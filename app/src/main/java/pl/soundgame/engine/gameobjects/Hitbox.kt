@@ -28,10 +28,26 @@ class Hitbox(var x: Float, var y: Float, var width: Float, var height: Float) {
      * @return True if the click is inside the hitbox, false otherwise.
      */
     fun isClicked(clickX: Float, clickY: Float): Boolean {
-        return (clickX >= x && clickX <= x + width) && (clickY >= y && clickY <= y + height)
+        return (clickX >= x && clickX <= x + width) && (clickY <= y && clickY >= y - height)
     }
 
     fun logInfo(id: String) {
         Log.i("Hitbox Info", "GameObject $id -> Hitbox: X=$x, Y=$y, Width=$width, Height=$height")
+    }
+
+    /**
+     * Updates the position of the hitbox.
+     */
+    fun updatePosition(newX: Float, newY: Float) {
+        this.x = newX
+        this.y = newY
+    }
+
+    /**
+     * Updates the size of the hitbox.
+     */
+    fun updateSize(newWidth: Float, newHeight: Float) {
+        this.width = newWidth
+        this.height = newHeight
     }
 }

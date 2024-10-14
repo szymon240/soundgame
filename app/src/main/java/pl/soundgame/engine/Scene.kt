@@ -62,6 +62,12 @@ class Scene {
         }
     }
 
+
+    /**
+     * Sets init scene
+     *
+     * @param function that fill create scene
+     */
     fun setInitScene(fn: ()->Unit){
         mInitScene = fn
     }
