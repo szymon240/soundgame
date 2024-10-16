@@ -1,0 +1,146 @@
+package pl.soundgame.engine.gameobjects
+
+import android.graphics.Bitmap
+import android.opengl.Matrix
+import android.util.Log
+import pl.soundgame.engine.gameobjects.gameobjectstates.GameObjectDefaultState
+import pl.soundgame.engine.gameobjects.gameobjectstates.GameObjectState
+import pl.soundgame.engine.shapes.Sprite
+
+
+/**
+ * Class for single object to be displayed on user screen
+ *
+ * @constructor Takes Bitmap as mandatory argument and id as optional, Default position is on the
+ * center of world space (starting point x: -0.5, y: 0.5, 1.0f width and height)
+ *
+ * @author Adam Czyżak
+ */
+
+class GameObject(bitmap: Bitmap, id: String = "") {
+    private var mSprite: Sprite
+    private val mMatrix = FloatArray(16)
+    private val mMatrixFrameChange = FloatArray(16)
+    private var mGameObjectState: GameObjectState
+    private var mId: String =""
+    private var mHitbox: Hitbox
+    private var mPosition = arrayOf(0.0f, 0.0f, 0.0f)  // Position of the GameObject
+    private var clickAction: (() -> Unit)? = null
+    private var width: Float
+    private var height: Float
+    var visible = true
+
+    init {
+        this.mGameObjectState = GameObjectDefaultState(this)
+        this.mSprite = Sprite(bitmap)
+        Matrix.setIdentityM(mMatrix, 0)
+        Matrix.setIdentityM(mMatrixFrameChange, 0)
+
+        val aspectRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
+        val initialWidth = 1.0f * aspectRatio
+        val initialHeight = 1.0f
+        width = initialWidth
+        height = initialHeight
+
+        // Adjusted hitbox positioning based on GameObject size
+        this.mHitbox = Hitbox(-0.5f * width, 0.5f * height, initialWidth, initialHeight)
+    }
+
+    fun logObjectInfo(){
+        Log.i("Sprite: ${mId}", "Object ${mId} exists in Scene\n" +
+                "visible: $visible\n" +
+                "click function bound: ${clickAction != null}\n")
+    }
+
+    fun draw(shaderProgram: Int, vPMatrix: FloatArray) {
+        if (visible) {
+            val scratch = FloatArray(16)
+            Matrix.multiplyMM(scratch, 0, vPMatrix, 0, mMatrixFrameChange, 0)
+            Matrix.multiplyMM(scratch, 0, mMatrix, 0, scratch, 0)
+            mGameObjectState.draw(shaderProgram, scratch, mSprite)
+        }
+        Matrix.setIdentityM(mMatrixFrameChange, 0)
+    }
+    fun swapSprite(newBitmap: Bitmap){
+        mSprite.swapImage(newBitmap)
+    }
+    fun setId(pId: String){
+        this.mId = pId
+    }
+
+    fun getId(): String{
+        return mId
+    }
+    fun setClickAction(function: () -> Unit) {
+        this.clickAction = function
+    }
+
+    fun removeClickAction() {
+        this.clickAction = null
+    }
+
+    fun click(x: Float, y: Float): Boolean {
+        mHitbox.logInfo(mId)
+        return if (mHitbox.isClicked(x, y)) {
+            Log.i("GameObject: $mId", "Click detected!")
+            clickAction?.invoke()
+            true
+        } else {
+            Log.i("GameObject: $mId", "Click not detected!")
+            false
+        }
+    }
+
+    fun scale(ratio: Float) {
+        Matrix.scaleM(mMatrix, 0, ratio, ratio, ratio)
+        width *= ratio
+        height *= ratio
+        updateHitbox()
+    }
+
+    fun scale(x: Float = 1.0f, y: Float = 1.0f, z: Float = 1.0f) {
+        Matrix.scaleM(mMatrix, 0, x, y, z)
+        width *= x
+        height *= y
+        updateHitbox()
+    }
+
+    fun translate(x: Float, y: Float) {
+        Matrix.translateM(mMatrix, 0, x, y, 0.0f)
+        mPosition[0] += x
+        mPosition[1] += y
+        updateHitbox()
+    }
+
+    fun setOriginPosition(x: Float = 0.0f, y: Float = 0.0f, z: Float = 0.0f) {
+        Matrix.setIdentityM(mMatrix, 0)
+        Matrix.translateM(mMatrix, 0, x, y, z)
+        mPosition[0] = x
+        mPosition[1] = y
+        updateHitbox()
+    }
+
+    private fun updateHitbox() {
+        // Update the hitbox based on the GameObject's position and size
+        println("${ mPosition[0] } ${ mPosition[1] }")
+
+        if(mPosition[0] < 0.0f) {
+            val newX = mPosition[0]
+            val newY = mPosition[1] + height / 2
+            mHitbox.updatePosition(newX, newY)
+            mHitbox.updateSize(width, height)
+        }else if(mPosition[0] == 0.0f){
+            val newX = mPosition[0] - width /2
+            val newY = mPosition[1] + height / 2
+            mHitbox.updatePosition(newX, newY)
+            mHitbox.updateSize(width, height)
+        } else{
+
+            val newX = mPosition[0] - width
+            val newY = mPosition[1] + height / 2
+            Log.i("${mId}"," ${newX}, ${width} ${newX + width}" )
+            mHitbox.updatePosition(newX, newY)
+            mHitbox.updateSize(width, height)
+        }
+    }
+}
