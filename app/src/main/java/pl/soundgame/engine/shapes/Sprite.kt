@@ -75,12 +75,6 @@ class Sprite(bitmap: Bitmap) {
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR)
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR)
 
-        // Update the textureBitmap reference
- // Optionally recycle the old bitmap
-
-
-
-
         val error = GLES20.glGetError()
         if (error != GLES20.GL_NO_ERROR) {
             Log.e(TAG, "OpenGL error after texImage2D: $error")

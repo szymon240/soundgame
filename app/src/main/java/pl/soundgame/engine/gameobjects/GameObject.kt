@@ -3,8 +3,7 @@ package pl.soundgame.engine.gameobjects
 import android.graphics.Bitmap
 import android.opengl.Matrix
 import android.util.Log
-import pl.soundgame.engine.gameobjects.gameobjectstates.GameObjectDefaultState
-import pl.soundgame.engine.gameobjects.gameobjectstates.GameObjectState
+import pl.soundgame.engine.shapes.Drawable
 import pl.soundgame.engine.shapes.Sprite
 
 
@@ -17,11 +16,10 @@ import pl.soundgame.engine.shapes.Sprite
  * @author Adam Czyżak
  */
 
-class GameObject(bitmap: Bitmap, id: String = "") {
+class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
     private var mSprite: Sprite
-    private val mMatrix = FloatArray(16)
+    override val mMatrix = FloatArray(16)
     private val mMatrixFrameChange = FloatArray(16)
-    private var mGameObjectState: GameObjectState
     private var mId: String =""
     private var mHitbox: Hitbox
     private var mPosition = arrayOf(0.0f, 0.0f, 0.0f)  // Position of the GameObject
@@ -31,7 +29,6 @@ class GameObject(bitmap: Bitmap, id: String = "") {
     var visible = true
 
     init {
-        this.mGameObjectState = GameObjectDefaultState(this)
         this.mSprite = Sprite(bitmap)
         Matrix.setIdentityM(mMatrix, 0)
         Matrix.setIdentityM(mMatrixFrameChange, 0)
@@ -52,12 +49,12 @@ class GameObject(bitmap: Bitmap, id: String = "") {
                 "click function bound: ${clickAction != null}\n")
     }
 
-    fun draw(shaderProgram: Int, vPMatrix: FloatArray) {
+    override fun draw(shaderProgram: Int, vPMatrix: FloatArray) {
         if (visible) {
             val scratch = FloatArray(16)
             Matrix.multiplyMM(scratch, 0, vPMatrix, 0, mMatrixFrameChange, 0)
             Matrix.multiplyMM(scratch, 0, mMatrix, 0, scratch, 0)
-            mGameObjectState.draw(shaderProgram, scratch, mSprite)
+            mSprite.draw(shaderProgram, scratch)
         }
         Matrix.setIdentityM(mMatrixFrameChange, 0)
     }

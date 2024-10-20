@@ -5,13 +5,13 @@ import android.opengl.Matrix
 import android.util.Log
 import pl.soundgame.engine.Scene
 import pl.soundgame.engine.ShaderProgram
+import pl.soundgame.engine.background.Background
 
 abstract class Game {
     private var width: Float = 0.0f
     private var height: Float = 0.0f
     private  var ratio: Float = 0.0f
     abstract var mScene: Scene
-    //abstract var mGameState: GameState
     lateinit var mShaderProgram: ShaderProgram
     private val vPMatrix = FloatArray(16)
     private val projectionMatrix = FloatArray(16)

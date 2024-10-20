@@ -1,5 +1,6 @@
 package pl.soundgame.engine
 
+import pl.soundgame.engine.background.Background
 import pl.soundgame.engine.gameobjects.GameObject
 
 /**
@@ -12,6 +13,9 @@ import pl.soundgame.engine.gameobjects.GameObject
 class Scene {
     private var mObjects: MutableList<GameObject> = mutableListOf<GameObject>()
     private var mInitScene: (() -> Unit)? = null
+    private lateinit var mBackground: Background
+    private var backgroundInitialized: Boolean = false
+
     var id: String = ""
         get() = field
         set(value) {
@@ -36,6 +40,7 @@ class Scene {
      * @param vPMatrix FloatArray(16) - product of view and perspective matrix multiplication
      */
     fun draw(shaderProgram: Int, vPMatrix: FloatArray ){
+        if(backgroundInitialized) mBackground.draw(vPMatrix)
         for( gameObject in mObjects){
             gameObject.draw(shaderProgram,vPMatrix)
         }
@@ -79,6 +84,4 @@ class Scene {
             }
         }
     }
-
-    fun executeFunction(foo:  () -> Unit ){foo()}
 }

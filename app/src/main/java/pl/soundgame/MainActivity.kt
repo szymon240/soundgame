@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
             ob4.setOriginPosition(y=-0.2f, x=-0.5f)
             ob4.scale(0.25f)
 
-            ob2.setClickAction {
+            ob4.setClickAction {
                 if (zmienna == 1){
                     ob2.logObjectInfo()
                     ob2.swapSprite(createTextTexture("hej- po kliknięciu",size=60f, background = loadTextureBitmap("button.png", this)))
