@@ -11,9 +11,16 @@ import pl.soundgame.engine.shapes.createTextTexture
 
 class MainActivity : AppCompatActivity() {
     private lateinit var gLView: GLSurfaceView
-
+    private lateinit var soundPlayer1: SoundPlayer
+    private lateinit var soundPlayer2: SoundPlayer
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        soundPlayer1 = SoundPlayer(this)
+        soundPlayer1.initialize(R.raw.test)
+
+        soundPlayer2 = SoundPlayer(this)
+        soundPlayer2.initialize(R.raw.test)
 
         val scene = Scene()
         val game = SoundGame(scene)
@@ -45,6 +52,21 @@ class MainActivity : AppCompatActivity() {
                 }
 
             }
+
+            ob1.setClickAction {
+                soundPlayer1.setSound(R.raw.test)
+                soundPlayer1.play()
+            }
+
+            ob4.setClickAction {
+                if (!soundPlayer2.isPlaying()) {
+                    soundPlayer2.setSound(R.raw.sound2)
+                    soundPlayer2.play()
+                } else {
+                    soundPlayer2.pause()
+                }
+            }
+
 
             scene.addGameObject(ob1, ob2, ob3, ob4)
             var question  = GameObject(createTextTexture( game.someQuestion,size=60f, background = loadTextureBitmap("button.png", this)), id="5")
