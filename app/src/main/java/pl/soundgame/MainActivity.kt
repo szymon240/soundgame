@@ -11,16 +11,12 @@ import pl.soundgame.engine.shapes.createTextTexture
 
 class MainActivity : AppCompatActivity() {
     private lateinit var gLView: GLSurfaceView
-    private lateinit var soundPlayer1: SoundPlayer
-    private lateinit var soundPlayer2: SoundPlayer
+    private lateinit var soundPlayer: SoundPlayer
+
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        soundPlayer1 = SoundPlayer(this)
-        soundPlayer1.initialize(R.raw.test)
-
-        soundPlayer2 = SoundPlayer(this)
-        soundPlayer2.initialize(R.raw.test)
+        soundPlayer = SoundPlayer(this)
 
         val scene = Scene()
         val game = SoundGame(scene)
@@ -54,18 +50,30 @@ class MainActivity : AppCompatActivity() {
             }
 
             ob1.setClickAction {
-                soundPlayer1.setSound(R.raw.test)
-                soundPlayer1.play()
-            }
-
-            ob4.setClickAction {
-                if (!soundPlayer2.isPlaying()) {
-                    soundPlayer2.setSound(R.raw.sound2)
-                    soundPlayer2.play()
-                } else {
-                    soundPlayer2.pause()
+                val sound = soundPlayer.getSoundById(1)
+                sound?.let {
+                    soundPlayer.setSound(it.resId)
+                    soundPlayer.play()
                 }
             }
+
+            ob3.setClickAction {
+                soundPlayer.resume()
+            }
+
+            // Play/pause sound 2 on ob4 click
+            ob4.setClickAction {
+                val sound = soundPlayer.getSoundById(2)
+                sound?.let {
+                    if (!soundPlayer.isPlaying()) {
+                        soundPlayer.setSound(it.resId)
+                        soundPlayer.resume()
+                    } else {
+                        soundPlayer.pause()
+                    }
+                }
+            }
+
 
 
             scene.addGameObject(ob1, ob2, ob3, ob4)
