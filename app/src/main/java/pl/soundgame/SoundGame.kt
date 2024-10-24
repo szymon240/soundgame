@@ -1,16 +1,26 @@
 package pl.soundgame
 
+import android.content.Context
 import pl.soundgame.engine.Game
 import pl.soundgame.engine.Scene
+import pl.soundgame.modes.GameMode
+import pl.soundgame.modes.RythmMode
 
 
-internal class SoundGame(initialScene: Scene) : Game() {
+internal class SoundGame(context: Context) : Game() {
     override var mScene: Scene
-    var someQuestion = "pytanko"
-    private var audioPlayer: Int = 0
+    private var gameMode: GameMode
+    private var context: Context
 
     init {
-        mScene = initialScene
+        this.context = context
+        gameMode = RythmMode(this.context)
+        mScene = gameMode.returnGameModeScene()
+    }
+
+    fun changeMode(){
+        TODO("implement change mode")
+
     }
 }
 

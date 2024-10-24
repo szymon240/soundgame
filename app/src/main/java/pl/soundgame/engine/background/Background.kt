@@ -26,7 +26,7 @@ abstract class Background {
     }
 
     /**
-     * Adds GameObject to the scene
+     * Adds GameObject to the background
      *
      * @param pGameObject object to be added, can be multiple separated with ,
      */
