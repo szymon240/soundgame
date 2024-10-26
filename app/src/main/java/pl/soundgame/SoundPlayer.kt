@@ -2,16 +2,20 @@ package pl.soundgame
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.media.PlaybackParams
 
 class SoundPlayer(private val context: Context) {
 
-    private var mediaPlayer: MediaPlayer? = null
+    internal var mediaPlayer: MediaPlayer? = null
     private var currentSoundResId: Int? = null
     private var pausedPosition: Int = 0
 
     private val soundList = listOf(
         Sound(id = 1, name = "Test Sound", resId = R.raw.test),
-        Sound(id = 2, name = "Sound 2", resId = R.raw.sound2)
+        Sound(id = 2, name = "Sound 2", resId = R.raw.sound2),
+        Sound(id = 3, name = "Beat 1", resId = R.raw.beat1),
+        Sound(id = 4, name = "Beat 2", resId = R.raw.beat2),
+        Sound(id = 5, name = "Beat 3", resId = R.raw.beat3)
     )
 
     fun initialize(mediaResId: Int) {
@@ -62,6 +66,20 @@ class SoundPlayer(private val context: Context) {
     fun release() {
         mediaPlayer?.release()
         mediaPlayer = null
+    }
+
+    fun playSoundWithPitch(pitch: Float) {
+        val mediaPlayer = this.mediaPlayer
+        mediaPlayer?.let {
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.pause()
+                mediaPlayer.seekTo(0)
+            }
+            val playbackParams = PlaybackParams()
+            playbackParams.pitch = pitch
+            mediaPlayer.playbackParams = playbackParams
+            mediaPlayer.start()
+        }
     }
 
     //Check if the media player is currently playing
