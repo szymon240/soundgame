@@ -7,8 +7,11 @@ import pl.soundgame.engine.shapes.Drawable
 class SampleBackground(context: Context) : Background() {
     override var mShaderProgram: ShaderProgram
     override var mObjects: MutableList<Drawable> = mutableListOf()
+    override fun updateFrame() {
+
+    }
 
     init{
-        mShaderProgram = ShaderProgram("vertex_shader.glsl","fragment_shader.glsl", context)
+        mShaderProgram = ShaderProgram("foreground_vertex_shader.glsl","foreground_fragment_shader.glsl", context)
     }
 }

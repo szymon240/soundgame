@@ -20,7 +20,6 @@ internal class SoundGame(context: Context) : Game() {
 
     fun changeMode(){
         TODO("implement change mode")
-
     }
 }
 

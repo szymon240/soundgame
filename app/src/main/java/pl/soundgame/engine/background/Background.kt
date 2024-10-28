@@ -9,6 +9,8 @@ abstract class Background {
     private var beforeDrawFrame: (() -> Unit)? = null
     private var afterDrawFrame: (() -> Unit)? = null
 
+    abstract fun updateFrame();
+
     fun draw(vPMatrix: FloatArray ){
         beforeDrawFrame?.invoke()
         for( gameObject in mObjects){

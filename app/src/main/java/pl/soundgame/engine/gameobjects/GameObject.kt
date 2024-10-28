@@ -16,20 +16,25 @@ import pl.soundgame.engine.shapes.Sprite
  * @author Adam Czyżak
  */
 
-class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
-    private var mSprite: Sprite
+open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
+    protected var mSprite: Sprite
     override val mMatrix = FloatArray(16)
-    private val mMatrixFrameChange = FloatArray(16)
+    protected val mMatrixFrameChange = FloatArray(16)
     private var mId: String =""
     private var mHitbox: Hitbox
     private var mPosition = arrayOf(0.0f, 0.0f, 0.0f)  // Position of the GameObject
     private var clickAction: (() -> Unit)? = null
     private var width: Float
     private var height: Float
+
+    protected var baseBitmap: Bitmap
+
     var visible = true
 
     init {
+        baseBitmap = bitmap
         this.mSprite = Sprite(bitmap)
+
         Matrix.setIdentityM(mMatrix, 0)
         Matrix.setIdentityM(mMatrixFrameChange, 0)
 
@@ -49,6 +54,7 @@ class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
                 "click function bound: ${clickAction != null}\n")
     }
 
+    open fun beforeDraw() {}
     override fun draw(shaderProgram: Int, vPMatrix: FloatArray) {
         if (visible) {
             val scratch = FloatArray(16)
@@ -76,14 +82,15 @@ class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
         this.clickAction = null
     }
 
+    open fun afterClickDetected(){}
+
     fun click(x: Float, y: Float): Boolean {
         mHitbox.logInfo(mId)
         return if (mHitbox.isClicked(x, y)) {
-            Log.i("GameObject: $mId", "Click detected!")
             clickAction?.invoke()
+            afterClickDetected()
             true
         } else {
-            Log.i("GameObject: $mId", "Click not detected!")
             false
         }
     }

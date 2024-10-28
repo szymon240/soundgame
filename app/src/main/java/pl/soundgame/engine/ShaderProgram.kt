@@ -47,4 +47,8 @@ class ShaderProgram(vertShaderName: String, fragShaderName: String ,context: Con
 
         return shader
     }
+
+    fun release(){
+        GLES20.glDeleteProgram(mProgram)
+    }
 }

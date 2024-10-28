@@ -8,6 +8,7 @@ import pl.soundgame.engine.loadTextureBitmap
 import pl.soundgame.engine.shapes.createTextTexture
 import android.os.Handler
 import android.os.Looper
+import pl.soundgame.engine.gameobjects.Button
 import kotlin.random.Random
 
 class RythmMode(var context: Context) : GameMode() {
@@ -24,7 +25,7 @@ class RythmMode(var context: Context) : GameMode() {
 
         scene.setInitScene {
             // Button to generate and play the rhythm pattern
-            val playButton = GameObject(loadTextureBitmap("button.png", context), id = "playButton")
+            val playButton = Button(loadTextureBitmap("button.png", context), id = "playButton")
             playButton.setOriginPosition(y = 0.2f, x = 0.5f)
             playButton.scale(0.25f)
             playButton.setClickAction {
@@ -35,7 +36,7 @@ class RythmMode(var context: Context) : GameMode() {
             scene.addGameObject(playButton)
 
             // Button for the player to press in sync with the rhythm pattern
-            val tapButton = GameObject(loadTextureBitmap("button.png", context), id = "tapButton")
+            val tapButton = Button(loadTextureBitmap("button.png", context), id = "tapButton")
             tapButton.setOriginPosition(y = 0.5f, x = 0.5f)
             tapButton.scale(0.25f)
             tapButton.setClickAction {
@@ -44,7 +45,7 @@ class RythmMode(var context: Context) : GameMode() {
             }
             scene.addGameObject(tapButton)
 
-            val finishButton = GameObject(loadTextureBitmap("button.png", context), id = "finishButton")
+            val finishButton = Button(createTextTexture("Przycisk 3", background= loadTextureBitmap("button.png", context)), id = "finishButton")
             finishButton.setOriginPosition(y = 0.8f, x = 0.5f)
             finishButton.scale(0.25f)
             finishButton.setClickAction {
