@@ -5,19 +5,22 @@ import pl.soundgame.SoundPlayer
 import pl.soundgame.engine.Scene
 import pl.soundgame.engine.gameobjects.GameObject
 import pl.soundgame.engine.loadTextureBitmap
-import pl.soundgame.engine.shapes.createTextTexture
 import android.os.Handler
 import android.os.Looper
+import kotlin.math.abs
 import kotlin.random.Random
 
 class RythmMode(var context: Context) : GameMode() {
-    val soundPlayer: SoundPlayer = SoundPlayer(context)
+    private val soundPlayer: SoundPlayer = SoundPlayer(context)
     private val handler = Handler(Looper.getMainLooper())
     private val rhythmPattern = mutableListOf<Pair<Boolean, Float>>()
-    private val userPressTimes = mutableListOf<Long>()
-    var tempoBPM = 60
-
+    private val rhythmIntervals = mutableListOf<Long>()
+    private val userPressIntervals = mutableListOf<Long>()
+    private var tempoBPM = 60
+    private var isFirst = true
+    private var start = true
     private var startTime = 0L
+    private var lastPressTime = 0L
 
     override fun returnGameModeScene(): Scene {
         val scene = Scene()
@@ -25,30 +28,46 @@ class RythmMode(var context: Context) : GameMode() {
         scene.setInitScene {
             // Button to generate and play the rhythm pattern
             val playButton = GameObject(loadTextureBitmap("button.png", context), id = "playButton")
-            playButton.setOriginPosition(y = 0.2f, x = 0.5f)
+            playButton.setOriginPosition(y = 0.7f, x = 0.0f)
             playButton.scale(0.25f)
             playButton.setClickAction {
                 generateRhythmPattern()
-                startTime = System.currentTimeMillis()
                 playRhythmPattern()
             }
             scene.addGameObject(playButton)
 
             // Button for the player to press in sync with the rhythm pattern
             val tapButton = GameObject(loadTextureBitmap("button.png", context), id = "tapButton")
-            tapButton.setOriginPosition(y = 0.5f, x = 0.5f)
+            tapButton.setOriginPosition(y = 0.0f, x = -0.5f)
             tapButton.scale(0.25f)
             tapButton.setClickAction {
-                val pressTime = System.currentTimeMillis() - startTime
-                userPressTimes.add(pressTime)  // Log the relative time of each press
+                if (start) {
+                    userPressIntervals.clear()
+                    lastPressTime = 0L
+                    startTime = System.currentTimeMillis()
+                    isFirst = true
+                    start = false
+                }
+                else {
+                    val pressTime = System.currentTimeMillis()
+                    if (isFirst) {
+                        userPressIntervals.add(pressTime - startTime)
+                        isFirst = false
+                    } else {
+                        userPressIntervals.add(pressTime - lastPressTime)
+                    } // Save interval since last press
+                    lastPressTime = pressTime  // Update lastPressTime to the current press time
+                }
             }
             scene.addGameObject(tapButton)
 
+            // Finish button to check accuracy
             val finishButton = GameObject(loadTextureBitmap("button.png", context), id = "finishButton")
-            finishButton.setOriginPosition(y = 0.8f, x = 0.5f)
+            finishButton.setOriginPosition(y = 0.0f, x = 0.5f)
             finishButton.scale(0.25f)
             finishButton.setClickAction {
-                checkAccuracy()
+                    checkAccuracy()
+                    start = true
             }
             scene.addGameObject(finishButton)
         }
@@ -59,8 +78,9 @@ class RythmMode(var context: Context) : GameMode() {
     // Generate a random rhythm pattern with varied note lengths
     fun generateRhythmPattern() {
         rhythmPattern.clear()
-        val totalBeats = 8
+        rhythmIntervals.clear()  // Clear previous intervals
 
+        val totalBeats = 8
         repeat(totalBeats) {
             val playSound = Random.nextBoolean()
             val randomPitch = if (playSound) Random.nextFloat() * 1.5f + 0.5f else 1.0f
@@ -71,11 +91,29 @@ class RythmMode(var context: Context) : GameMode() {
 
     // Play the generated rhythm pattern
     fun playRhythmPattern() {
+        startTime = System.currentTimeMillis()  // Set start time for rhythm playback
+        lastPressTime = 0L                      // Reset last press time for user input
+        userPressIntervals.clear()              // Clear previous press intervals
+
+        var isFirst = true
         var delay = 0L
         val beatInterval = (60000L / (tempoBPM * 2))
         val beatSound = soundPlayer.getSoundById(4)
+        var lastDelay = 0L
 
         for ((playSound, pitch) in rhythmPattern) {
+            if (playSound) {
+                print("$delay|")
+                if (isFirst) {
+                    rhythmIntervals.add(delay)
+                    isFirst = false
+                    lastDelay = delay
+                }
+                else {
+                    rhythmIntervals.add(delay - lastDelay)
+                    lastDelay = delay
+                }
+            }
             handler.postDelayed({
                 if (playSound) {
                     beatSound?.let {
@@ -90,37 +128,27 @@ class RythmMode(var context: Context) : GameMode() {
     }
 
 
-    // Check user accuracy by comparing button presses to the generated rhythm
+    // Check user accuracy by comparing intervals between presses to generated rhythm intervals
     private fun checkAccuracy() {
-        val beatInterval = (60000L / (tempoBPM * 2))  // Eighth note duration
         var score = 0
-        val tolerance = beatInterval / 4  // Allowable deviation from exact timing
+        val tolerance = tempoBPM / 4
+        print(rhythmIntervals)
+        print(userPressIntervals)
 
-        // Loop through user presses to find a match within tolerance in rhythmPattern beats
-        for (pressTime in userPressTimes) {
-            var matched = false
-            for (i in rhythmPattern.indices) {
-                if (rhythmPattern[i].first) {  // Only compare to "play sound" beats
-                    val expectedTime = i * beatInterval
-
-                    // Calculate time difference and check if it’s within tolerance
-                    if (kotlin.math.abs(expectedTime - pressTime) <= tolerance) {
-                        score++
-                        matched = true
-                        break  // Exit inner loop after finding a match
-                    }
-                }
+        val comparisonCount = minOf(rhythmIntervals.size, userPressIntervals.size)
+        for (i in 0 until comparisonCount) {
+            val difference = abs(rhythmIntervals[i] - userPressIntervals[i])
+            if (difference <= tolerance) {
+                score++
             }
         }
 
-        val totalPlayableBeats = rhythmPattern.count { it.first }
-        val accuracyPercentage = if (totalPlayableBeats > 0) {
-            (score.toFloat() / totalPlayableBeats) * 100
+        val accuracyPercentage = if (rhythmIntervals.isNotEmpty()) {
+            (score.toFloat() / rhythmIntervals.size) * 100
         } else {
-            0f  // Avoid division by zero
+            0f
         }
 
         println("Accuracy: $accuracyPercentage%")
     }
-
 }
