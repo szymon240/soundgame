@@ -35,7 +35,7 @@ class RythmMode(var context: Context) : GameMode() {
             val playButton = Button(loadTextureBitmap("button.png", context), id = "playButton")
             playButton.setOriginPosition(y = 0.2f, x = 0.5f)
             playButton.scale(0.25f)
-            playButton.setClickAction {
+            playButton.onClickAction {
                 generateRhythmPattern()
                 startTime = System.currentTimeMillis()
                 playRhythmPattern()
@@ -47,7 +47,7 @@ class RythmMode(var context: Context) : GameMode() {
                 alternateBitmap = loadTextureBitmap("roundbutton_on.png", context))
             tapButton.setOriginPosition(y = -0.5f, x = 0f)
             tapButton.scale(0.5f)
-            tapButton.setClickAction {
+            tapButton.onClickAction {
                 if (start) {
                     userPressIntervals.clear()
                     lastPressTime = 0L
@@ -71,15 +71,13 @@ class RythmMode(var context: Context) : GameMode() {
             val finishButton = Button(createTextTexture("Przycisk 3", background= loadTextureBitmap("button.png", context)), id = "finishButton")
             finishButton.setOriginPosition(y = 0.8f, x = 0.5f)
             finishButton.scale(0.25f)
-            finishButton.setClickAction {
+            finishButton.onClickAction {
+                    tapButton.toggleLock()
                     checkAccuracy()
                     start = true
             }
             scene.addGameObject(finishButton)
         }
-
-
-
         return scene
     }
 

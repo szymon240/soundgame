@@ -10,8 +10,9 @@ import android.opengl.Matrix
 
 
 class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) : GameObject(bitmap, id){
-
+    private var isBlocked: Boolean = false
     private var animationFrameCounter: Int = 0
+    private var storeClickAction: (() -> Unit)? = null
     private var wasClicked: Boolean = false
     private var wasSwaped = false
 
@@ -21,6 +22,40 @@ class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) :
             this.alternateBitmap = darkenBitmap(bitmap)
         }else{
             this.alternateBitmap = alternateBitmap
+        }
+    }
+    fun isLocked(): Boolean {
+        return isBlocked
+    }
+
+    fun toggleLock(){
+        if (!isBlocked){
+            isBlocked = !isBlocked
+            swapSprite(alternateBitmap)
+            if(clickAction != null) storeClickAction = clickAction!!
+            clickAction = null
+        }else{
+            isBlocked = !isBlocked
+            swapSprite(baseBitmap)
+            if(storeClickAction != null) clickAction = storeClickAction
+            storeClickAction = null
+        }
+    }
+    fun lock(){
+        if (!isBlocked){
+            isBlocked = !isBlocked
+            swapSprite(alternateBitmap)
+            if(clickAction != null) storeClickAction = clickAction!!
+            clickAction = null
+        }
+    }
+
+    fun unlock() {
+        if (isBlocked){
+            isBlocked = !isBlocked
+            swapSprite(baseBitmap)
+            if(storeClickAction != null) clickAction = storeClickAction
+            storeClickAction = null
         }
     }
 
