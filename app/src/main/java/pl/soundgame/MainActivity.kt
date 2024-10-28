@@ -17,10 +17,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val game = SoundGame(this)
 
-        game.setAfterCreateSurface {
-
-        }
-
         gLView = GameGLSurfaceView(this, game)
         setContentView(gLView)
     }

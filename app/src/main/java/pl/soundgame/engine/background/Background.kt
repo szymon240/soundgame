@@ -11,11 +11,9 @@ abstract class Background {
 
     abstract fun updateFrame();
 
-    fun draw(vPMatrix: FloatArray ){
+    fun draw(){
         beforeDrawFrame?.invoke()
-        for( gameObject in mObjects){
-            gameObject.draw(mShaderProgram.getProgram(),vPMatrix)
-        }
+        updateFrame()
         afterDrawFrame?.invoke()
     }
 

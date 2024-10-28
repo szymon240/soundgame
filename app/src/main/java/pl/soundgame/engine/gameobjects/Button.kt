@@ -38,7 +38,7 @@ class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) :
     }
 
     override fun afterClickDetected(){
-        animationFrameCounter = 30
+        animationFrameCounter = 10
         wasClicked = true
     }
 

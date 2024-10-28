@@ -8,6 +8,7 @@ import pl.soundgame.engine.loadTextureBitmap
 import pl.soundgame.engine.shapes.createTextTexture
 import android.os.Handler
 import android.os.Looper
+import pl.soundgame.engine.background.SampleBackground
 import kotlin.math.abs
 import pl.soundgame.engine.gameobjects.Button
 import kotlin.random.Random
@@ -26,7 +27,9 @@ class RythmMode(var context: Context) : GameMode() {
 
     override fun returnGameModeScene(): Scene {
         val scene = Scene()
-
+        scene.setBackground {
+            SampleBackground(context)
+        }
         scene.setInitScene {
             // Button to generate and play the rhythm pattern
             val playButton = Button(loadTextureBitmap("button.png", context), id = "playButton")
@@ -40,9 +43,10 @@ class RythmMode(var context: Context) : GameMode() {
             scene.addGameObject(playButton)
 
             // Button for the player to press in sync with the rhythm pattern
-            val tapButton = Button(loadTextureBitmap("button.png", context), id = "tapButton")
-            tapButton.setOriginPosition(y = 0.5f, x = 0.5f)
-            tapButton.scale(0.25f)
+            val tapButton = Button(loadTextureBitmap("roundbutton_off.png", context), id = "tapButton",
+                alternateBitmap = loadTextureBitmap("roundbutton_on.png", context))
+            tapButton.setOriginPosition(y = -0.5f, x = 0f)
+            tapButton.scale(0.5f)
             tapButton.setClickAction {
                 if (start) {
                     userPressIntervals.clear()
@@ -73,6 +77,8 @@ class RythmMode(var context: Context) : GameMode() {
             }
             scene.addGameObject(finishButton)
         }
+
+
 
         return scene
     }
