@@ -39,7 +39,7 @@ class RythmMode(var context: Context) : GameMode() {
             val playButton = Button(loadTextureBitmap("button.png", context), id = "playButton")
             playButton.setOriginPosition(y = 0.2f, x = 0.5f)
             playButton.scale(0.25f)
-            playButton.setClickAction {
+            playButton.onClickAction {
                 if (roundNumber < 8) {
                     generateRhythmPattern()
                     startTime = System.currentTimeMillis()
@@ -56,7 +56,7 @@ class RythmMode(var context: Context) : GameMode() {
                 alternateBitmap = loadTextureBitmap("roundbutton_on.png", context))
             tapButton.setOriginPosition(y = -0.5f, x = 0f)
             tapButton.scale(0.5f)
-            tapButton.setClickAction {
+            tapButton.onClickAction {
                 if (unblocked) {
                     if (start) {
                         userPressIntervals.clear()
