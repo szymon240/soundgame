@@ -23,7 +23,7 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
     private var mId: String =""
     private var mHitbox: Hitbox
     private var mPosition = arrayOf(0.0f, 0.0f, 0.0f)  // Position of the GameObject
-    private var clickAction: (() -> Unit)? = null
+    protected var clickAction: (() -> Unit)? = null
     private var width: Float
     private var height: Float
 
@@ -74,7 +74,7 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
     fun getId(): String{
         return mId
     }
-    fun setClickAction(function: () -> Unit) {
+    fun onClickAction(function: () -> Unit) {
         this.clickAction = function
     }
 

@@ -92,7 +92,7 @@ class Scene {
     fun bindClickAction(function: () -> Unit, id: String){
         for(gameObject in mObjects){
             if(gameObject.getId() == id){
-                gameObject.setClickAction {function.invoke()}
+                gameObject.onClickAction {function.invoke()}
             }
         }
     }
