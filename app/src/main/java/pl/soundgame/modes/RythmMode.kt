@@ -20,11 +20,15 @@ class RythmMode(var context: Context) : GameMode() {
     private val rhythmPattern = mutableListOf<Pair<Boolean, Float>>()
     private val rhythmIntervals = mutableListOf<Long>()
     private val userPressIntervals = mutableListOf<Long>()
+    private val tolerance = 100L
     private var tempoBPM = 60
     private var isFirst = true
     private var start = true
+    private var unblocked = false
     private var startTime = 0L
     private var lastPressTime = 0L
+    private var accuracy = 0.0
+    private var roundNumber = 0
 
     override fun returnGameModeScene(): Scene {
         val scene = Scene()
@@ -46,9 +50,14 @@ class RythmMode(var context: Context) : GameMode() {
             playButton.setOriginPosition(y = 0.2f, x = 0.5f)
             playButton.scale(0.25f)
             playButton.onClickAction {
-                generateRhythmPattern()
-                startTime = System.currentTimeMillis()
-                playRhythmPattern()
+                if (roundNumber < 8) {
+                    generateRhythmPattern()
+                    startTime = System.currentTimeMillis()
+                    playRhythmPattern()
+                    unblocked = true
+                } else {
+                    println("Finito")
+                }
             }
             scene.addGameObject(playButton)
 
@@ -61,39 +70,34 @@ class RythmMode(var context: Context) : GameMode() {
                 // UWAGA PRZYKŁA mój
                 ++scoreExample
                 scoreText.displayedText = "${scoreExampleText}${scoreExample}"
-                if (start) {
-                    userPressIntervals.clear()
-                    lastPressTime = 0L
-                    startTime = System.currentTimeMillis()
-                    isFirst = true
-                    start = false
-                }
-                else {
-                    val pressTime = System.currentTimeMillis()
-                    if (isFirst) {
-                        userPressIntervals.add(pressTime - startTime)
-                        isFirst = false
+                if (unblocked) {
+                    if (start) {
+                        userPressIntervals.clear()
+                        lastPressTime = 0L
+                        startTime = System.currentTimeMillis()
+                        isFirst = true
+                        start = false
                     } else {
-                        userPressIntervals.add(pressTime - lastPressTime)
-                    } // Save interval since last press
-                    lastPressTime = pressTime  // Update lastPressTime to the current press time
-                }
+                        val pressTime = System.currentTimeMillis()
+                        if (isFirst) {
+                            userPressIntervals.add(pressTime - startTime)
+                            isFirst = false
+                        } else {
+                            userPressIntervals.add(pressTime - lastPressTime)
+                        }
+                        lastPressTime = pressTime
 
+                        // Check if user has completed the required number of intervals
+                        if (userPressIntervals.size == rhythmIntervals.size) {
+                            checkAccuracy()
+                            start = true
+                            unblocked = false
+                            roundNumber++
+                        }
+                    }
+                }
             }
             scene.addGameObject(tapButton)
-
-            val finishButton = Button(createTextTexture("Przycisk 3", background= loadTextureBitmap("button.png", context)), id = "finishButton")
-            finishButton.setOriginPosition(y = 0.5f, x = 0.5f)
-            finishButton.scale(0.25f)
-            finishButton.onClickAction {
-                    tapButton.toggleLock()
-                    checkAccuracy()
-                    start = true
-            }
-            scene.addGameObject(finishButton)
-
-
-
         }
         return scene
     }
@@ -167,12 +171,8 @@ class RythmMode(var context: Context) : GameMode() {
             }
         }
 
-        val accuracyPercentage = if (rhythmIntervals.isNotEmpty()) {
-            (score.toFloat() / rhythmIntervals.size) * 100
-        } else {
-            0f
-        }
+        accuracy += (score.toFloat() / rhythmIntervals.size) * 100
 
-        println("Accuracy: $accuracyPercentage%")
+        println("Score: $accuracy")
     }
 }
