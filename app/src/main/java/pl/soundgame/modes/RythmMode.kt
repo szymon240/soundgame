@@ -11,6 +11,7 @@ import android.os.Looper
 import pl.soundgame.engine.background.SampleBackground
 import kotlin.math.abs
 import pl.soundgame.engine.gameobjects.Button
+import pl.soundgame.engine.gameobjects.TextBox
 import kotlin.random.Random
 
 class RythmMode(var context: Context) : GameMode() {
@@ -30,7 +31,16 @@ class RythmMode(var context: Context) : GameMode() {
         scene.setBackground {
             SampleBackground(context)
         }
+
+        var scoreExample = 0
+        var scoreExampleText = "Score: "
+
         scene.setInitScene {
+            val scoreText = TextBox(initialText = "${scoreExampleText}${scoreExample}", id = "finishButton")
+            scoreText.setOriginPosition(y = 0.8f, x = 0f)
+            scoreText.scale(0.5f)
+            scene.addGameObject(scoreText)
+
             // Button to generate and play the rhythm pattern
             val playButton = Button(loadTextureBitmap("button.png", context), id = "playButton")
             playButton.setOriginPosition(y = 0.2f, x = 0.5f)
@@ -48,6 +58,9 @@ class RythmMode(var context: Context) : GameMode() {
             tapButton.setOriginPosition(y = -0.5f, x = 0f)
             tapButton.scale(0.5f)
             tapButton.onClickAction {
+                // UWAGA PRZYKŁA mój
+                ++scoreExample
+                scoreText.displayedText = "${scoreExampleText}${scoreExample}"
                 if (start) {
                     userPressIntervals.clear()
                     lastPressTime = 0L
@@ -65,11 +78,12 @@ class RythmMode(var context: Context) : GameMode() {
                     } // Save interval since last press
                     lastPressTime = pressTime  // Update lastPressTime to the current press time
                 }
+
             }
             scene.addGameObject(tapButton)
 
             val finishButton = Button(createTextTexture("Przycisk 3", background= loadTextureBitmap("button.png", context)), id = "finishButton")
-            finishButton.setOriginPosition(y = 0.8f, x = 0.5f)
+            finishButton.setOriginPosition(y = 0.5f, x = 0.5f)
             finishButton.scale(0.25f)
             finishButton.onClickAction {
                     tapButton.toggleLock()
@@ -77,6 +91,9 @@ class RythmMode(var context: Context) : GameMode() {
                     start = true
             }
             scene.addGameObject(finishButton)
+
+
+
         }
         return scene
     }
