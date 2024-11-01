@@ -36,16 +36,19 @@ class RythmMode(var context: Context) : GameMode() {
             SampleBackground(context)
         }
 
-        var scoreText = "Score: "
-        var roundText = "Round: "
+        var scoreExampleText = "Score: "
+        var roundExampleText = "Round: "
+
+        var finalScore = "Your final score: "
+        var finishGame = "Game finished!"
 
         scene.setInitScene {
-            val scoreText = TextBox(initialText = "${scoreText}${accuracy}", id = "scoreText")
-            scoreText.setOriginPosition(y = 0.7f, x = 0f)
+            val scoreText = TextBox(initialText = "${scoreExampleText}${accuracy}", id = "scoreText")
+            scoreText.setOriginPosition(y = 0.5f, x = 0f)
             scoreText.scale(0.5f)
             scene.addGameObject(scoreText)
 
-            val roundText = TextBox(initialText = "${roundText}${roundNumber}", id = "roundText")
+            val roundText = TextBox(initialText = "${roundExampleText}${roundNumber}", id = "roundText")
             roundText.setOriginPosition(y = 0.8f, x = 0f)
             roundText.scale(0.5f)
             scene.addGameObject(roundText)
@@ -55,13 +58,14 @@ class RythmMode(var context: Context) : GameMode() {
             playButton.setOriginPosition(y = 0.2f, x = 0.5f)
             playButton.scale(0.25f)
             playButton.onClickAction {
-                if (roundNumber < 9) {
+                if (roundNumber < 8) {
                     generateRhythmPattern()
                     startTime = System.currentTimeMillis()
                     playRhythmPattern()
                     unblocked = true
                 } else {
-                    println("Finito")
+                    scoreText.displayedText = "${finalScore}${accuracy}"
+                    roundText.displayedText = "${finishGame}"
                 }
             }
             scene.addGameObject(playButton)
@@ -72,8 +76,8 @@ class RythmMode(var context: Context) : GameMode() {
             tapButton.setOriginPosition(y = -0.5f, x = 0f)
             tapButton.scale(0.5f)
             tapButton.onClickAction {
-                roundText.displayedText = "${roundText}${roundNumber}"
-                scoreText.displayedText = "${scoreText}${accuracy}"
+                roundText.displayedText = "${roundExampleText}${roundNumber}"
+                scoreText.displayedText = "${scoreExampleText}${accuracy}"
                 if (unblocked) {
                     if (start) {
                         userPressIntervals.clear()
@@ -95,10 +99,10 @@ class RythmMode(var context: Context) : GameMode() {
                         if (userPressIntervals.size == rhythmIntervals.size) {
                             checkAccuracy()
                             roundNumber++
-                            scoreText.displayedText = "${scoreText}${accuracy}"
+                            scoreText.displayedText = "${scoreExampleText}${accuracy}"
                             start = true
                             unblocked = false
-                            roundText.displayedText = "${roundText}${roundNumber}"
+                            roundText.displayedText = "${roundExampleText}${roundNumber}"
                         }
                     }
                 }
