@@ -38,6 +38,7 @@ class GameGLRenderer(context: Context, game: Game): GLSurfaceView.Renderer {
 
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
         Log.d(TAG,"Creating surface...")
+
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
         game.mShaderProgram = ShaderProgram("foreground_vertex_shader.glsl","foreground_fragment_shader.glsl", context)
         // initialize a triangle

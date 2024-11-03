@@ -1,5 +1,6 @@
 package pl.soundgame.engine
 
+import android.opengl.GLES20
 import pl.soundgame.engine.background.Background
 import pl.soundgame.engine.gameobjects.GameObject
 
@@ -53,9 +54,12 @@ class Scene {
             mNewInitialization = false
         }
         if(backgroundInitialized) mBackground.draw()
+        GLES20.glEnable(GLES20.GL_BLEND)
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
         for( gameObject in mObjects){
             gameObject.draw(shaderProgram,vPMatrix)
         }
+        GLES20.glDisable(GLES20.GL_BLEND)
     }
 
     /**
