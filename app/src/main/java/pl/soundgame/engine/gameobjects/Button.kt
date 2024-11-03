@@ -44,7 +44,7 @@ class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) :
     fun lock(){
         if (!isBlocked){
             isBlocked = !isBlocked
-            swapSprite(alternateBitmap)
+            swapSprite(baseBitmap)
             if(clickAction != null) storeClickAction = clickAction!!
             clickAction = null
         }
