@@ -21,18 +21,16 @@ class SampleBackground(context: Context) : Background() {
         -1.0f,  1.0f,  // Top-left corner
         1.0f,  1.0f   // Top-right corner
     )
-    override fun updateFrame() {
-        GLES20.glUseProgram(mShaderProgram.getProgram())
 
-        // Pass resolution to the shader
+    override fun updateFrame() {
+        time += 0.016f  // Assuming 60 FPS, adjust as needed
+
+        GLES20.glUseProgram(mShaderProgram.getProgram())
         val resolutionHandle = GLES20.glGetUniformLocation(mShaderProgram.getProgram(), "u_resolution")
         GLES20.glUniform2fv(resolutionHandle, 1, floatArrayOf(resolution.first.toFloat(), resolution.second.toFloat()), 0)
 
-        // Pass time to the shader
         val timeHandle = GLES20.glGetUniformLocation(mShaderProgram.getProgram(), "u_time")
         GLES20.glUniform1f(timeHandle, time)
-
-        // Draw the full-screen quad
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, quadVertexBuffer)
         val positionHandle = GLES20.glGetAttribLocation(mShaderProgram.getProgram(), "vPosition")
         GLES20.glEnableVertexAttribArray(positionHandle)
@@ -50,8 +48,6 @@ class SampleBackground(context: Context) : Background() {
         val buffers = IntArray(1)
         GLES20.glGenBuffers(1, buffers, 0)
         quadVertexBuffer = buffers[0]
-
-        // Bind buffer and upload vertex data
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, quadVertexBuffer)
         val vertexData = ByteBuffer.allocateDirect(quadVertices.size * 4)
             .order(ByteOrder.nativeOrder())
@@ -62,9 +58,5 @@ class SampleBackground(context: Context) : Background() {
 
         // Unbind the buffer
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0)
-    }
-
-    init{
-        mShaderProgram = ShaderProgram("foreground_vertex_shader.glsl","foreground_fragment_shader.glsl", context)
     }
 }
