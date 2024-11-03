@@ -14,7 +14,7 @@ class SampleBackground(context: Context) : Background() {
     private var time = 0.0f
     private val resolution = getScreenResolution(context)
     private val quadVertexBuffer: Int
-
+    private var animation_step = 0.016f
     private val quadVertices = floatArrayOf(
         -1.0f, -1.0f,  // Bottom-left corner
         1.0f, -1.0f,  // Bottom-right corner
@@ -23,7 +23,7 @@ class SampleBackground(context: Context) : Background() {
     )
 
     override fun updateFrame() {
-        time += 0.016f  // Assuming 60 FPS, adjust as needed
+        time +=  animation_step // Assuming 60 FPS, adjust as needed
 
         GLES20.glUseProgram(mShaderProgram.getProgram())
         val resolutionHandle = GLES20.glGetUniformLocation(mShaderProgram.getProgram(), "u_resolution")
@@ -41,6 +41,9 @@ class SampleBackground(context: Context) : Background() {
         GLES20.glDisableVertexAttribArray(positionHandle)
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0)
         GLES20.glUseProgram(0)
+        if( time > 1000f * 0.016f || time < 0.0){
+            animation_step *= -1
+        }
     }
 
     init {
