@@ -86,6 +86,11 @@ class RythmMode(var context: Context) : GameMode() {
                         isFirst = true
                         start = false
                     } else {
+                        val beatSound = soundPlayer.getSoundById(4)  // Assuming the beat sound is stored at ID 4
+                        beatSound?.let {
+                            soundPlayer.setSound(it.resId)
+                            soundPlayer.playSoundWithPitch(1.0f)  // You can modify pitch if needed
+                        }
                         val pressTime = System.currentTimeMillis()
                         if (isFirst) {
                             userPressIntervals.add(pressTime - startTime)
@@ -98,11 +103,16 @@ class RythmMode(var context: Context) : GameMode() {
                         // Check if user has completed the required number of intervals
                         if (userPressIntervals.size == rhythmIntervals.size) {
                             checkAccuracy()
-                            roundNumber++
-                            scoreText.displayedText = "${scoreExampleText}${accuracy}"
                             start = true
                             unblocked = false
-                            roundText.displayedText = "${roundExampleText}${roundNumber}"
+                            if (roundNumber < 8) {
+                                roundNumber++
+                                scoreText.displayedText = "${scoreExampleText}${accuracy}"
+                                roundText.displayedText = "${roundExampleText}${roundNumber}"
+                            } else {
+                                scoreText.displayedText = "${finalScore}${accuracy}"
+                                roundText.displayedText = "${finishGame}"
+                            }
                         }
                     }
                 }
@@ -169,7 +179,7 @@ class RythmMode(var context: Context) : GameMode() {
     // Check user accuracy by comparing intervals between presses to generated rhythm intervals
     private fun checkAccuracy() {
         var score = 0
-        val tolerance = tempoBPM / 4
+        val tolerance = 100L
         print(rhythmIntervals)
         print(userPressIntervals)
 
