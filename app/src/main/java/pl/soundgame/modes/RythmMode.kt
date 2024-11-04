@@ -14,7 +14,7 @@ import pl.soundgame.engine.gameobjects.Button
 import pl.soundgame.engine.gameobjects.TextBox
 import kotlin.random.Random
 
-class RythmMode(var context: Context) : GameMode() {
+class RythmMode(var context: Context, private val changeModeCallback: (GameModeName) -> Unit) : GameMode() {
     private val soundPlayer: SoundPlayer = SoundPlayer(context)
     private val handler = Handler(Looper.getMainLooper())
     private val rhythmPattern = mutableListOf<Pair<Boolean, Float>>()
@@ -76,6 +76,7 @@ class RythmMode(var context: Context) : GameMode() {
             tapButton.setOriginPosition(y = -0.5f, x = 0f)
             tapButton.scale(0.5f)
             tapButton.onClickAction {
+
                 roundText.displayedText = "${roundExampleText}${roundNumber}"
                 scoreText.displayedText = "${scoreExampleText}${accuracy}"
                 if (unblocked) {
@@ -118,6 +119,12 @@ class RythmMode(var context: Context) : GameMode() {
                 }
             }
             scene.addGameObject(tapButton)
+
+            val exitButton = Button(loadTextureBitmap("button.png", context), id = "playButton")
+            exitButton.setOriginPosition(y = 0.2f, x = -0.5f)
+            exitButton.scale(0.25f)
+            exitButton.onClickAction { changeModeCallback(GameModeName.MENU) }
+            scene.addGameObject(exitButton)
         }
         return scene
     }

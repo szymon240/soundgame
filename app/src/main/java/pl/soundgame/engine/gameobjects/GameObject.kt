@@ -85,7 +85,7 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
     open fun afterClickDetected(){}
 
     fun click(x: Float, y: Float): Boolean {
-        mHitbox.logInfo(mId)
+        //mHitbox.logInfo(mId)
         return if (mHitbox.isClicked(x, y)) {
             clickAction?.invoke()
             afterClickDetected()
@@ -142,7 +142,7 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
 
             val newX = mPosition[0] - width
             val newY = mPosition[1] + height / 2
-            Log.i("${mId}"," ${newX}, ${width} ${newX + width}" )
+            //Log.i("${mId}"," ${newX}, ${width} ${newX + width}" )
             mHitbox.updatePosition(newX, newY)
             mHitbox.updateSize(width, height)
         }
