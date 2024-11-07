@@ -89,10 +89,10 @@ class RythmMode(var rounds: Int = 8, var context: Context, private val changeMod
                             unblocked = false
                             if (roundNumber < rounds) {
                                 roundNumber++
-                                scoreText.displayedText = "${scoreExampleText}${accuracy}"
+                                scoreText.displayedText = "${scoreExampleText}${"%.2f".format(accuracy)}"
                                 roundText.displayedText = "${roundExampleText}${roundNumber}"
                             } else {
-                                scoreText.displayedText = "${finalScore}${accuracy}"
+                                scoreText.displayedText = "${finalScore}${"%.2f".format(accuracy)}"
                                 roundText.displayedText = "${finishGame}"
                             }
                         }
@@ -112,7 +112,7 @@ class RythmMode(var rounds: Int = 8, var context: Context, private val changeMod
                     playRhythmPattern()
                     unblocked = true
                 } else {
-                    scoreText.displayedText = "${finalScore}${accuracy}"
+                    scoreText.displayedText = "${finalScore}${"%.2f".format(accuracy)}"
                     roundText.displayedText = "${finishGame}"
                 }
             }
@@ -197,7 +197,6 @@ class RythmMode(var rounds: Int = 8, var context: Context, private val changeMod
         }
 
         accuracy += (score / rhythmIntervals.size)
-        accuracy = String.format("%.2f", accuracy).toDouble()
-        println("Score: $accuracy")
+        println("Score: ${"%.2f".format(accuracy)}")
     }
 }
