@@ -3,18 +3,16 @@ package pl.soundgame.modes
 import android.content.Context
 import pl.soundgame.SoundPlayer
 import pl.soundgame.engine.Scene
-import pl.soundgame.engine.gameobjects.GameObject
 import pl.soundgame.engine.loadTextureBitmap
-import pl.soundgame.engine.shapes.createTextTexture
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import pl.soundgame.engine.background.SampleBackground
-import kotlin.math.abs
 import pl.soundgame.engine.gameobjects.Button
 import pl.soundgame.engine.gameobjects.TextBox
 import kotlin.random.Random
 
-class RythmMode(var rounds: Int = 8, var context: Context, private val changeModeCallback: (GameModeName) -> Unit) : GameMode() {
+class RhythmMode(var rounds: Int = 8, var context: Context, private val changeModeCallback: (GameModeName) -> Unit) : GameMode() {
     private val soundPlayer: SoundPlayer = SoundPlayer(context)
     private val handler = Handler(Looper.getMainLooper())
     private val rhythmPattern = mutableListOf<Pair<Boolean, Float>>()
@@ -29,8 +27,10 @@ class RythmMode(var rounds: Int = 8, var context: Context, private val changeMod
     private var lastPressTime = 0L
     private var accuracy = 0.0
     private var roundNumber = 1
+    private val TAG = "RHYTM MODE"
 
     override fun returnGameModeScene(): Scene {
+        Log.i(TAG,"Creating scene")
         val scene = Scene()
         scene.setBackground {
             SampleBackground(context)
@@ -124,6 +124,7 @@ class RythmMode(var rounds: Int = 8, var context: Context, private val changeMod
             exitButton.onClickAction { changeModeCallback(GameModeName.MENU) }
             scene.addGameObject(exitButton)
         }
+        Log.i(TAG, "Retutning  scene")
         return scene
     }
 

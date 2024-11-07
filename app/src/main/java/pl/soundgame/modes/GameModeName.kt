@@ -2,6 +2,6 @@ package pl.soundgame.modes
 
 enum class GameModeName {
     MENU,
-    RYTHM_MODE,
+    RHYTHM_MODE,
     INSTRUMENTAL_MODE
 }

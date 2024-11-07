@@ -17,7 +17,7 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
         rhythmModeButton.setOriginPosition(y = 0.3f, x = 0f)  // Position button in the upper center
         rhythmModeButton.scale(0.5f)
         rhythmModeButton.onClickAction {
-            changeModeCallback(GameModeName.RYTHM_MODE) // Call to switch to RhythmMode
+            changeModeCallback(GameModeName.RHYTHM_MODE) // Call to switch to RhythmMode
         }
         scene.addGameObject(rhythmModeButton)
 

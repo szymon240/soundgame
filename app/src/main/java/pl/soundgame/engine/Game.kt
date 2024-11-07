@@ -86,5 +86,6 @@ abstract class Game {
 
     fun switchScene(scene: Scene){
         mScene = scene
+        mScene.loadScene()
     }
 }
