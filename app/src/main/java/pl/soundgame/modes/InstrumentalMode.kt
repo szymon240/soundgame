@@ -25,51 +25,53 @@ class InstrumentalMode(var context: Context, private val changeModeCallback: (Ga
             SampleBackground(context)
         }
 
-        // Przycisk do odtwarzania dźwięku
-        val playSoundButton = Button(loadTextureBitmap("button.png", context), id = "playSoundButton")
-        playSoundButton.setOriginPosition(y = 0.7f, x = 0.6f)
-        playSoundButton.scale(0.2f)
-        playSoundButton.onClickAction {
-            playInstrumentSound(currentInstrument)
-        }
-        scene.addGameObject(playSoundButton)
+        scene.setInitScene {
+            // Przycisk do odtwarzania dźwięku
+            val playSoundButton =
+                Button(loadTextureBitmap("button.png", context), id = "playSoundButton")
+            playSoundButton.setOriginPosition(y = 0.7f, x = 0.6f)
+            playSoundButton.scale(0.2f)
+            playSoundButton.onClickAction {
+                playInstrumentSound(currentInstrument)
+            }
+            scene.addGameObject(playSoundButton)
 
-        // Przycisk dla odpowiedzi "Guitar"
-        val guitarButton = Button(loadTextureBitmap("button.png", context), id = "guitarButton")
-        guitarButton.scale(0.4f)
-        guitarButton.setOriginPosition(y = 0.3f, x = -0.4f)
-        guitarButton.onClickAction {
-            checkAnswer("Guitar")
-        }
-        scene.addGameObject(guitarButton)
+            // Przycisk dla odpowiedzi "Guitar"
+            val guitarButton = Button(loadTextureBitmap("button.png", context), id = "guitarButton")
+            guitarButton.scale(0.4f)
+            guitarButton.setOriginPosition(y = 0.3f, x = -0.4f)
+            guitarButton.onClickAction {
+                checkAnswer("Guitar")
+            }
+            scene.addGameObject(guitarButton)
 
-        // Przycisk dla odpowiedzi "Piano"
-        val pianoButton = Button(loadTextureBitmap("button.png", context), id = "pianoButton")
-        pianoButton.scale(0.4f)
-        pianoButton.setOriginPosition(y = 0.3f, x = 0.4f)
-        pianoButton.onClickAction {
-            checkAnswer("Piano")
-        }
-        scene.addGameObject(pianoButton)
+            // Przycisk dla odpowiedzi "Piano"
+            val pianoButton = Button(loadTextureBitmap("button.png", context), id = "pianoButton")
+            pianoButton.scale(0.4f)
+            pianoButton.setOriginPosition(y = 0.3f, x = 0.4f)
+            pianoButton.onClickAction {
+                checkAnswer("Piano")
+            }
+            scene.addGameObject(pianoButton)
 
-        // Przycisk dla odpowiedzi "Drums"
-        val drumsButton = Button(loadTextureBitmap("button.png", context), id = "drumsButton")
-        drumsButton.scale(0.4f)
-        drumsButton.setOriginPosition(y = -0.1f, x = -0.4f)
-        drumsButton.onClickAction {
-            checkAnswer("Drums")
-        }
-        scene.addGameObject(drumsButton)
+            // Przycisk dla odpowiedzi "Drums"
+            val drumsButton = Button(loadTextureBitmap("button.png", context), id = "drumsButton")
+            drumsButton.scale(0.4f)
+            drumsButton.setOriginPosition(y = -0.1f, x = -0.4f)
+            drumsButton.onClickAction {
+                checkAnswer("Drums")
+            }
+            scene.addGameObject(drumsButton)
 
-        // Przycisk dla odpowiedzi "Violin"
-        val violinButton = Button(loadTextureBitmap("button.png", context), id = "violinButton")
-        violinButton.scale(0.4f)
-        violinButton.setOriginPosition(y = -0.1f, x = 0.4f)
-        violinButton.onClickAction {
-            checkAnswer("Violin")
+            // Przycisk dla odpowiedzi "Violin"
+            val violinButton = Button(loadTextureBitmap("button.png", context), id = "violinButton")
+            violinButton.scale(0.4f)
+            violinButton.setOriginPosition(y = -0.1f, x = 0.4f)
+            violinButton.onClickAction {
+                checkAnswer("Violin")
+            }
+            scene.addGameObject(violinButton)
         }
-        scene.addGameObject(violinButton)
-
         return scene
     }
 
