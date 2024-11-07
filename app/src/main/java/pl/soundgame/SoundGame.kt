@@ -6,6 +6,7 @@ import pl.soundgame.engine.Game
 import pl.soundgame.engine.Scene
 import pl.soundgame.modes.GameMode
 import pl.soundgame.modes.GameModeName
+import pl.soundgame.modes.InstrumentalMode
 import pl.soundgame.modes.Menu
 import pl.soundgame.modes.RythmMode
 
@@ -17,10 +18,10 @@ internal class SoundGame(context: Context) : Game() {
     private var gameModeName: GameModeName
     private var TAG = "SoundGame Main Object"
     private var changeModeCallback: (GameModeName) -> Unit = { mode -> changeMode(mode)}
-
+    private var rounds = 8
     init {
         this.context = context
-        gameMode = RythmMode(this.context, changeModeCallback)
+        gameMode = RythmMode(rounds, this.context, changeModeCallback)
 
         gameModeName = GameModeName.RYTHM_MODE
         mScene = gameMode.returnGameModeScene()
@@ -29,7 +30,8 @@ internal class SoundGame(context: Context) : Game() {
     fun changeMode(newMode: GameModeName) {
         gameMode = when (newMode) {
             GameModeName.MENU -> Menu(this.context, changeModeCallback)
-            GameModeName.RYTHM_MODE -> RythmMode(this.context, changeModeCallback)
+            GameModeName.RYTHM_MODE -> RythmMode(rounds, this.context, changeModeCallback)
+            GameModeName.INSTRUMENTAL_MODE -> InstrumentalMode(this.context, changeModeCallback)
             //GameModeName.ANOTHER_MODE -> AnotherMode(this.context)
 
         }

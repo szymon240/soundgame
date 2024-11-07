@@ -14,7 +14,7 @@ import pl.soundgame.engine.gameobjects.Button
 import pl.soundgame.engine.gameobjects.TextBox
 import kotlin.random.Random
 
-class RythmMode(var context: Context, private val changeModeCallback: (GameModeName) -> Unit) : GameMode() {
+class RythmMode(var rounds: Int = 8, var context: Context, private val changeModeCallback: (GameModeName) -> Unit) : GameMode() {
     private val soundPlayer: SoundPlayer = SoundPlayer(context)
     private val handler = Handler(Looper.getMainLooper())
     private val rhythmPattern = mutableListOf<Pair<Boolean, Float>>()
@@ -53,22 +53,6 @@ class RythmMode(var context: Context, private val changeModeCallback: (GameModeN
             roundText.scale(0.5f)
             scene.addGameObject(roundText)
 
-            // Button to generate and play the rhythm pattern
-            val playButton = Button(loadTextureBitmap("button.png", context), id = "playButton")
-            playButton.setOriginPosition(y = 0.2f, x = 0.5f)
-            playButton.scale(0.25f)
-            playButton.onClickAction {
-                if (roundNumber < 8) {
-                    generateRhythmPattern()
-                    startTime = System.currentTimeMillis()
-                    playRhythmPattern()
-                    unblocked = true
-                } else {
-                    scoreText.displayedText = "${finalScore}${accuracy}"
-                    roundText.displayedText = "${finishGame}"
-                }
-            }
-            scene.addGameObject(playButton)
 
             // Button for the player to press in sync with the rhythm pattern
             val tapButton = Button(loadTextureBitmap("roundbutton_off.png", context), id = "tapButton",
@@ -76,9 +60,6 @@ class RythmMode(var context: Context, private val changeModeCallback: (GameModeN
             tapButton.setOriginPosition(y = -0.5f, x = 0f)
             tapButton.scale(0.5f)
             tapButton.onClickAction {
-
-                roundText.displayedText = "${roundExampleText}${roundNumber}"
-                scoreText.displayedText = "${scoreExampleText}${accuracy}"
                 if (unblocked) {
                     if (start) {
                         userPressIntervals.clear()
@@ -106,7 +87,7 @@ class RythmMode(var context: Context, private val changeModeCallback: (GameModeN
                             checkAccuracy()
                             start = true
                             unblocked = false
-                            if (roundNumber < 8) {
+                            if (roundNumber < rounds) {
                                 roundNumber++
                                 scoreText.displayedText = "${scoreExampleText}${accuracy}"
                                 roundText.displayedText = "${roundExampleText}${roundNumber}"
@@ -119,6 +100,23 @@ class RythmMode(var context: Context, private val changeModeCallback: (GameModeN
                 }
             }
             scene.addGameObject(tapButton)
+
+            // Button to generate and play the rhythm pattern
+            val playButton = Button(loadTextureBitmap("button.png", context), id = "playButton")
+            playButton.setOriginPosition(y = 0.2f, x = 0.5f)
+            playButton.scale(0.25f)
+            playButton.onClickAction {
+                if (roundNumber < rounds) {
+                    generateRhythmPattern()
+                    startTime = System.currentTimeMillis()
+                    playRhythmPattern()
+                    unblocked = true
+                } else {
+                    scoreText.displayedText = "${finalScore}${accuracy}"
+                    roundText.displayedText = "${finishGame}"
+                }
+            }
+            scene.addGameObject(playButton)
 
             val exitButton = Button(loadTextureBitmap("button.png", context), id = "playButton")
             exitButton.setOriginPosition(y = 0.2f, x = -0.5f)
@@ -185,21 +183,21 @@ class RythmMode(var context: Context, private val changeModeCallback: (GameModeN
 
     // Check user accuracy by comparing intervals between presses to generated rhythm intervals
     private fun checkAccuracy() {
-        var score = 0
-        val tolerance = 100L
-        print(rhythmIntervals)
-        print(userPressIntervals)
-
+        var score = 0f
         val comparisonCount = minOf(rhythmIntervals.size, userPressIntervals.size)
+
         for (i in 0 until comparisonCount) {
-            val difference = abs(rhythmIntervals[i] - userPressIntervals[i])
-            if (difference <= tolerance) {
-                score++
-            }
+            val interval1 = rhythmIntervals[i]
+            val interval2 = userPressIntervals[i]
+            val maxInterval = maxOf(interval1, interval2)
+            val minInterval = minOf(interval1, interval2)
+
+            val ratioScore = (minInterval.toFloat() / maxInterval.toFloat()) * 100
+            score += ratioScore
         }
 
-        accuracy += (score.toFloat() / rhythmIntervals.size) * 100
-
+        accuracy += (score / rhythmIntervals.size)
+        accuracy = String.format("%.2f", accuracy).toDouble()
         println("Score: $accuracy")
     }
 }
