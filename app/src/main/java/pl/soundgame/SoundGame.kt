@@ -21,9 +21,9 @@ internal class SoundGame(context: Context) : Game() {
     private var rounds = 8
     init {
         this.context = context
-        gameMode = InstrumentalMode(rounds, this.context, changeModeCallback)
+        gameMode = RythmMode(rounds, this.context, changeModeCallback)
 
-        gameModeName = GameModeName.INSTRUMENTAL_MODE
+        gameModeName = GameModeName.RYTHM_MODE
         mScene = gameMode.returnGameModeScene()
     }
 
