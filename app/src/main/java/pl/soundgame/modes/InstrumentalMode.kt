@@ -3,15 +3,32 @@ package pl.soundgame.modes
 import android.content.Context
 import pl.soundgame.SoundPlayer
 import pl.soundgame.engine.Scene
+import pl.soundgame.engine.gameobjects.GameObject
+import pl.soundgame.engine.loadTextureBitmap
+import pl.soundgame.engine.shapes.createTextTexture
+import android.os.Handler
+import android.os.Looper
 import pl.soundgame.engine.background.SampleBackground
+import kotlin.math.abs
 import pl.soundgame.engine.gameobjects.Button
 import pl.soundgame.engine.gameobjects.TextBox
-import pl.soundgame.engine.loadTextureBitmap
+import kotlin.random.Random
 
-class InstrumentalMode(private val context: Context, private val changeModeCallback: (GameModeName) -> Unit) : GameMode() {
+class InstrumentalMode(var rounds: Int = 8, var context: Context, private val changeModeCallback: (GameModeName) -> Unit) : GameMode() {
     private val soundPlayer: SoundPlayer = SoundPlayer(context)
-    private val instruments = listOf("Guitar", "Piano", "Drums", "Violin") // Lista instrumentów
-    private var currentInstrument = ""
+    private val handler = Handler(Looper.getMainLooper())
+    private val rhythmPattern = mutableListOf<Pair<Boolean, Float>>()
+    private val rhythmIntervals = mutableListOf<Long>()
+    private val userPressIntervals = mutableListOf<Long>()
+    private val tolerance = 100L
+    private var tempoBPM = 60
+    private var isFirst = true
+    private var start = true
+    private var unblocked = false
+    private var startTime = 0L
+    private var lastPressTime = 0L
+    private var accuracy = 0.0
+    private var roundNumber = 1
 
     override fun returnGameModeScene(): Scene {
         val scene = Scene()
@@ -19,88 +36,168 @@ class InstrumentalMode(private val context: Context, private val changeModeCallb
             SampleBackground(context)
         }
 
-        // Tekst z pytaniem
-        val questionText = TextBox(initialText = "Which instrument is playing?", id = "questionText")
-        questionText.setOriginPosition(y = 0.7f, x = 0f)
-        questionText.scale(0.6f)
-        scene.addGameObject(questionText)
+        var scoreExampleText = "Score: "
+        var roundExampleText = "Round: "
 
-        // Przycisk do odtwarzania dźwięku
-        val playSoundButton = Button(loadTextureBitmap("button.png", context), id = "playSoundButton")
-        playSoundButton.setOriginPosition(y = 0.7f, x = 0.6f)
-        playSoundButton.scale(0.2f)
-        playSoundButton.onClickAction {
-            playInstrumentSound(currentInstrument)
+        var finalScore = "Your final score: "
+        var finishGame = "Game finished!"
+
+        scene.setInitScene {
+            val scoreText = TextBox(initialText = "${scoreExampleText}${accuracy}", id = "scoreText")
+            scoreText.setOriginPosition(y = 0.5f, x = 0f)
+            scoreText.scale(0.5f)
+            scene.addGameObject(scoreText)
+
+            val roundText = TextBox(initialText = "${roundExampleText}${roundNumber}", id = "roundText")
+            roundText.setOriginPosition(y = 0.8f, x = 0f)
+            roundText.scale(0.5f)
+            scene.addGameObject(roundText)
+
+
+            // Button for the player to press in sync with the rhythm pattern
+            val tapButton = Button(loadTextureBitmap("roundbutton_off.png", context), id = "tapButton",
+                alternateBitmap = loadTextureBitmap("roundbutton_on.png", context))
+            tapButton.setOriginPosition(y = -0.5f, x = 0f)
+            tapButton.scale(0.5f)
+            tapButton.onClickAction {
+                if (unblocked) {
+                    if (start) {
+                        userPressIntervals.clear()
+                        lastPressTime = 0L
+                        startTime = System.currentTimeMillis()
+                        isFirst = true
+                        start = false
+                    } else {
+                        val beatSound = soundPlayer.getSoundById(4)  // Assuming the beat sound is stored at ID 4
+                        beatSound?.let {
+                            soundPlayer.setSound(it.resId)
+                            soundPlayer.playSoundWithPitch(1.0f)  // You can modify pitch if needed
+                        }
+                        val pressTime = System.currentTimeMillis()
+                        if (isFirst) {
+                            userPressIntervals.add(pressTime - startTime)
+                            isFirst = false
+                        } else {
+                            userPressIntervals.add(pressTime - lastPressTime)
+                        }
+                        lastPressTime = pressTime
+
+                        // Check if user has completed the required number of intervals
+                        if (userPressIntervals.size == rhythmIntervals.size) {
+                            checkAccuracy()
+                            start = true
+                            unblocked = false
+                            if (roundNumber < rounds) {
+                                roundNumber++
+                                scoreText.displayedText = "${scoreExampleText}${accuracy}"
+                                roundText.displayedText = "${roundExampleText}${roundNumber}"
+                            } else {
+                                scoreText.displayedText = "${finalScore}${accuracy}"
+                                roundText.displayedText = "${finishGame}"
+                            }
+                        }
+                    }
+                }
+            }
+            scene.addGameObject(tapButton)
+
+            // Button to generate and play the rhythm pattern
+            val playButton = Button(loadTextureBitmap("button.png", context), id = "playButton")
+            playButton.setOriginPosition(y = 0.2f, x = 0.5f)
+            playButton.scale(0.25f)
+            playButton.onClickAction {
+                if (roundNumber < rounds) {
+                    generateRhythmPattern()
+                    startTime = System.currentTimeMillis()
+                    playRhythmPattern()
+                    unblocked = true
+                } else {
+                    scoreText.displayedText = "${finalScore}${accuracy}"
+                    roundText.displayedText = "${finishGame}"
+                }
+            }
+            scene.addGameObject(playButton)
+
+            val exitButton = Button(loadTextureBitmap("button.png", context), id = "playButton")
+            exitButton.setOriginPosition(y = 0.2f, x = -0.5f)
+            exitButton.scale(0.25f)
+            exitButton.onClickAction { changeModeCallback(GameModeName.MENU) }
+            scene.addGameObject(exitButton)
         }
-        scene.addGameObject(playSoundButton)
-
-        // Przycisk dla odpowiedzi "Guitar"
-        val guitarButton = Button(loadTextureBitmap("button.png", context), id = "guitarButton")
-        guitarButton.scale(0.4f)
-        guitarButton.setOriginPosition(y = 0.3f, x = -0.4f)
-        guitarButton.onClickAction {
-            checkAnswer("Guitar")
-        }
-        scene.addGameObject(guitarButton)
-
-        // Przycisk dla odpowiedzi "Piano"
-        val pianoButton = Button(loadTextureBitmap("button.png", context), id = "pianoButton")
-        pianoButton.scale(0.4f)
-        pianoButton.setOriginPosition(y = 0.3f, x = 0.4f)
-        pianoButton.onClickAction {
-            checkAnswer("Piano")
-        }
-        scene.addGameObject(pianoButton)
-
-        // Przycisk dla odpowiedzi "Drums"
-        val drumsButton = Button(loadTextureBitmap("button.png", context), id = "drumsButton")
-        drumsButton.scale(0.4f)
-        drumsButton.setOriginPosition(y = -0.1f, x = -0.4f)
-        drumsButton.onClickAction {
-            checkAnswer("Drums")
-        }
-        scene.addGameObject(drumsButton)
-
-        // Przycisk dla odpowiedzi "Violin"
-        val violinButton = Button(loadTextureBitmap("button.png", context), id = "violinButton")
-        violinButton.scale(0.4f)
-        violinButton.setOriginPosition(y = -0.1f, x = 0.4f)
-        violinButton.onClickAction {
-            checkAnswer("Violin")
-        }
-        scene.addGameObject(violinButton)
-
         return scene
     }
 
-    // Funkcja do odtwarzania dźwięku wybranego instrumentu
-    private fun playInstrumentSound(instrument: String) {
-        val soundId = when (instrument) {
-            "Guitar" -> 1
-            "Piano" -> 2
-            "Drums" -> 3
-            "Violin" -> 4
-            else -> 0
+    // Generate a random rhythm pattern with varied note lengths
+    fun generateRhythmPattern() {
+        rhythmPattern.clear()
+        rhythmIntervals.clear()  // Clear previous intervals
+
+        val totalBeats = 8
+
+        repeat(totalBeats) {
+            val playSound = Random.nextBoolean()
+            val randomPitch = if (playSound) Random.nextFloat() * 1.5f + 0.5f else 1.0f
+            rhythmPattern.add(Pair(playSound, randomPitch))
         }
-        val sound = soundPlayer.getSoundById(soundId)
-        sound?.let {
-            soundPlayer.setSound(it.resId)
-            soundPlayer.play()
+        println("Generated Rhythm Pattern: $rhythmPattern")
+    }
+
+    // Play the generated rhythm pattern
+    fun playRhythmPattern() {
+        startTime = System.currentTimeMillis()  // Set start time for rhythm playback
+        lastPressTime = 0L                      // Reset last press time for user input
+        userPressIntervals.clear()              // Clear previous press intervals
+
+        var isFirst = true
+        var delay = 0L
+        val beatInterval = (60000L / (tempoBPM * 2))
+        val beatSound = soundPlayer.getSoundById(4)
+        var lastDelay = 0L
+
+        for ((playSound, pitch) in rhythmPattern) {
+            if (playSound) {
+                print("$delay|")
+                if (isFirst) {
+                    rhythmIntervals.add(delay)
+                    isFirst = false
+                    lastDelay = delay
+                }
+                else {
+                    rhythmIntervals.add(delay - lastDelay)
+                    lastDelay = delay
+                }
+            }
+            handler.postDelayed({
+                if (playSound) {
+                    beatSound?.let {
+                        soundPlayer.setSound(it.resId)
+                        soundPlayer.playSoundWithPitch(pitch)
+                    }
+                }
+            }, delay)
+
+            delay += beatInterval
         }
     }
 
-    // Funkcja do sprawdzania poprawności odpowiedzi
-    private fun checkAnswer(selectedInstrument: String) {
-        if (selectedInstrument == currentInstrument) {
-            println("Correct! It was $currentInstrument.")
-        } else {
-            println("Wrong! It was $currentInstrument.")
-        }
-        generateNewQuestion()
-    }
 
-    // Generuje nowe pytanie z losowym instrumentem
-    private fun generateNewQuestion() {
-        currentInstrument = instruments.random()
+    // Check user accuracy by comparing intervals between presses to generated rhythm intervals
+    private fun checkAccuracy() {
+        var score = 0f
+        val comparisonCount = minOf(rhythmIntervals.size, userPressIntervals.size)
+
+        for (i in 0 until comparisonCount) {
+            val interval1 = rhythmIntervals[i]
+            val interval2 = userPressIntervals[i]
+            val maxInterval = maxOf(interval1, interval2)
+            val minInterval = minOf(interval1, interval2)
+
+            val ratioScore = (minInterval.toFloat() / maxInterval.toFloat()) * 100
+            score += ratioScore
+        }
+
+        accuracy += (score / rhythmIntervals.size)
+        accuracy = String.format("%.2f", accuracy).toDouble()
+        println("Score: $accuracy")
     }
 }
