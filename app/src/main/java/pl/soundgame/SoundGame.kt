@@ -31,7 +31,7 @@ internal class SoundGame(context: Context) : Game() {
         gameMode = when (newMode) {
             GameModeName.MENU -> Menu(this.context, changeModeCallback)
             GameModeName.RYTHM_MODE -> RythmMode(rounds, this.context, changeModeCallback)
-            GameModeName.INSTRUMENTAL_MODE -> InstrumentalMode(rounds, this.context, changeModeCallback)
+            GameModeName.INSTRUMENTAL_MODE -> InstrumentalMode(this.context, changeModeCallback)
             //GameModeName.ANOTHER_MODE -> AnotherMode(this.context)
 
         }
