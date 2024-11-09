@@ -5,19 +5,17 @@ import pl.soundgame.SoundPlayer
 import pl.soundgame.engine.Scene
 import pl.soundgame.engine.gameobjects.GameObject
 import pl.soundgame.engine.loadTextureBitmap
-import pl.soundgame.engine.shapes.createTextTexture
 import android.os.Handler
 import android.os.Looper
 import pl.soundgame.engine.background.SampleBackground
-import kotlin.math.abs
 import pl.soundgame.engine.gameobjects.Button
-import pl.soundgame.engine.gameobjects.TextBox
 import kotlin.random.Random
 
 class InstrumentalMode(var context: Context, private val changeModeCallback: (GameModeName) -> Unit) : GameMode() {
     private val soundPlayer: SoundPlayer = SoundPlayer(context)
-    private val instruments = listOf("Guitar", "Piano", "Drums", "Violin")
+    private val instruments = listOf("Guitar", "Piano", "Drums", "Violin", "Flute", "Trumpet", "Harp", "Saxophone") // Możliwość dodania większej liczby instrumentów
     private var currentInstrument = ""
+    private var answerOptions = listOf<String>()
 
     override fun returnGameModeScene(): Scene {
         val scene = Scene()
@@ -26,64 +24,53 @@ class InstrumentalMode(var context: Context, private val changeModeCallback: (Ga
         }
 
         scene.setInitScene {
-            // Przycisk do odtwarzania dźwięku
-            val playSoundButton =
-                Button(loadTextureBitmap("button.png", context), id = "playSoundButton")
-            playSoundButton.setOriginPosition(y = 0.7f, x = 0.6f)
-            playSoundButton.scale(0.2f)
-            playSoundButton.onClickAction {
-                playInstrumentSound(currentInstrument)
-            }
-            scene.addGameObject(playSoundButton)
+            generateNewQuestion()
 
-            // Przycisk dla odpowiedzi "Guitar"
-            val guitarButton = Button(loadTextureBitmap("button.png", context), id = "guitarButton")
-            guitarButton.scale(0.4f)
-            guitarButton.setOriginPosition(y = 0.3f, x = -0.4f)
-            guitarButton.onClickAction {
-                checkAnswer("Guitar")
-            }
-            scene.addGameObject(guitarButton)
+            // Przycisk powrotu
+            val exitButton = Button(loadTextureBitmap("button.png", context), id = "exitButton")
+            exitButton.setOriginPosition(y = 0.85f, x = -0.65f)
+            exitButton.scale(0.2f)
+            exitButton.onClickAction { changeModeCallback(GameModeName.MENU) }
+            scene.addGameObject(exitButton)
 
-            // Przycisk dla odpowiedzi "Piano"
-            val pianoButton = Button(loadTextureBitmap("button.png", context), id = "pianoButton")
-            pianoButton.scale(0.4f)
-            pianoButton.setOriginPosition(y = 0.3f, x = 0.4f)
-            pianoButton.onClickAction {
-                checkAnswer("Piano")
-            }
-            scene.addGameObject(pianoButton)
+            // Przycisk do puszczania muzyki
+            val playMusicButton = Button(loadTextureBitmap("button.png", context), id = "playMusicButton")
+            playMusicButton.setOriginPosition(x = 0.0f, y = 0.4f)
+            playMusicButton.scale(0.25f)
+            playMusicButton.onClickAction { playInstrumentSound(currentInstrument) }
+            scene.addGameObject(playMusicButton)
 
-            // Przycisk dla odpowiedzi "Drums"
-            val drumsButton = Button(loadTextureBitmap("button.png", context), id = "drumsButton")
-            drumsButton.scale(0.4f)
-            drumsButton.setOriginPosition(y = -0.1f, x = -0.4f)
-            drumsButton.onClickAction {
-                checkAnswer("Drums")
-            }
-            scene.addGameObject(drumsButton)
+            // Tworzenie przycisków odpowiedzi na podstawie answerOptions
+            val answerButton1 = Button(loadTextureBitmap("button.png", context), id = "answerButton1")
+            answerButton1.setOriginPosition(x = -0.5f, y = -0.2f)
+            answerButton1.scale(0.25f)
+            answerButton1.onClickAction { checkAnswer(answerOptions[0]) }
+            scene.addGameObject(answerButton1)
 
-            // Przycisk dla odpowiedzi "Violin"
-            val violinButton = Button(loadTextureBitmap("button.png", context), id = "violinButton")
-            violinButton.scale(0.4f)
-            violinButton.setOriginPosition(y = -0.1f, x = 0.4f)
-            violinButton.onClickAction {
-                checkAnswer("Violin")
-            }
-            scene.addGameObject(violinButton)
+            val answerButton2 = Button(loadTextureBitmap("button.png", context), id = "answerButton2")
+            answerButton2.setOriginPosition(x = 0.5f, y = -0.2f)
+            answerButton2.scale(0.25f)
+            answerButton2.onClickAction { checkAnswer(answerOptions[1]) }
+            scene.addGameObject(answerButton2)
+
+            val answerButton3 = Button(loadTextureBitmap("button.png", context), id = "answerButton3")
+            answerButton3.setOriginPosition(x = -0.5f, y = -0.6f)
+            answerButton3.scale(0.25f)
+            answerButton3.onClickAction { checkAnswer(answerOptions[2]) }
+            scene.addGameObject(answerButton3)
+
+            val answerButton4 = Button(loadTextureBitmap("button.png", context), id = "answerButton4")
+            answerButton4.setOriginPosition(x = 0.5f, y = -0.6f)
+            answerButton4.scale(0.25f)
+            answerButton4.onClickAction { checkAnswer(answerOptions[3]) }
+            scene.addGameObject(answerButton4)
         }
+
         return scene
     }
 
-
     private fun playInstrumentSound(instrument: String) {
-        val soundId = when (instrument) {
-            "Guitar" -> 1
-            "Piano" -> 2
-            "Drums" -> 3
-            "Violin" -> 4
-            else -> 0
-        }
+        val soundId = instruments.indexOf(instrument) + 1 // Założenie: ID odpowiadają indeksowi +1
         val sound = soundPlayer.getSoundById(soundId)
         sound?.let {
             soundPlayer.setSound(it.resId)
@@ -101,6 +88,13 @@ class InstrumentalMode(var context: Context, private val changeModeCallback: (Ga
     }
 
     private fun generateNewQuestion() {
+        // Wybieranie poprawnej odpowiedzi
         currentInstrument = instruments.random()
+
+        // Generowanie 3 losowych, różnych od currentInstrument opcji
+        val incorrectAnswers = instruments.filter { it != currentInstrument }.shuffled().take(3)
+
+        // Łączenie poprawnej odpowiedzi z trzema niepoprawnymi i mieszanie
+        answerOptions = (incorrectAnswers + currentInstrument).shuffled()
     }
 }
