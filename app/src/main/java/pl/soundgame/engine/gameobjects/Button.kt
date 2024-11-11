@@ -8,7 +8,16 @@ import android.graphics.LightingColorFilter
 import android.graphics.Paint
 import android.opengl.Matrix
 
-
+/**
+ * Class for creating and managing buttons
+ *
+ * @constructor
+ * TODO
+ *
+ * @param bitmap bitmap being backgorund of buton
+ * @param id id for using in collections
+ * @param alternateBitmap bitmap to be used in animation after button is pressed. If null a darken version of original bitmap will be used
+ */
 class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) : GameObject(bitmap, id){
     private var isBlocked: Boolean = false
     private var animationFrameCounter: Int = 0
@@ -24,6 +33,12 @@ class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) :
             this.alternateBitmap = alternateBitmap
         }
     }
+
+    /**
+     * Get information if button is locked from being clicked
+     *
+     * @return true if button is locked - cannot be clicked, else false
+     */
     fun isLocked(): Boolean {
         return isBlocked
     }
@@ -32,6 +47,10 @@ class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) :
         if(isBlocked) return false
         return super.click(x, y)
     }
+
+    /**
+     * Change lock state to opposite of current state
+     */
     fun toggleLock(){
         if (!isBlocked){
             isBlocked = !isBlocked
@@ -45,6 +64,10 @@ class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) :
             storeClickAction = null
         }
     }
+
+    /**
+     * Locks button so it cannot be clicked.
+     */
     fun lock(){
         if (!isBlocked){
             isBlocked = !isBlocked
@@ -54,6 +77,9 @@ class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) :
         }
     }
 
+    /**
+     * Unlocks button so it can be clicked
+     */
     fun unlock() {
         if (isBlocked){
             isBlocked = !isBlocked
@@ -81,7 +107,7 @@ class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) :
         wasClicked = true
     }
 
-    fun darkenBitmap(inputBitmap: Bitmap, darkenFactor: Float = 0.2f): Bitmap {
+    private fun darkenBitmap(inputBitmap: Bitmap, darkenFactor: Float = 0.2f): Bitmap {
         val clampedFactor = darkenFactor.coerceIn(0f, 1f)
         val darkenedBitmap = Bitmap.createBitmap(inputBitmap.width, inputBitmap.height, inputBitmap.config)
         val canvas = Canvas(darkenedBitmap)

@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.opengl.Matrix
 import android.util.Log
 import pl.soundgame.engine.shapes.Drawable
+import pl.soundgame.engine.shapes.Hitbox
 import pl.soundgame.engine.shapes.Sprite
 
 
@@ -48,6 +49,10 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
         this.mHitbox = Hitbox(-0.5f * width, 0.5f * height, initialWidth, initialHeight)
     }
 
+    /**
+     * Prints in logcat base info about object
+     *
+     */
     fun logObjectInfo(){
         Log.i("Sprite: ${mId}", "Object ${mId} exists in Scene\n" +
                 "visible: $visible\n" +

@@ -3,17 +3,37 @@ package pl.soundgame.engine.gameobjects
 import android.graphics.Bitmap
 import pl.soundgame.engine.shapes.Color
 
+/**
+ * Class for displaying temporary windows with some info to user, can be dismissed with button click or after some time
+ *
+ * @property duration  time in frames the popup will stay visible, will be only affected by button if -1
+ * @constructor
+ * sets-up all elements of the popup
+ *
+ * @param background  background bitmap image for given popup
+ * @param popupText  text that will appear in the top of popup - required parameter
+ * @param popupAnswer  text on a button to skip such popup
+ * @param id identification for one popup for using in collections
+ */
 class Popup(background: Bitmap, popupText: String, popupAnswer: String = "", val duration: Int = -1, id: String = "") : GameObject(bitmap = background , id= id) {
-    val timedPopup: Boolean
-    var popupOn: Boolean = false
-    var currentDuration = duration
+    private val timedPopup: Boolean
+    private var popupOn: Boolean = false
+    private var currentDuration = duration
     private var popupCallback: (() -> Unit)? = null
-    var framesOn: Int = 0
+    private var framesOn: Int = 0
+
+    /**
+     * Text on top of popup
+     */
     var popupText: String = popupText
         get() = field
         set(value){
             field = value
         }
+
+    /**
+     * Text on the bottom of popup - can be clicked to dismiss a popup
+     */
     var popupAnswer: String = popupAnswer
         get() = field
         set(value){
@@ -23,6 +43,11 @@ class Popup(background: Bitmap, popupText: String, popupAnswer: String = "", val
     public var popupTextBox: TextBox
     private var answerButton: TextBox
 
+    /**
+     * Sets function that will be called after popup disappears
+     *
+     * @param func Function to be called after popup disappears
+     */
     fun setPopupCallback(func: ()->Unit){
         popupCallback = func
     }
@@ -43,6 +68,12 @@ class Popup(background: Bitmap, popupText: String, popupAnswer: String = "", val
 
     }
 
+    /**
+     * Standard drawing for popup
+     *
+     * @param shaderProgram shader program id
+     * @param vPMatrix matrix for drawing
+     */
     override fun draw(shaderProgram: Int, vPMatrix: FloatArray) {
         if(currentDuration > 0){
             currentDuration--
@@ -58,6 +89,9 @@ class Popup(background: Bitmap, popupText: String, popupAnswer: String = "", val
         }
     }
 
+    /**
+     * Shows current popup setting up button or timer for popup hinding
+     */
     fun showPopup() {
         popupOn = true
         if( duration > 0) {
@@ -74,6 +108,10 @@ class Popup(background: Bitmap, popupText: String, popupAnswer: String = "", val
 
     }
 
+    /**
+     * Hides popup immediately
+     *
+     */
     fun hidePopup(){
         popupOn = false
         framesOn = 0

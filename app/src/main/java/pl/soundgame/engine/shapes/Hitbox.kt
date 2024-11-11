@@ -1,4 +1,4 @@
-package pl.soundgame.engine.gameobjects
+package pl.soundgame.engine.shapes
 
 import android.util.Log
 
