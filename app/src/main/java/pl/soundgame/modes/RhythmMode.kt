@@ -59,6 +59,7 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
                 alternateBitmap = loadTextureBitmap("roundbutton_on.png", context))
             tapButton.setOriginPosition(y = -0.5f, x = 0f)
             tapButton.scale(0.5f)
+            var currentPatternIndex = 0
             tapButton.onClickAction {
                 if (unblocked) {
                     if (start) {
@@ -67,12 +68,17 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
                         startTime = System.currentTimeMillis()
                         isFirst = true
                         start = false
+                        currentPatternIndex = 0
                     } else {
-                        val beatSound = soundPlayer.getSoundById(4)  // Assuming the beat sound is stored at ID 4
+                        val pitch = if (currentPatternIndex < rhythmPattern.size) rhythmPattern[currentPatternIndex].second else 1.0f
+                        currentPatternIndex++
+
+                        val beatSound = soundPlayer.getSoundById(4)
                         beatSound?.let {
                             soundPlayer.setSound(it.resId)
-                            soundPlayer.playSoundWithPitch(1.0f)  // You can modify pitch if needed
+                            soundPlayer.playSoundWithPitch(pitch)
                         }
+
                         val pressTime = System.currentTimeMillis()
                         if (isFirst) {
                             userPressIntervals.add(pressTime - startTime)
@@ -82,11 +88,11 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
                         }
                         lastPressTime = pressTime
 
-                        // Check if user has completed the required number of intervals
                         if (userPressIntervals.size == rhythmIntervals.size) {
                             checkAccuracy()
                             start = true
                             unblocked = false
+                            currentPatternIndex = 0
                             if (roundNumber < rounds) {
                                 roundNumber++
                                 scoreText.displayedText = "${scoreExampleText}${"%.2f".format(accuracy)}"
@@ -99,6 +105,7 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
                     }
                 }
             }
+
             scene.addGameObject(tapButton)
 
             // Button to generate and play the rhythm pattern
