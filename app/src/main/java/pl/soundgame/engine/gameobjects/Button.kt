@@ -28,6 +28,10 @@ class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) :
         return isBlocked
     }
 
+    override fun click(x: Float, y: Float): Boolean {
+        if(isBlocked) return false
+        return super.click(x, y)
+    }
     fun toggleLock(){
         if (!isBlocked){
             isBlocked = !isBlocked

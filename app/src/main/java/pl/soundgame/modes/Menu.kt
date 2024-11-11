@@ -4,6 +4,7 @@ import android.content.Context
 import pl.soundgame.engine.Scene
 import pl.soundgame.engine.background.SampleBackground
 import pl.soundgame.engine.gameobjects.Button
+import pl.soundgame.engine.gameobjects.Popup
 import pl.soundgame.engine.loadTextureBitmap
 
 class Menu(var context: Context, private val changeModeCallback: (GameModeName) -> Unit) : GameMode() {
@@ -14,6 +15,9 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
         }
 
         scene.setInitScene {
+
+            val popup = Popup(loadTextureBitmap("popupBackgound.png", context), popupText = "Testowy popup", popupAnswer = "Continue", id = "popup", duration = -1)
+
             val rhythmModeButton =
                 Button(loadTextureBitmap("button.png", context), id = "rhythmModeButton")
             rhythmModeButton.setOriginPosition(
@@ -35,9 +39,13 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             )  // Position button below the Rhythm button
             instrumentalModeButton.scale(0.5f)
             instrumentalModeButton.onClickAction {
-                changeModeCallback(GameModeName.INSTRUMENTAL_MODE) // Call to switch to InstrumentalMode
+                //changeModeCallback(GameModeName.INSTRUMENTAL_MODE) // Call to switch to InstrumentalMode
+                instrumentalModeButton.lock()
+                popup.setPopupCallback { instrumentalModeButton.unlock() }
+                popup.showPopup()
             }
-            scene.addGameObject(instrumentalModeButton)
+            scene.addGameObject(instrumentalModeButton, popup)
+
         }
         return scene
     }

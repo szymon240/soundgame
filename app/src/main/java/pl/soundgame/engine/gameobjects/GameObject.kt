@@ -84,7 +84,7 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
 
     open fun afterClickDetected(){}
 
-    fun click(x: Float, y: Float): Boolean {
+    open fun click(x: Float, y: Float): Boolean {
         //mHitbox.logInfo(mId)
         return if (mHitbox.isClicked(x, y)) {
             clickAction?.invoke()
