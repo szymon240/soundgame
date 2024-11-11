@@ -32,7 +32,7 @@ class Popup(background: Bitmap, popupText: String, popupAnswer: String = "", val
 
         this.scale(0.75f)
 
-        popupTextBox = TextBox(id = "${id} - Textbox",  size = 32f, initialText = popupText)
+        popupTextBox = TextBox(id = "${id} - Textbox",  size = 32f, width = 300, initialText = popupText)
         popupTextBox.setOriginPosition(y = 0.1f)
         popupTextBox.scale(0.5f)
 

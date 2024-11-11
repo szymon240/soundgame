@@ -9,7 +9,7 @@ abstract class Background {
     private var beforeDrawFrame: (() -> Unit)? = null
     private var afterDrawFrame: (() -> Unit)? = null
 
-    abstract fun updateFrame();
+    abstract fun updateFrame()
 
     fun draw(){
         beforeDrawFrame?.invoke()

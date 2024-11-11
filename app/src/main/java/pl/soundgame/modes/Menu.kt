@@ -16,7 +16,7 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
 
         scene.setInitScene {
 
-            val popup = Popup(loadTextureBitmap("popupBackgound.png", context), popupText = "Testowy popup", popupAnswer = "Continue", id = "popup", duration = -1)
+            val popup = Popup(loadTextureBitmap("popupBackgound.png", context), popupText = "Testowy\n popup\nbaredzo długa linijka z dużą ilością zbędnego tekstu", popupAnswer = "Continue", id = "popup", duration = -1)
 
             val rhythmModeButton =
                 Button(loadTextureBitmap("button.png", context), id = "rhythmModeButton")
