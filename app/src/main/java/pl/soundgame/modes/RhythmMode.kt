@@ -7,6 +7,7 @@ import pl.soundgame.engine.loadTextureBitmap
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import pl.soundgame.R
 import pl.soundgame.engine.background.SampleBackground
 import pl.soundgame.engine.gameobjects.Button
 import pl.soundgame.engine.gameobjects.TextBox
@@ -36,19 +37,19 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
             SampleBackground(context)
         }
 
-        var scoreExampleText = "Score: "
-        var roundExampleText = "Round: "
+        val scoreExampleText = context.getString(R.string.score_example_text)
+        val roundExampleText = context.getString(R.string.round_example_text)
 
-        var finalScore = "Your final score: "
-        var finishGame = "Game finished!"
+        val final_score_text = context.getString(R.string.final_score_text)
+        val finish_game_text = context.getString(R.string.finish_game_text)
 
         scene.setInitScene {
-            val scoreText = TextBox(initialText = "${scoreExampleText}${accuracy}", id = "scoreText")
+            val scoreText = TextBox(initialText = "${scoreExampleText} ${accuracy}", id = "scoreText")
             scoreText.setOriginPosition(y = 0.5f, x = 0f)
             scoreText.scale(0.5f)
             scene.addGameObject(scoreText)
 
-            val roundText = TextBox(initialText = "${roundExampleText}${roundNumber}", id = "roundText")
+            val roundText = TextBox(initialText = "${roundExampleText} ${roundNumber}", id = "roundText")
             roundText.setOriginPosition(y = 0.8f, x = 0f)
             roundText.scale(0.5f)
             scene.addGameObject(roundText)
@@ -90,11 +91,11 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
                             userPressIntervals.clear()
                             if (roundNumber < rounds) {
                                 roundNumber++
-                                scoreText.displayedText = "${scoreExampleText}${"%.2f".format(accuracy)}"
-                                roundText.displayedText = "${roundExampleText}${roundNumber}"
+                                scoreText.displayedText = "${scoreExampleText} ${"%.2f".format(accuracy)}"
+                                roundText.displayedText = "${roundExampleText} ${roundNumber}"
                             } else {
-                                scoreText.displayedText = "${finalScore}${"%.2f".format(accuracy)}"
-                                roundText.displayedText = "${finishGame}"
+                                scoreText.displayedText = "${final_score_text} ${"%.2f".format(accuracy)}"
+                                roundText.displayedText = "${finish_game_text}"
                             }
                         }
                     }
@@ -115,8 +116,8 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
                     unblocked = true
                     start = false
                 } else {
-                    scoreText.displayedText = "${finalScore}${"%.2f".format(accuracy)}"
-                    roundText.displayedText = "${finishGame}"
+                    scoreText.displayedText = "${final_score_text} ${"%.2f".format(accuracy)}"
+                    roundText.displayedText = "${finish_game_text}"
                 }
             }
             scene.addGameObject(playButton)

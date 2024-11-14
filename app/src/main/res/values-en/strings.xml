@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">SoundGame</string>
+    <string name="score_example_text">Score: </string>
+    <string name="round_example_text">Round: </string>
+    <string name="final_score_text">Your final score: </string>
+    <string name="finish_game_text">Game finished!</string>
 </resources>
