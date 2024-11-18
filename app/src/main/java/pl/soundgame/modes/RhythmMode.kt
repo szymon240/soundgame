@@ -136,7 +136,7 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
     }
 
     // Generate a random rhythm pattern with varied note lengths
-    fun generateRhythmPattern() {
+    private fun generateRhythmPattern() {
         rhythmPattern.clear()
         rhythmIntervals.clear()  // Clear previous intervals
 
@@ -151,7 +151,7 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
     }
 
     // Play the generated rhythm pattern
-    fun playRhythmPattern() {
+    private fun playRhythmPattern() {
         startTime = System.currentTimeMillis()  // Set start time for rhythm playback
         lastPressTime = 0L                      // Reset last press time for user input
         userPressIntervals.clear()              // Clear previous press intervals
