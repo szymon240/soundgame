@@ -16,6 +16,8 @@ class InstrumentalMode(var context: Context, private val changeModeCallback: (Ga
     private val instruments = listOf("Guitar", "Piano", "Drums", "Violin", "Flute", "Trumpet", "Harp", "Saxophone") // Możliwość dodania większej liczby instrumentów
     private var currentInstrument = ""
     private var answerOptions = listOf<String>()
+    private var score = 0
+    
 
     override fun returnGameModeScene(): Scene {
         val scene = Scene()

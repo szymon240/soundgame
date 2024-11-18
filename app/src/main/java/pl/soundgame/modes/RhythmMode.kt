@@ -7,6 +7,7 @@ import pl.soundgame.engine.loadTextureBitmap
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import pl.soundgame.R
 import pl.soundgame.engine.background.SampleBackground
 import pl.soundgame.engine.gameobjects.Button
 import pl.soundgame.engine.gameobjects.TextBox
@@ -36,19 +37,19 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
             SampleBackground(context)
         }
 
-        var scoreExampleText = "Score: "
-        var roundExampleText = "Round: "
+        val scoreExampleText = context.getString(R.string.score_example_text)
+        val roundExampleText = context.getString(R.string.round_example_text)
 
-        var finalScore = "Your final score: "
-        var finishGame = "Game finished!"
+        val final_score_text = context.getString(R.string.final_score_text)
+        val finish_game_text = context.getString(R.string.finish_game_text)
 
         scene.setInitScene {
-            val scoreText = TextBox(initialText = "${scoreExampleText}${accuracy}", id = "scoreText")
+            val scoreText = TextBox(initialText = "${scoreExampleText} ${accuracy}", id = "scoreText")
             scoreText.setOriginPosition(y = 0.5f, x = 0f)
             scoreText.scale(0.5f)
             scene.addGameObject(scoreText)
 
-            val roundText = TextBox(initialText = "${roundExampleText}${roundNumber}", id = "roundText")
+            val roundText = TextBox(initialText = "${roundExampleText} ${roundNumber}", id = "roundText")
             roundText.setOriginPosition(y = 0.8f, x = 0f)
             roundText.scale(0.5f)
             scene.addGameObject(roundText)
@@ -81,8 +82,9 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
 
                         val pressTime = System.currentTimeMillis()
                         if (isFirst) {
-                            userPressIntervals.add(pressTime - startTime)
+                            userPressIntervals.add(0)
                             isFirst = false
+                            lastPressTime = System.currentTimeMillis()
                         } else {
                             userPressIntervals.add(pressTime - lastPressTime)
                         }
@@ -90,20 +92,21 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
 
                         if (userPressIntervals.size == rhythmIntervals.size) {
                             checkAccuracy()
-                            start = true
+                            isFirst = true
                             unblocked = false
                             currentPatternIndex = 0
+                            userPressIntervals.clear()
                             if (roundNumber < rounds) {
                                 roundNumber++
-                                scoreText.displayedText = "${scoreExampleText}${"%.2f".format(accuracy)}"
-                                roundText.displayedText = "${roundExampleText}${roundNumber}"
+                                scoreText.displayedText = "${scoreExampleText} ${"%.2f".format(accuracy)}"
+                                roundText.displayedText = "${roundExampleText} ${roundNumber}"
                             } else {
-                                scoreText.displayedText = "${finalScore}${"%.2f".format(accuracy)}"
-                                roundText.displayedText = "${finishGame}"
+                                scoreText.displayedText = "${final_score_text} ${"%.2f".format(accuracy)}"
+                                roundText.displayedText = "${finish_game_text}"
                             }
                         }
                     }
-                }
+
             }
 
             scene.addGameObject(tapButton)
@@ -118,9 +121,10 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
                     startTime = System.currentTimeMillis()
                     playRhythmPattern()
                     unblocked = true
+                    start = false
                 } else {
-                    scoreText.displayedText = "${finalScore}${"%.2f".format(accuracy)}"
-                    roundText.displayedText = "${finishGame}"
+                    scoreText.displayedText = "${final_score_text} ${"%.2f".format(accuracy)}"
+                    roundText.displayedText = "${finish_game_text}"
                 }
             }
             scene.addGameObject(playButton)
@@ -138,23 +142,27 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
     // Generate a random rhythm pattern with varied note lengths
     private fun generateRhythmPattern() {
         rhythmPattern.clear()
-        rhythmIntervals.clear()  // Clear previous intervals
+        rhythmIntervals.clear()
 
         val totalBeats = 8
 
-        repeat(totalBeats) {
+        rhythmPattern.add(Pair(true, Random.nextFloat() * 1.5f + 0.5f))
+
+        repeat(totalBeats - 1) {
             val playSound = Random.nextBoolean()
             val randomPitch = if (playSound) Random.nextFloat() * 1.5f + 0.5f else 1.0f
             rhythmPattern.add(Pair(playSound, randomPitch))
         }
+
         println("Generated Rhythm Pattern: $rhythmPattern")
     }
 
+
     // Play the generated rhythm pattern
     private fun playRhythmPattern() {
-        startTime = System.currentTimeMillis()  // Set start time for rhythm playback
-        lastPressTime = 0L                      // Reset last press time for user input
-        userPressIntervals.clear()              // Clear previous press intervals
+        startTime = System.currentTimeMillis()
+        lastPressTime = 0L
+        userPressIntervals.clear()
 
         var isFirst = true
         var delay = 0L
@@ -191,10 +199,12 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
 
     // Check user accuracy by comparing intervals between presses to generated rhythm intervals
     private fun checkAccuracy() {
+        print(rhythmIntervals)
+        print(userPressIntervals)
         var score = 0f
         val comparisonCount = minOf(rhythmIntervals.size, userPressIntervals.size)
 
-        for (i in 0 until comparisonCount) {
+        for (i in 1 until comparisonCount) {
             val interval1 = rhythmIntervals[i]
             val interval2 = userPressIntervals[i]
             val maxInterval = maxOf(interval1, interval2)
@@ -204,7 +214,7 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
             score += ratioScore
         }
 
-        accuracy += (score / rhythmIntervals.size)
+        accuracy += (score / rhythmIntervals.size-1)
         println("Score: ${"%.2f".format(accuracy)}")
     }
 }
