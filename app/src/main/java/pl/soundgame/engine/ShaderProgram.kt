@@ -14,20 +14,12 @@ class ShaderProgram(vertShaderName: String, fragShaderName: String ,context: Con
     }
 
     init {
-
         val vertexShader: Int = compileAndLoadShader(GLES20.GL_VERTEX_SHADER, vertShaderName, context)
         val fragmentShader: Int = compileAndLoadShader(GLES20.GL_FRAGMENT_SHADER, fragShaderName, context)
 
-        // create empty OpenGL ES Program
         mProgram = GLES20.glCreateProgram().also {
-
-            // add the vertex shader to program
             GLES20.glAttachShader(it, vertexShader)
-
-            // add the fragment shader to program
             GLES20.glAttachShader(it, fragmentShader)
-
-            // creates OpenGL ES program executables
             GLES20.glLinkProgram(it)
         }
         Log.i(TAG, "ShaderProgram has been created!")
@@ -54,5 +46,9 @@ class ShaderProgram(vertShaderName: String, fragShaderName: String ,context: Con
         }
 
         return shader
+    }
+
+    fun release(){
+        GLES20.glDeleteProgram(mProgram)
     }
 }

@@ -1,5 +1,7 @@
 package pl.soundgame.engine
 
+import android.opengl.GLES20
+import pl.soundgame.engine.background.Background
 import pl.soundgame.engine.gameobjects.GameObject
 
 /**
@@ -12,11 +14,21 @@ import pl.soundgame.engine.gameobjects.GameObject
 class Scene {
     private var mObjects: MutableList<GameObject> = mutableListOf<GameObject>()
     private var mInitScene: (() -> Unit)? = null
+    private var mInitBackground: (() -> Background)? = null
+    private var mNewInitialization: Boolean = false
+    private lateinit var mBackground: Background
+    private var backgroundInitialized: Boolean = false
+
     var id: String = ""
         get() = field
         set(value) {
             field = value
         }
+
+    fun setBackground(pBackground: () -> Background){
+        mInitBackground = pBackground
+        mNewInitialization = true
+    }
 
     /**
      * Adds GameObject to the scene
@@ -36,9 +48,18 @@ class Scene {
      * @param vPMatrix FloatArray(16) - product of view and perspective matrix multiplication
      */
     fun draw(shaderProgram: Int, vPMatrix: FloatArray ){
+        if(mNewInitialization){
+            mBackground = mInitBackground!!.invoke()
+            backgroundInitialized = true
+            mNewInitialization = false
+        }
+        if(backgroundInitialized) mBackground.draw()
+        GLES20.glEnable(GLES20.GL_BLEND)
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
         for( gameObject in mObjects){
             gameObject.draw(shaderProgram,vPMatrix)
         }
+        GLES20.glDisable(GLES20.GL_BLEND)
     }
 
     /**
@@ -75,10 +96,8 @@ class Scene {
     fun bindClickAction(function: () -> Unit, id: String){
         for(gameObject in mObjects){
             if(gameObject.getId() == id){
-                gameObject.setClickAction {function.invoke()}
+                gameObject.onClickAction {function.invoke()}
             }
         }
     }
-
-    fun executeFunction(foo:  () -> Unit ){foo()}
 }

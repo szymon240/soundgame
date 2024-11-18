@@ -66,7 +66,6 @@ class Sprite(bitmap: Bitmap) {
 
         GLES20.glGenTextures(1, textureUnit, 0)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureUnit[0])
-        textureBitmap.recycle()
         textureBitmap = newBitmap
         // Set the new texture with the new bitmap
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, newBitmap, 0)
@@ -74,12 +73,6 @@ class Sprite(bitmap: Bitmap) {
         // Set texture parameters
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR)
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR)
-
-        // Update the textureBitmap reference
- // Optionally recycle the old bitmap
-
-
-
 
         val error = GLES20.glGetError()
         if (error != GLES20.GL_NO_ERROR) {
@@ -169,6 +162,7 @@ class Sprite(bitmap: Bitmap) {
 
         // Unbind texture (optional, depending on your rendering pipeline)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0)
+        GLES20.glUseProgram(0)
     }
     companion object{
         var NUMBER_OF_TEXTURES = 0;

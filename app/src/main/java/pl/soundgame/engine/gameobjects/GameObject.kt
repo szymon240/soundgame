@@ -3,8 +3,7 @@ package pl.soundgame.engine.gameobjects
 import android.graphics.Bitmap
 import android.opengl.Matrix
 import android.util.Log
-import pl.soundgame.engine.gameobjects.gameobjectstates.GameObjectDefaultState
-import pl.soundgame.engine.gameobjects.gameobjectstates.GameObjectState
+import pl.soundgame.engine.shapes.Drawable
 import pl.soundgame.engine.shapes.Sprite
 
 
@@ -17,22 +16,25 @@ import pl.soundgame.engine.shapes.Sprite
  * @author Adam Czyżak
  */
 
-class GameObject(bitmap: Bitmap, id: String = "") {
-    private var mSprite: Sprite
-    private val mMatrix = FloatArray(16)
-    private val mMatrixFrameChange = FloatArray(16)
-    private var mGameObjectState: GameObjectState
+open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
+    protected var mSprite: Sprite
+    override val mMatrix = FloatArray(16)
+    protected val mMatrixFrameChange = FloatArray(16)
     private var mId: String =""
     private var mHitbox: Hitbox
     private var mPosition = arrayOf(0.0f, 0.0f, 0.0f)  // Position of the GameObject
-    private var clickAction: (() -> Unit)? = null
+    protected var clickAction: (() -> Unit)? = null
     private var width: Float
     private var height: Float
+
+    protected var baseBitmap: Bitmap
+
     var visible = true
 
     init {
-        this.mGameObjectState = GameObjectDefaultState(this)
+        baseBitmap = bitmap
         this.mSprite = Sprite(bitmap)
+
         Matrix.setIdentityM(mMatrix, 0)
         Matrix.setIdentityM(mMatrixFrameChange, 0)
 
@@ -52,12 +54,13 @@ class GameObject(bitmap: Bitmap, id: String = "") {
                 "click function bound: ${clickAction != null}\n")
     }
 
-    fun draw(shaderProgram: Int, vPMatrix: FloatArray) {
+    open fun beforeDraw() {}
+    override fun draw(shaderProgram: Int, vPMatrix: FloatArray) {
         if (visible) {
             val scratch = FloatArray(16)
             Matrix.multiplyMM(scratch, 0, vPMatrix, 0, mMatrixFrameChange, 0)
             Matrix.multiplyMM(scratch, 0, mMatrix, 0, scratch, 0)
-            mGameObjectState.draw(shaderProgram, scratch, mSprite)
+            mSprite.draw(shaderProgram, scratch)
         }
         Matrix.setIdentityM(mMatrixFrameChange, 0)
     }
@@ -71,7 +74,7 @@ class GameObject(bitmap: Bitmap, id: String = "") {
     fun getId(): String{
         return mId
     }
-    fun setClickAction(function: () -> Unit) {
+    fun onClickAction(function: () -> Unit) {
         this.clickAction = function
     }
 
@@ -79,14 +82,15 @@ class GameObject(bitmap: Bitmap, id: String = "") {
         this.clickAction = null
     }
 
+    open fun afterClickDetected(){}
+
     fun click(x: Float, y: Float): Boolean {
-        mHitbox.logInfo(mId)
+        //mHitbox.logInfo(mId)
         return if (mHitbox.isClicked(x, y)) {
-            Log.i("GameObject: $mId", "Click detected!")
             clickAction?.invoke()
+            afterClickDetected()
             true
         } else {
-            Log.i("GameObject: $mId", "Click not detected!")
             false
         }
     }
@@ -138,7 +142,7 @@ class GameObject(bitmap: Bitmap, id: String = "") {
 
             val newX = mPosition[0] - width
             val newY = mPosition[1] + height / 2
-            Log.i("${mId}"," ${newX}, ${width} ${newX + width}" )
+            //Log.i("${mId}"," ${newX}, ${width} ${newX + width}" )
             mHitbox.updatePosition(newX, newY)
             mHitbox.updateSize(width, height)
         }
