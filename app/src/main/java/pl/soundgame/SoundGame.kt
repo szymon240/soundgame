@@ -2,6 +2,7 @@ package pl.soundgame
 
 import android.content.Context
 import android.util.Log
+import pl.soundgame.connection.CommunicationManager
 import pl.soundgame.engine.Game
 import pl.soundgame.engine.Scene
 import pl.soundgame.modes.GameMode
@@ -19,10 +20,19 @@ internal class SoundGame(context: Context) : Game() {
     private var TAG = "SoundGame Main Object"
     private var changeModeCallback: (GameModeName) -> Unit = { mode -> changeMode(mode)}
     private var rounds = 8
+    private val commManager = CommunicationManager()
     init {
         this.context = context
         gameMode = Menu(this.context, changeModeCallback)
-
+        commManager.parseExemplary()
+        commManager.getServerStatus { status ->
+            if(status != null ) {
+                Log.i(TAG, "$status")
+            }
+            else{
+                Log.i(TAG, "Something's wrong")
+            }
+        }
         gameModeName = GameModeName.MENU
         mScene = gameMode.returnGameModeScene()
         changeMode(GameModeName.MENU)

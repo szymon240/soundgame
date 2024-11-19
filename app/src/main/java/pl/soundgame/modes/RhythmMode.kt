@@ -63,49 +63,42 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
             var currentPatternIndex = 0
             tapButton.onClickAction {
                 if (unblocked) {
-                    if (start) {
-                        userPressIntervals.clear()
-                        lastPressTime = 0L
-                        startTime = System.currentTimeMillis()
-                        isFirst = true
-                        start = false
-                        currentPatternIndex = 0
+                    startTime = System.currentTimeMillis()
+                    val pitch = if (currentPatternIndex < rhythmPattern.size) rhythmPattern[currentPatternIndex].second else 1.0f
+                    currentPatternIndex++
+
+                    val beatSound = soundPlayer.getSoundById(4)
+                    beatSound?.let {
+                        soundPlayer.setSound(it.resId)
+                        soundPlayer.playSoundWithPitch(pitch)
+                    }
+
+                    val pressTime = System.currentTimeMillis()
+                    if (isFirst) {
+                        userPressIntervals.add(0)
+                        isFirst = false
+                        lastPressTime = System.currentTimeMillis()
                     } else {
-                        val pitch = if (currentPatternIndex < rhythmPattern.size) rhythmPattern[currentPatternIndex].second else 1.0f
-                        currentPatternIndex++
+                        userPressIntervals.add(pressTime - lastPressTime)
+                    }
+                    lastPressTime = pressTime
 
-                        val beatSound = soundPlayer.getSoundById(4)
-                        beatSound?.let {
-                            soundPlayer.setSound(it.resId)
-                            soundPlayer.playSoundWithPitch(pitch)
-                        }
-
-                        val pressTime = System.currentTimeMillis()
-                        if (isFirst) {
-                            userPressIntervals.add(0)
-                            isFirst = false
-                            lastPressTime = System.currentTimeMillis()
+                    if (userPressIntervals.size == rhythmIntervals.size) {
+                        checkAccuracy()
+                        isFirst = true
+                        unblocked = false
+                        currentPatternIndex = 0
+                        userPressIntervals.clear()
+                        if (roundNumber < rounds) {
+                            roundNumber++
+                            scoreText.displayedText = "${scoreExampleText} ${"%.2f".format(accuracy)}"
+                            roundText.displayedText = "${roundExampleText} ${roundNumber}"
                         } else {
-                            userPressIntervals.add(pressTime - lastPressTime)
-                        }
-                        lastPressTime = pressTime
-
-                        if (userPressIntervals.size == rhythmIntervals.size) {
-                            checkAccuracy()
-                            isFirst = true
-                            unblocked = false
-                            currentPatternIndex = 0
-                            userPressIntervals.clear()
-                            if (roundNumber < rounds) {
-                                roundNumber++
-                                scoreText.displayedText = "${scoreExampleText} ${"%.2f".format(accuracy)}"
-                                roundText.displayedText = "${roundExampleText} ${roundNumber}"
-                            } else {
-                                scoreText.displayedText = "${final_score_text} ${"%.2f".format(accuracy)}"
-                                roundText.displayedText = "${finish_game_text}"
-                            }
+                            scoreText.displayedText = "${final_score_text} ${"%.2f".format(accuracy)}"
+                            roundText.displayedText = "${finish_game_text}"
                         }
                     }
+                }
 
             }
 
@@ -140,7 +133,7 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
     }
 
     // Generate a random rhythm pattern with varied note lengths
-    private fun generateRhythmPattern() {
+    fun generateRhythmPattern() {
         rhythmPattern.clear()
         rhythmIntervals.clear()
 
@@ -159,7 +152,7 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
 
 
     // Play the generated rhythm pattern
-    private fun playRhythmPattern() {
+    fun playRhythmPattern() {
         startTime = System.currentTimeMillis()
         lastPressTime = 0L
         userPressIntervals.clear()

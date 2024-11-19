@@ -18,10 +18,6 @@ fun loadTextureBitmap(textureName: String, context: Context): Bitmap {
 
 class GameGLRenderer(context: Context, game: Game): GLSurfaceView.Renderer {
     private var context: Context
-    private var height: Float =  1.0f
-    private var width: Float =  1.0f
-    private var ratio: Float = 1.0f
-    private val projectionMatrix = FloatArray(16)
     private val TAG = "Renderer"
     private var game: Game
 

@@ -11,8 +11,6 @@ import pl.soundgame.engine.shapes.createTextTexture
 
 class MainActivity : AppCompatActivity() {
     private lateinit var gLView: GLSurfaceView
-    private lateinit var soundPlayer: SoundPlayer
-
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val game = SoundGame(this)
