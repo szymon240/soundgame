@@ -2,6 +2,7 @@ package pl.soundgame.engine.gameobjects
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.util.Log
 import pl.soundgame.engine.shapes.Color
 import pl.soundgame.engine.shapes.createTextTexture
 
@@ -70,6 +71,8 @@ class TextBox(
         }
 
     private fun updateBitmap(){
+        Log.i("DEBUG", "Updating TextBox bitmap with text: $displayedText")
+
         baseBitmap = createTextTexture(displayedText, width, height, size, color, background)
         swapSprite(baseBitmap)
     }

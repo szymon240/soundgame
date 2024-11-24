@@ -1,6 +1,7 @@
 package pl.soundgame.engine
 
 import android.opengl.GLES20
+import android.util.Log
 import pl.soundgame.engine.background.Background
 import pl.soundgame.engine.gameobjects.GameObject
 
@@ -18,6 +19,8 @@ class Scene {
     private var mNewInitialization: Boolean = false
     private lateinit var mBackground: Background
     private var backgroundInitialized: Boolean = false
+    private var beforeDrawFrame: (() -> Unit)? = null
+    private var afterDrawFrame: (() -> Unit)? = null
 
     var id: String = ""
         get() = field
@@ -48,18 +51,19 @@ class Scene {
      * @param vPMatrix FloatArray(16) - product of view and perspective matrix multiplication
      */
     fun draw(shaderProgram: Int, vPMatrix: FloatArray ){
+        beforeDrawFrame?.invoke()
         if(mNewInitialization){
             mBackground = mInitBackground!!.invoke()
             backgroundInitialized = true
             mNewInitialization = false
         }
         if(backgroundInitialized) mBackground.draw()
-        GLES20.glEnable(GLES20.GL_BLEND)
-        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
+
         for( gameObject in mObjects){
             gameObject.draw(shaderProgram,vPMatrix)
         }
-        GLES20.glDisable(GLES20.GL_BLEND)
+        afterDrawFrame?.invoke()
+        //GLES20.glDisable(GLES20.GL_BLEND)
     }
 
     /**
@@ -100,4 +104,38 @@ class Scene {
             }
         }
     }
+
+    /**
+     * Finds and returns all GameObjects with the given id.
+     *
+     * @param id The id to search for.
+     * @return List of matching GameObjects.
+     */
+    fun findGameObjectsById(id: String): List<GameObject> {
+        return mObjects.filter { it.getId() == id }
+    }
+
+    /**
+     * Modifies the properties of all GameObjects with the given id.
+     *
+     * @param id The id to search for.
+     * @param modifyFn A function to modify the GameObject's properties.
+     */
+    fun modifyGameObjectsById(id: String, modifyFn: (GameObject) -> Unit) {
+        for (gameObject in mObjects) {
+            if (gameObject.getId().equals(id)) {
+                Log.i("Scene", "Changing object ${gameObject.getId()}")
+                modifyFn(gameObject)
+            }
+        }
+    }
+
+    fun setBeforeDrawFrame(fn: () -> Unit){
+        beforeDrawFrame = fn
+    }
+
+    fun setAfterDrawFrame(fn: () -> Unit){
+        afterDrawFrame = fn
+    }
+
 }

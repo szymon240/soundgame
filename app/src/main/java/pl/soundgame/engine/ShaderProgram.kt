@@ -5,7 +5,7 @@ import android.opengl.GLES20
 import android.util.Log
 import java.io.BufferedReader
 
-class ShaderProgram(vertShaderName: String, fragShaderName: String ,context: Context) {
+class ShaderProgram(vertShaderName: String, fragShaderName: String, context: Context) {
     private var mProgram: Int
     private val TAG  = "ShaderProgram"
 

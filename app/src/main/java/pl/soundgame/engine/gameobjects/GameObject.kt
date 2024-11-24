@@ -21,7 +21,7 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
     protected var mSprite: Sprite
     override val mMatrix = FloatArray(16)
     protected val mMatrixFrameChange = FloatArray(16)
-    private var mId: String =""
+    private var mId: String = id
     private var mHitbox: Hitbox
     private var mPosition = arrayOf(0.0f, 0.0f, 0.0f)  // Position of the GameObject
     protected var clickAction: (() -> Unit)? = null
@@ -44,7 +44,6 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
         val initialHeight = 1.0f
         width = initialWidth
         height = initialHeight
-
         // Adjusted hitbox positioning based on GameObject size
         this.mHitbox = Hitbox(-0.5f * width, 0.5f * height, initialWidth, initialHeight)
     }
@@ -128,6 +127,8 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
         mPosition[1] = y
         updateHitbox()
     }
+
+
 
     private fun updateHitbox() {
         // Update the hitbox based on the GameObject's position and size

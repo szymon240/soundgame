@@ -5,4 +5,7 @@
     <string name="round_example_text">Runda: </string>
     <string name="final_score_text">Twój ostateczny wynik: </string>
     <string name="finish_game_text">Koniec gry!</string>
+    <string name="connection_success">Połączono!</string>
+    <string name="connection_failed">Nie udało sie połączyć z serwerem gry</string>
+    <string name="connecting">Szukanie serwera...</string>
 </resources>

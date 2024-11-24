@@ -56,8 +56,8 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
 
 
             // Button for the player to press in sync with the rhythm pattern
-            val tapButton = Button(loadTextureBitmap("roundbutton_off.png", context), id = "tapButton",
-                alternateBitmap = loadTextureBitmap("roundbutton_on.png", context))
+            val tapButton = Button(loadTextureBitmap("rhythm_mode/roundbutton_off.png", context), id = "tapButton",
+                alternateBitmap = loadTextureBitmap("rhythm_mode/roundbutton_on.png", context))
             tapButton.setOriginPosition(y = -0.5f, x = 0f)
             tapButton.scale(0.5f)
             var currentPatternIndex = 0
@@ -105,8 +105,8 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
             scene.addGameObject(tapButton)
 
             // Button to generate and play the rhythm pattern
-            val playButton = Button(loadTextureBitmap("button.png", context), id = "playButton")
-            playButton.setOriginPosition(y = 0.2f, x = 0.5f)
+            val playButton = Button(loadTextureBitmap("rhythm_mode/play.png", context), id = "playButton")
+            playButton.setOriginPosition(y = -0.1f, x = 0.0f)
             playButton.scale(0.25f)
             playButton.onClickAction {
                 if (roundNumber < rounds) {
@@ -122,7 +122,7 @@ class RhythmMode(var rounds: Int = 8, var context: Context, private val changeMo
             }
             scene.addGameObject(playButton)
 
-            val exitButton = Button(loadTextureBitmap("button.png", context), id = "playButton")
+            val exitButton = Button(loadTextureBitmap("button.png", context), id = "exitButton")
             exitButton.setOriginPosition(y = 0.2f, x = -0.5f)
             exitButton.scale(0.25f)
             exitButton.onClickAction { changeModeCallback(GameModeName.MENU) }

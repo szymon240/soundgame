@@ -4,4 +4,7 @@
     <string name="round_example_text">Round: </string>
     <string name="final_score_text">Your final score: </string>
     <string name="finish_game_text">Game finished!</string>
+    <string name="connection_success">Connected!</string>
+    <string name="connection_failed">Connection to game server failed!</string>
+    <string name="connecting">Connecting...</string>
 </resources>

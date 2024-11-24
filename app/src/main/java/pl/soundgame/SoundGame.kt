@@ -3,6 +3,7 @@ package pl.soundgame
 import android.content.Context
 import android.util.Log
 import pl.soundgame.connection.CommunicationManager
+import pl.soundgame.connection.ConnectionStatus
 import pl.soundgame.engine.Game
 import pl.soundgame.engine.Scene
 import pl.soundgame.modes.GameMode
@@ -10,6 +11,7 @@ import pl.soundgame.modes.GameModeName
 import pl.soundgame.modes.InstrumentalMode
 import pl.soundgame.modes.Menu
 import pl.soundgame.modes.RhythmMode
+import pl.soundgame.modes.Settings
 
 
 internal class SoundGame(context: Context) : Game() {
@@ -24,13 +26,17 @@ internal class SoundGame(context: Context) : Game() {
     init {
         this.context = context
         gameMode = Menu(this.context, changeModeCallback)
-
+        gameModeName = GameModeName.MENU
+        mScene = gameMode.returnGameModeScene()
+        changeMode(GameModeName.MENU)
         commManager.getServerStatus { status ->
             if(status != null ) {
                 Log.i(TAG, "App: ${status.app}, Database: ${status.database}")
+                CONNECTION_STATUS = ConnectionStatus.SUCCESS
             }
             else{
                 Log.i(TAG, "Something's wrong")
+                CONNECTION_STATUS = ConnectionStatus.FAILED
             }
         }
 
@@ -42,9 +48,7 @@ internal class SoundGame(context: Context) : Game() {
                 Log.e(TAG, "Failed to fetch questions")
             }
         }
-        gameModeName = GameModeName.MENU
-        mScene = gameMode.returnGameModeScene()
-        changeMode(GameModeName.MENU)
+
     }
 
     fun changeMode(newMode: GameModeName) {
@@ -53,13 +57,17 @@ internal class SoundGame(context: Context) : Game() {
             GameModeName.RHYTHM -> RhythmMode(rounds, this.context, changeModeCallback)
             GameModeName.INSTRUMENTAL -> InstrumentalMode(this.context, changeModeCallback)
             //GameModeName.ANOTHER_MODE -> AnotherMode(this.context)
-
+            GameModeName.SETTINGS -> Settings(this.context, changeModeCallback)
         }
 
         Log.i(TAG, "Swaped mode to: ${newMode.name}")
         gameModeName = newMode
         mScene = gameMode.returnGameModeScene()
         mScene.loadScene()
+    }
+
+    companion object {
+        var CONNECTION_STATUS = ConnectionStatus.CONNECTING
     }
 }
 
