@@ -3,6 +3,7 @@ package pl.soundgame
 import android.content.Context
 import android.util.Log
 import pl.soundgame.connection.CommunicationManager
+import pl.soundgame.connection.serializedclasses.Question
 import pl.soundgame.engine.Game
 import pl.soundgame.engine.Scene
 import pl.soundgame.modes.GameMode
@@ -21,6 +22,7 @@ internal class SoundGame(context: Context) : Game() {
     private var changeModeCallback: (GameModeName) -> Unit = { mode -> changeMode(mode)}
     private var rounds = 8
     private val commManager = CommunicationManager()
+    private var questions: List<Question> = emptyList()
     init {
         this.context = context
         gameMode = Menu(this.context, changeModeCallback)
@@ -36,6 +38,7 @@ internal class SoundGame(context: Context) : Game() {
 
         commManager.getQuestions(GameModeName.INSTRUMENTAL, 3) { response ->
             if (response != null) {
+                questions = response.questions!!
                 Log.i(TAG, "Question status: ${response.status}")
                 Log.i(TAG, "Questions: ${response.questions!![0].ans1}")
             } else {
@@ -48,15 +51,18 @@ internal class SoundGame(context: Context) : Game() {
     }
 
     fun changeMode(newMode: GameModeName) {
+        Log.i(TAG, "Changing mode to: $newMode with ${questions.size} questions.")
+
+        questions.firstOrNull()?.let {
+            Log.i(TAG, "First question URL: ${it.url}")
+        }
+
         gameMode = when (newMode) {
             GameModeName.MENU -> Menu(this.context, changeModeCallback)
             GameModeName.RHYTHM -> RhythmMode(rounds, this.context, changeModeCallback)
-            GameModeName.INSTRUMENTAL -> InstrumentalMode(this.context, changeModeCallback)
-            //GameModeName.ANOTHER_MODE -> AnotherMode(this.context)
-
+            GameModeName.INSTRUMENTAL -> InstrumentalMode(this.context, changeModeCallback, questions, rounds)
         }
 
-        Log.i(TAG, "Swaped mode to: ${newMode.name}")
         gameModeName = newMode
         mScene = gameMode.returnGameModeScene()
         mScene.loadScene()
