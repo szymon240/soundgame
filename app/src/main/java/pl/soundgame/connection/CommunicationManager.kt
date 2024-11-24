@@ -20,37 +20,6 @@ import java.net.URL
 class CommunicationManager {
     private var parser = Gson()
     private val TAG = "CommunicationManager"
-    fun parseExemplary(){
-        val jsonString = """
-        {
-            "status": "ok",
-            "questions": [
-                {
-                    "question": "What is 2+2?",
-                    "correctAnswer": 1,
-                    "ans1": "4",
-                    "...": "",
-                    "ans4": "5",
-                    "url": "http://example.com/answer1"
-                },
-                {
-                    "question": "What is 3+3?",
-                    "correctAnswer": 3,
-                    "ans1": "5",
-                    "...": "",
-                    "ans4": "6",
-                    "url": "http://example.com/answer2"
-                }
-            ]
-        }
-        """
-        val response = parser.fromJson(jsonString, Response::class.java)
-        Log.i(TAG,response.status)
-        response.questions?.forEach { question ->
-            Log.i(TAG,question.question)
-            Log.i(TAG,"${question.correctAnswer}")
-        }
-    }
 
     fun getServerStatus(onResult: (StatusResponse?) -> Unit){
         CoroutineScope(Dispatchers.IO).launch {
@@ -80,7 +49,7 @@ class CommunicationManager {
             val request = Request(mode = gameMode.name.lowercase(), questions = numberOfRounds)
 
             try {
-                val requestBody = Gson().toJson(request)
+                val requestBody = parser.toJson(request)
                 Log.i(TAG, "Request Body: $requestBody")
 
                 with(url.openConnection() as HttpURLConnection) {
@@ -94,10 +63,8 @@ class CommunicationManager {
                     val responseCode = responseCode
                     if (responseCode == HttpURLConnection.HTTP_OK) {
                         val jsonResponse = inputStream.bufferedReader().use { it.readText() }
-                        Log.i(TAG, "Response: $jsonResponse")
 
-
-                        val response = Gson().fromJson(jsonResponse, Response::class.java)
+                         val response = parser.fromJson(jsonResponse, Response::class.java)
 
                         withContext(Dispatchers.Main) {
                             onResult(response)
@@ -122,5 +89,6 @@ class CommunicationManager {
         val STATUS_URL = "https://springboot-kotlin-app-84877666332.europe-west1.run.app/api/status"
         val QUESTIONS_URL =
             "https://springboot-kotlin-app-84877666332.europe-west1.run.app/api/audio/questions"
+        val AUDIO_URL = "https://springboot-kotlin-app-84877666332.europe-west1.run.app"
     }
  }

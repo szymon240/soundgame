@@ -24,7 +24,7 @@ internal class SoundGame(context: Context) : Game() {
     init {
         this.context = context
         gameMode = Menu(this.context, changeModeCallback)
-        commManager.parseExemplary()
+
         commManager.getServerStatus { status ->
             if(status != null ) {
                 Log.i(TAG, "App: ${status.app}, Database: ${status.database}")
@@ -34,10 +34,10 @@ internal class SoundGame(context: Context) : Game() {
             }
         }
 
-        commManager.getQuestions(GameModeName.INSTRUMENTAL, 1) { response ->
+        commManager.getQuestions(GameModeName.INSTRUMENTAL, 3) { response ->
             if (response != null) {
                 Log.i(TAG, "Question status: ${response.status}")
-                Log.i(TAG, "Questions: ${response.questions}")
+                Log.i(TAG, "Questions: ${response.questions!![0].ans1}")
             } else {
                 Log.e(TAG, "Failed to fetch questions")
             }
@@ -55,6 +55,7 @@ internal class SoundGame(context: Context) : Game() {
             //GameModeName.ANOTHER_MODE -> AnotherMode(this.context)
 
         }
+
         Log.i(TAG, "Swaped mode to: ${newMode.name}")
         gameModeName = newMode
         mScene = gameMode.returnGameModeScene()
