@@ -26,7 +26,7 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             )  // Position button in the upper center
             rhythmModeButton.scale(0.5f)
             rhythmModeButton.onClickAction {
-                changeModeCallback(GameModeName.RHYTHM_MODE) // Call to switch to RhythmMode
+                changeModeCallback(GameModeName.RHYTHM) // Call to switch to RhythmMode
             }
             scene.addGameObject(rhythmModeButton)
 
@@ -39,7 +39,7 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             )  // Position button below the Rhythm button
             instrumentalModeButton.scale(0.5f)
             instrumentalModeButton.onClickAction {
-                changeModeCallback(GameModeName.INSTRUMENTAL_MODE) // Call to switch to InstrumentalMode
+                changeModeCallback(GameModeName.INSTRUMENTAL) // Call to switch to InstrumentalMode
                 //instrumentalModeButton.lock()
                // popup.setPopupCallback { instrumentalModeButton.unlock() }
               //  popup.showPopup()

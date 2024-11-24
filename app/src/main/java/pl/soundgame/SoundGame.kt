@@ -27,10 +27,19 @@ internal class SoundGame(context: Context) : Game() {
         commManager.parseExemplary()
         commManager.getServerStatus { status ->
             if(status != null ) {
-                Log.i(TAG, "$status")
+                Log.i(TAG, "App: ${status.app}, Database: ${status.database}")
             }
             else{
                 Log.i(TAG, "Something's wrong")
+            }
+        }
+
+        commManager.getQuestions(GameModeName.INSTRUMENTAL, 1) { response ->
+            if (response != null) {
+                Log.i(TAG, "Question status: ${response.status}")
+                Log.i(TAG, "Questions: ${response.questions}")
+            } else {
+                Log.e(TAG, "Failed to fetch questions")
             }
         }
         gameModeName = GameModeName.MENU
@@ -41,8 +50,8 @@ internal class SoundGame(context: Context) : Game() {
     fun changeMode(newMode: GameModeName) {
         gameMode = when (newMode) {
             GameModeName.MENU -> Menu(this.context, changeModeCallback)
-            GameModeName.RHYTHM_MODE -> RhythmMode(rounds, this.context, changeModeCallback)
-            GameModeName.INSTRUMENTAL_MODE -> InstrumentalMode(this.context, changeModeCallback)
+            GameModeName.RHYTHM -> RhythmMode(rounds, this.context, changeModeCallback)
+            GameModeName.INSTRUMENTAL -> InstrumentalMode(this.context, changeModeCallback)
             //GameModeName.ANOTHER_MODE -> AnotherMode(this.context)
 
         }

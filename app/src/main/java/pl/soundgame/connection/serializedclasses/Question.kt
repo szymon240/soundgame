@@ -7,6 +7,5 @@ data class Question(
     val ans2: String?,
     val and3: String?,
     val ans4: String?,
-    val url: String,
-    val additionalFields: Map<String, Any> = emptyMap()
+    val url: String
 )
