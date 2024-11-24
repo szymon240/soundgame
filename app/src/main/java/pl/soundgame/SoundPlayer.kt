@@ -90,4 +90,26 @@ class SoundPlayer(private val context: Context) {
     fun getSoundById(id: Int): Sound? {
         return soundList.find { it.id == id }
     }
+
+    fun playFromUrl(url: String) {
+        mediaPlayer?.release()
+        mediaPlayer = null
+
+        try {
+            mediaPlayer = MediaPlayer().apply {
+                setDataSource(url) // Ustawienie źródła strumienia
+                setOnPreparedListener {
+                    start() // Rozpocznij odtwarzanie po przygotowaniu
+                }
+                setOnErrorListener { _, what, extra ->
+                    println("Error occurred: what=$what, extra=$extra")
+                    false // Zwrot false oznacza, że MediaPlayer nie obsłuży błędu samodzielnie
+                }
+                prepareAsync() // Przygotowanie odtwarzania w tle
+            }
+        } catch (e: Exception) {
+            println("Error initializing MediaPlayer: ${e.message}")
+        }
+    }
+
 }
