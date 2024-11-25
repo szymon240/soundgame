@@ -8,4 +8,7 @@
     <string name="connection_success">Connected!</string>
     <string name="connection_failed">Connection to game server failed!</string>
     <string name="connecting">Connecting...</string>
+    <string name="tutorial_rhythm">Start game by pressing \"play\" button, then try to repeat pattern with by pressing red button.</string>
+    <string name="tutorial_rhythm_answer">Let\'s begin!</string>
+    <string name="rhythm_popup_answser">Okay!</string>
 </resources>

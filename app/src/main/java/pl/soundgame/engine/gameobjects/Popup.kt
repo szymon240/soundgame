@@ -40,8 +40,8 @@ class Popup(background: Bitmap, popupText: String, popupAnswer: String = "", val
             field = value
         }
 
-    public var popupTextBox: TextBox
-    private var answerButton: TextBox
+    var popupTextBox: TextBox
+    var answerButton: TextBox
 
     /**
      * Sets function that will be called after popup disappears

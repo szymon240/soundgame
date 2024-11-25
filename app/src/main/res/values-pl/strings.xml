@@ -8,4 +8,7 @@
     <string name="connection_success">Połączono!</string>
     <string name="connection_failed">Nie udało sie połączyć z serwerem gry</string>
     <string name="connecting">Szukanie serwera...</string>
+    <string name="tutorial_rhythm">"Rozpocznij grę naciskając przycisk \"play\", następnie odtwórz rytm  poprzez wciskanie przycisku. "</string>
+    <string name="tutorial_rhythm_answer">Zaczynamy!</string>
+    <string name="rhythm_popup_answser">Okej!</string>
 </resources>
