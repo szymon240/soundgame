@@ -68,29 +68,6 @@ class SoundPlayer(private val context: Context) {
         mediaPlayer = null
     }
 
-    fun playSoundWithPitch(pitch: Float) {
-        val mediaPlayer = this.mediaPlayer
-        mediaPlayer?.let {
-            if (mediaPlayer.isPlaying) {
-                mediaPlayer.pause()
-                mediaPlayer.seekTo(0)
-            }
-            val playbackParams = PlaybackParams()
-            playbackParams.pitch = pitch
-            mediaPlayer.playbackParams = playbackParams
-            mediaPlayer.start()
-        }
-    }
-
-    //Check if the media player is currently playing
-    fun isPlaying(): Boolean {
-        return mediaPlayer?.isPlaying ?: false
-    }
-
-    fun getSoundById(id: Int): Sound? {
-        return soundList.find { it.id == id }
-    }
-
     fun playFromUrl(url: String) {
         mediaPlayer?.release()
         mediaPlayer = null
@@ -112,4 +89,33 @@ class SoundPlayer(private val context: Context) {
         }
     }
 
+    fun playSoundWithPitch(pitch: Float, source: Any) {
+        if (source is String) {
+            playFromUrl(source)
+            mediaPlayer?.setOnPreparedListener {
+                val playbackParams = PlaybackParams().apply { this.pitch = pitch }
+                mediaPlayer?.playbackParams = playbackParams
+                mediaPlayer?.start()
+            }
+        } else if (source is Int) {
+            setSound(source) // Reuses existing method to initialize MediaPlayer for local resource
+            mediaPlayer?.let {
+                val playbackParams = PlaybackParams().apply { this.pitch = pitch }
+                it.playbackParams = playbackParams
+                it.start()
+            }
+        } else {
+            println("Invalid source type. Must be String (URL) or Int (Resource ID).")
+        }
+    }
+
+
+    //Check if the media player is currently playing
+    fun isPlaying(): Boolean {
+        return mediaPlayer?.isPlaying ?: false
+    }
+
+    fun getSoundById(id: Int): Sound? {
+        return soundList.find { it.id == id }
+    }
 }

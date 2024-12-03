@@ -6,6 +6,7 @@ import pl.soundgame.connection.serializedclasses.Question
 import pl.soundgame.engine.Scene
 import pl.soundgame.engine.background.SampleBackground
 import pl.soundgame.engine.gameobjects.Button
+import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.engine.loadTextureBitmap
 
 
@@ -43,7 +44,7 @@ class InstrumentalMode(var context: Context, private val changeModeCallback: (Ga
 
         createAnswerButton(scene, currentQuestion.ans1 ?: "", x = -0.5f, y = -0.2f)
         createAnswerButton(scene, currentQuestion.ans2 ?: "", x = 0.5f, y = -0.2f)
-        createAnswerButton(scene, currentQuestion.and3 ?: "", x = -0.5f, y = -0.6f)
+        createAnswerButton(scene, currentQuestion.ans3 ?: "", x = -0.5f, y = -0.6f)
         createAnswerButton(scene, currentQuestion.ans4 ?: "", x = 0.5f, y = -0.6f)
 
         val exitButton = Button(loadTextureBitmap("button.png", context), id = "exitButton")
@@ -59,7 +60,13 @@ class InstrumentalMode(var context: Context, private val changeModeCallback: (Ga
         button.scale(0.25f)
         button.onClickAction { checkAnswer(text) }
         scene.addGameObject(button)
+
+        val textBox = TextBox(initialText = text, id = "textBox-$text")
+        textBox.setOriginPosition(x = x, y = y)
+        textBox.scale(0.2f)
+        scene.addGameObject(textBox)
     }
+
 
     private fun checkAnswer(selectedAnswer: String) {
         val currentQuestion = questions[currentRound]
@@ -82,7 +89,7 @@ class InstrumentalMode(var context: Context, private val changeModeCallback: (Ga
         return when (question.correctAnswer) {
             1 -> question.ans1 ?: ""
             2 -> question.ans2 ?: ""
-            3 -> question.and3 ?: ""
+            3 -> question.ans3 ?: ""
             4 -> question.ans4 ?: ""
             else -> ""
         }
