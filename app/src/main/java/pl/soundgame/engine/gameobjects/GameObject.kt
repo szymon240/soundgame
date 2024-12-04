@@ -68,7 +68,7 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
         }
         Matrix.setIdentityM(mMatrixFrameChange, 0)
     }
-    fun swapSprite(newBitmap: Bitmap){
+    open fun swapSprite(newBitmap: Bitmap){
         mSprite.swapImage(newBitmap)
     }
     fun setId(pId: String){

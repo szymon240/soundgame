@@ -118,4 +118,10 @@ class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) :
         canvas.drawRect(0f, 0f, inputBitmap.width.toFloat(), inputBitmap.height.toFloat(), paint)
         return darkenedBitmap
     }
+
+    override fun swapSprite(newBitmap: Bitmap){
+        super.swapSprite(newBitmap)
+        baseBitmap = newBitmap
+        alternateBitmap = darkenBitmap(newBitmap)
+    }
 }

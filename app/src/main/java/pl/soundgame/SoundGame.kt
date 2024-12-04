@@ -58,8 +58,7 @@ internal class SoundGame(context: Context) : Game() {
         commManager.getQuestions(mode, rounds) { response ->
             if (response != null) {
                 questions = response.questions ?: emptyList()
-                Log.i(TAG, "Fetched questions for mode: $mode")
-                logAllQuestions(questions)
+
 
                 // Launch coroutine to download sounds
                 GlobalScope.launch {

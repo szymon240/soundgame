@@ -250,12 +250,14 @@ class RhythmMode(
                     val soundFile = question?.url?.let { context.cacheDir.resolve(it.substringAfterLast("/")) }
                     if (soundFile?.exists() == true) {
                         soundPlayer.playSoundWithPitch(pitch, soundFile.absolutePath)
-                    } else {
-                        val beatSound = soundPlayer.getSoundById(4)
-                        beatSound?.let {
-                            soundPlayer.playSoundWithPitch(pitch, it.resId)
-                        }
                     }
+                    //FIXME if something goes wrong uncomment it pls
+//                    else {
+//                        val beatSound = soundPlayer.getSoundById(4)
+//                        beatSound?.let {
+//                            soundPlayer.playSoundWithPitch(pitch, it.resId)
+//                        }
+//                    }
                 }
             }, delay)
 
