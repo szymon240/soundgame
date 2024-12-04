@@ -247,9 +247,10 @@ class RhythmMode(
 
             handler.postDelayed({
                 if (playSound) {
-                    question?.url?.let { url ->
-                        soundPlayer.playSoundWithPitch(pitch, url)
-                    } ?: run {
+                    val soundFile = question?.url?.let { context.cacheDir.resolve(it.substringAfterLast("/")) }
+                    if (soundFile?.exists() == true) {
+                        soundPlayer.playSoundWithPitch(pitch, soundFile.absolutePath)
+                    } else {
                         val beatSound = soundPlayer.getSoundById(4)
                         beatSound?.let {
                             soundPlayer.playSoundWithPitch(pitch, it.resId)

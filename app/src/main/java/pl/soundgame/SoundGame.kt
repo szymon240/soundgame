@@ -2,6 +2,9 @@ package pl.soundgame
 
 import android.content.Context
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import pl.soundgame.connection.CommunicationManager
 import pl.soundgame.connection.ConnectionStatus
 import pl.soundgame.connection.serializedclasses.Question
@@ -13,6 +16,10 @@ import pl.soundgame.modes.InstrumentalMode
 import pl.soundgame.modes.Menu
 import pl.soundgame.modes.RhythmMode
 import pl.soundgame.modes.Settings
+import java.io.File
+import java.io.FileOutputStream
+import java.net.URL
+import kotlinx.coroutines.GlobalScope
 
 internal class SoundGame(context: Context) : Game() {
     override var mScene: Scene
@@ -53,9 +60,14 @@ internal class SoundGame(context: Context) : Game() {
                 questions = response.questions ?: emptyList()
                 Log.i(TAG, "Fetched questions for mode: $mode")
                 logAllQuestions(questions)
+
+                // Launch coroutine to download sounds
+                GlobalScope.launch {
+                    downloadSoundsForQuestions(questions)
+                }
             } else {
                 Log.e(TAG, "Failed to fetch questions for mode: $mode")
-                questions = emptyList() // Ensure questions are cleared if fetch fails
+                questions = emptyList()
             }
         }
     }
@@ -77,6 +89,38 @@ internal class SoundGame(context: Context) : Game() {
             )
         }
     }
+    private suspend fun downloadSound(urlString: String): File? {
+        // Replace "rhythm" with "rhytm" in the URL
+        val modifiedUrlString = urlString.replace("rhythm", "rhytm")
+
+        return withContext(Dispatchers.IO) {  // Switch to background thread
+            try {
+                val url = URL(modifiedUrlString)  // Use the modified URL
+                val connection = url.openConnection()
+                val inputStream = connection.getInputStream()
+
+                // Extract original file name and extension
+                val originalFileName = modifiedUrlString.substringAfterLast("/")
+                val soundFile = File(context.cacheDir, originalFileName)
+
+                FileOutputStream(soundFile).use { outputStream ->
+                    inputStream.copyTo(outputStream)
+                }
+
+                Log.i(TAG, "Downloaded sound to: ${soundFile.absolutePath}")
+                soundFile
+            } catch (e: Exception) {
+                Log.e(TAG, "Error downloading sound from URL: $modifiedUrlString", e)
+                null
+            }
+        }
+    }
+
+
+    private fun isValidAudioFile(file: File): Boolean {
+        val validExtensions = listOf("mp3", "wav", "ogg")
+        return validExtensions.any { file.extension.equals(it, ignoreCase = true) }
+    }
 
     fun changeMode(newMode: GameModeName) {
         Log.i(TAG, "Changing mode to: $newMode")
@@ -84,13 +128,20 @@ internal class SoundGame(context: Context) : Game() {
         if (newMode != GameModeName.MENU) {
             fetchQuestionsForMode(newMode)
 
-            // Check if questions are loaded
             if (questions.isEmpty()) {
                 Log.e(TAG, "No questions available for mode: $newMode. Staying in the current mode.")
-                return // Exit if no questions available
+                return
+            }
+
+            // Launch a coroutine to download sounds
+            GlobalScope.launch {
+                val allSoundsDownloaded = downloadSoundsForQuestions(questions)
+                if (!allSoundsDownloaded) {
+                    Log.e(TAG, "Not all sounds are downloaded. Staying in the current mode.")
+                    return@launch
+                }
             }
         } else {
-            // Clear questions and related data when going back to the menu
             questions = emptyList()
             Log.i(TAG, "Cleared questions and related data.")
         }
@@ -107,6 +158,18 @@ internal class SoundGame(context: Context) : Game() {
         mScene.loadScene()
     }
 
+    private suspend fun downloadSoundsForQuestions(questions: List<Question>): Boolean {
+        var allDownloaded = true
+        for (question in questions) {
+            val url = question.url ?: continue
+            val soundFile = downloadSound(url)
+            if (soundFile == null || !isValidAudioFile(soundFile)) {
+                allDownloaded = false
+                Log.e(TAG, "Failed or invalid sound file from: $url")
+            }
+        }
+        return allDownloaded
+    }
 
     companion object {
         var CONNECTION_STATUS = ConnectionStatus.CONNECTING
