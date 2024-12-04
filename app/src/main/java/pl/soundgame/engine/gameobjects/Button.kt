@@ -24,10 +24,11 @@ class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) :
     private var storeClickAction: (() -> Unit)? = null
     private var wasClicked: Boolean = false
     private var wasSwaped = false
-
+    private var wasSetAlternate = false
     protected var alternateBitmap: Bitmap
     init{
         if(alternateBitmap == null){
+            wasSetAlternate = true
             this.alternateBitmap = darkenBitmap(bitmap)
         }else{
             this.alternateBitmap = alternateBitmap
@@ -119,9 +120,13 @@ class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) :
         return darkenedBitmap
     }
 
-    override fun swapSprite(newBitmap: Bitmap){
+    fun changeBaseBitmap(newBitmap: Bitmap){
         super.swapSprite(newBitmap)
         baseBitmap = newBitmap
         alternateBitmap = darkenBitmap(newBitmap)
+    }
+
+    override fun swapSprite(newBitmap: Bitmap){
+        super.swapSprite(newBitmap)
     }
 }

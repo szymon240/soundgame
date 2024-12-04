@@ -42,16 +42,16 @@ class InstrumentalMode(
         fun refreshQuestion() {
             // Create and load a new scene with the next question
             val q = questions[currentRound]
-            ans1.swapSprite(createTextTexture(text = "${q.ans1}",
+            ans1.changeBaseBitmap(createTextTexture(text = "${q.ans1}",
                 size = 90f,
                 background = loadTextureBitmap("button.png", context)))
-            ans2.swapSprite(createTextTexture(text = "${q.ans2}",
+            ans2.changeBaseBitmap(createTextTexture(text = "${q.ans2}",
                 size = 90f,
                 background = loadTextureBitmap("button.png", context)))
-            ans3.swapSprite(createTextTexture(text = "${q.ans3}",
+            ans3.changeBaseBitmap(createTextTexture(text = "${q.ans3}",
                 size = 90f,
                 background = loadTextureBitmap("button.png", context)))
-            ans4.swapSprite(createTextTexture(text = "${q.ans4}",
+            ans4.changeBaseBitmap(createTextTexture(text = "${q.ans4}",
                 size = 90f,
                 background = loadTextureBitmap("button.png", context)))
 
