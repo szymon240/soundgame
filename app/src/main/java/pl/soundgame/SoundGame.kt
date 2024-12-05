@@ -89,17 +89,14 @@ internal class SoundGame(context: Context) : Game() {
         }
     }
     private suspend fun downloadSound(urlString: String): File? {
-        // Replace "rhythm" with "rhytm" in the URL
-        val modifiedUrlString = urlString.replace("rhythm", "rhytm")
-
         return withContext(Dispatchers.IO) {  // Switch to background thread
             try {
-                val url = URL(modifiedUrlString)  // Use the modified URL
+                val url = URL(urlString)  // Use the modified URL
                 val connection = url.openConnection()
                 val inputStream = connection.getInputStream()
 
                 // Extract original file name and extension
-                val originalFileName = modifiedUrlString.substringAfterLast("/")
+                val originalFileName = urlString.substringAfterLast("/")
                 val soundFile = File(context.cacheDir, originalFileName)
 
                 FileOutputStream(soundFile).use { outputStream ->
@@ -109,7 +106,7 @@ internal class SoundGame(context: Context) : Game() {
                 Log.i(TAG, "Downloaded sound to: ${soundFile.absolutePath}")
                 soundFile
             } catch (e: Exception) {
-                Log.e(TAG, "Error downloading sound from URL: $modifiedUrlString", e)
+                Log.e(TAG, "Error downloading sound from URL: $urlString", e)
                 null
             }
         }

@@ -35,9 +35,10 @@ class RhythmMode(
     private var startTime = 0L
     private var lastPressTime = 0L
     private var accuracy = 0.0
-    private var roundNumber = 1
+    private var roundNumber = 0
     private val TAG = "RHYTHM MODE"
     private var lastRoundScore = 0.0f
+    private var playingPattern = false
 
     override fun returnGameModeScene(): Scene {
         Log.i(TAG, "Creating scene")
@@ -69,7 +70,7 @@ class RhythmMode(
                 id = "tapButton",
                 alternateBitmap = loadTextureBitmap("rhythm_mode/roundbutton_on.png", context)
             )
-            val roundText = TextBox(initialText = "$roundExampleText $roundNumber", id = "roundText")
+            val roundText = TextBox(initialText = "$roundExampleText ${roundNumber + 1}", id = "roundText")
 
             roundText.setOriginPosition(y = 0.8f, x = 0f)
             roundText.scale(0.5f)
@@ -82,12 +83,12 @@ class RhythmMode(
             var currentPatternIndex = 0
 
             tapButton.onClickAction {
-                if (unblocked) {
+                if (unblocked && !playingPattern) {
                     startTime = System.currentTimeMillis()
                     val pitch = if (currentPatternIndex < rhythmPattern.size) rhythmPattern[currentPatternIndex].second else 1.0f
                     currentPatternIndex++
 
-                    val questionUrl = questions.getOrNull(roundNumber - 1)?.url
+                    val questionUrl = questions.getOrNull(roundNumber)?.url
 
                     if (!questionUrl.isNullOrEmpty()) {
                         soundPlayer.playSoundWithPitch(pitch, questionUrl)
@@ -119,7 +120,7 @@ class RhythmMode(
                             scoreText.displayedText = "$scoreExampleText ${"%.2f".format(accuracy)}"
                             roundText.displayedText = "$roundExampleText $roundNumber"
                             popup.popupTextBox.size = 32f
-                            popup.popupTextBox.displayedText = "$roundExampleText ${roundNumber - 1}\n $scoreExampleText ${"%.2f".format(lastRoundScore)}/100"
+                            popup.popupTextBox.displayedText = "$roundExampleText ${roundNumber}\n $scoreExampleText ${"%.2f".format(lastRoundScore)}/100"
                             playButton.lock()
                             exitButton.lock()
                             tapButton.lock()
@@ -128,7 +129,7 @@ class RhythmMode(
                             scoreText.displayedText = "$final_score_text ${"%.2f".format(accuracy)}"
                             roundText.displayedText = "$finish_game_text"
                             popup.setPopupCallback { changeModeCallback(GameModeName.MENU) }
-                            popup.popupTextBox.displayedText = "$roundExampleText ${roundNumber - 1}\n $scoreExampleText ${"%.2f".format(lastRoundScore)}/${totalRounds * 100}"
+                            popup.popupTextBox.displayedText = "$roundExampleText ${roundNumber}\n $scoreExampleText ${"%.2f".format(lastRoundScore)}/${totalRounds * 100}"
                             playButton.lock()
                             exitButton.lock()
                             tapButton.lock()
@@ -153,9 +154,7 @@ class RhythmMode(
                     scoreText.displayedText = "$final_score_text ${"%.2f".format(accuracy)}"
                     roundText.displayedText = "$finish_game_text"
                     popup.setPopupCallback { changeModeCallback(GameModeName.MENU) }
-                    popup.popupTextBox.displayedText = "$final_score_text ${"%.2f".format(accuracy)} \"$roundExampleText ${roundNumber - 1}\\n $scoreExampleText ${
-                        "%.2f".format(lastRoundScore)
-                    }/${totalRounds * 100}"
+                    popup.popupTextBox.displayedText = "$final_score_text ${"%.2f".format(accuracy)}"
                     playButton.lock()
                     exitButton.lock()
                     tapButton.lock()
@@ -227,10 +226,12 @@ class RhythmMode(
         lastPressTime = 0L
         userPressIntervals.clear()
 
+        playingPattern = true
+
         var isFirst = true
         var delay = 0L
         val beatInterval = (60000L / (tempoBPM * 2))
-        val question = questions.getOrNull(roundNumber - 1)
+        val question = questions.getOrNull(roundNumber)
         var lastDelay = 0L
 
         for ((playSound, pitch) in rhythmPattern) {
@@ -263,6 +264,10 @@ class RhythmMode(
 
             delay += beatInterval
         }
+
+        handler.postDelayed( {
+            playingPattern = false
+        }, delay)
     }
 
     private fun checkAccuracy() {
