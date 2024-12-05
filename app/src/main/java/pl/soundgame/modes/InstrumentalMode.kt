@@ -2,6 +2,7 @@ package pl.soundgame.modes
 
 import android.content.Context
 import android.util.Log
+import pl.soundgame.R
 import pl.soundgame.SoundPlayer
 import pl.soundgame.connection.serializedclasses.Question
 import pl.soundgame.engine.Scene
@@ -34,7 +35,21 @@ class InstrumentalMode(
         return scene
     }
 
+    val scoreExampleText = context.getString(R.string.score_example_text)
+    val roundExampleText = context.getString(R.string.round_example_text)
+    val final_score_text = context.getString(R.string.final_score_text)
+    val finish_game_text = context.getString(R.string.finish_game_text)
+
     private fun setupScene(scene: Scene) {
+        var scoreText = TextBox(initialText = "$scoreExampleText $score", id = "scoreText")
+        var roundText = TextBox(initialText = "$roundExampleText $currentRound", id = "roundText")
+
+        roundText.setOriginPosition(y = 0.8f, x = 0f)
+        roundText.scale(0.5f)
+        scoreText.setOriginPosition(y = 0.7f, x = 0f)
+        scoreText.scale(0.5f)
+        scene.addGameObject(scoreText, roundText)
+
         lateinit var  ans1: Button; lateinit var ans2: Button; lateinit var ans3: Button; lateinit var ans4: Button
         var currentQuestion = questions.getOrNull(currentRound)
         val playMusicButton = Button(loadTextureBitmap("button.png", context), id = "playMusicButton")
@@ -98,7 +113,6 @@ class InstrumentalMode(
                 } else {
                     // End of game, show the final score and transition to the menu
                     println("Game Over! Your final score: $score")
-                    changeModeCallback(GameModeName.MENU) // Go back to menu
                 }
             }
         }
