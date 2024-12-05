@@ -11,4 +11,5 @@
     <string name="tutorial_rhythm">"Rozpocznij grę naciskając przycisk \"play\", następnie odtwórz rytm  poprzez wciskanie przycisku. "</string>
     <string name="tutorial_rhythm_answer">Zaczynamy!</string>
     <string name="rhythm_popup_answser">Okej!</string>
+    <string name="tutorial_instrumental">Rozpocznij grę naciskając \"start\", a następnie wybierz spośród 4 opcji to co uznajesz</string>
 </resources>

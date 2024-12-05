@@ -8,6 +8,7 @@ import pl.soundgame.connection.serializedclasses.Question
 import pl.soundgame.engine.Scene
 import pl.soundgame.engine.background.SampleBackground
 import pl.soundgame.engine.gameobjects.Button
+import pl.soundgame.engine.gameobjects.Popup
 import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.engine.loadTextureBitmap
 import pl.soundgame.engine.shapes.createTextTexture
@@ -43,7 +44,11 @@ class InstrumentalMode(
     private fun setupScene(scene: Scene) {
         var scoreText = TextBox(initialText = "$scoreExampleText $score", id = "scoreText")
         var roundText = TextBox(initialText = "$roundExampleText $currentRound", id = "roundText")
-
+        val popup = Popup(
+            loadTextureBitmap("popupBackgound.png", context),
+            context.getString(R.string.tutorial_instrumental),
+            popupAnswer = context.getString(R.string.tutorial_rhythm_answer)
+        )
         roundText.setOriginPosition(y = 0.8f, x = 0f)
         roundText.scale(0.5f)
         scoreText.setOriginPosition(y = 0.7f, x = 0f)
@@ -158,6 +163,4 @@ class InstrumentalMode(
         scene.addGameObject(exitButton, ans1, ans2, ans3, ans4)
         refreshQuestion()
     }
-
-
 }

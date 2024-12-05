@@ -10,4 +10,5 @@
     <string name="tutorial_rhythm">tutorial_rhythm</string>
     <string name="tutorial_rhythm_answer">tutorial_rhythm_answer</string>
     <string name="rhythm_popup_answser">ok</string>
+    <string name="tutorial_instrumental">tutorial_instrumental</string>
 </resources>

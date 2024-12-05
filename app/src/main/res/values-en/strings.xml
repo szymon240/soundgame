@@ -11,4 +11,5 @@
     <string name="tutorial_rhythm">Start game by pressing \"play\" button, then try to repeat pattern with by pressing red button.</string>
     <string name="tutorial_rhythm_answer">Let\'s begin!</string>
     <string name="rhythm_popup_answser">Okay!</string>
+    <string name="tutorial_instrumental">Start game by pressing \"play\" Then choose from four anwsers what did you hear.</string>
 </resources>
