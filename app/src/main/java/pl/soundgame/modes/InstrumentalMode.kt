@@ -104,6 +104,8 @@ class InstrumentalMode(
         }
 
         fun checkAnswer(selectedAnswer: Int) {
+            soundPlayer.stopAllSounds()
+
             val currentQuestion = questions.getOrNull(currentRound)
             if (currentQuestion != null) {
                 if (selectedAnswer == currentQuestion.correctAnswer) {
@@ -159,7 +161,10 @@ class InstrumentalMode(
         val exitButton = Button(loadTextureBitmap("button.png", context), id = "exitButton")
         exitButton.setOriginPosition(y = 0.85f, x = -0.65f)
         exitButton.scale(0.2f)
-        exitButton.onClickAction { changeModeCallback(GameModeName.MENU) }
+        exitButton.onClickAction {
+            soundPlayer.stopAllSounds()
+            changeModeCallback(GameModeName.MENU)
+        }
         scene.addGameObject(exitButton, ans1, ans2, ans3, ans4)
         refreshQuestion()
     }

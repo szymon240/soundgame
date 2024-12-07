@@ -118,4 +118,20 @@ class SoundPlayer(private val context: Context) {
     fun getSoundById(id: Int): Sound? {
         return soundList.find { it.id == id }
     }
+
+    fun stopAllSounds() {
+        mediaPlayer?.let {
+            try {
+                if (it.isPlaying) {
+                    it.stop()
+                }
+                it.reset() // Reset the MediaPlayer to its uninitialized state
+            } catch (e: IllegalStateException) {
+                println("MediaPlayer is not in a valid state to stop: ${e.message}")
+            } finally {
+                release() // Always release resources
+            }
+        }
+    }
+
 }
