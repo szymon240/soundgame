@@ -15,6 +15,21 @@ import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.engine.loadTextureBitmap
 import kotlin.random.Random
 
+
+/**
+ * RhythmMode Class
+ *
+ * Implements a rhythm-based game mode where players replicate rhythm patterns.
+ * Features include dynamic sound generation, user input tracking, accuracy measurement,
+ * and gameplay progression through multiple rounds.
+ *
+ * @param context - Android context for accessing resources and system services
+ * @param changeModeCallback - Callback to switch between game modes
+ * @param questions - List of questions with associated sound URLs
+ * @param totalRounds - Number of game rounds
+ *
+ * @author Szymon Szymankiewicz
+ */
 class RhythmMode(
     var context: Context,
     private val changeModeCallback: (GameModeName) -> Unit,
@@ -27,7 +42,6 @@ class RhythmMode(
     private val rhythmPattern = mutableListOf<Pair<Boolean, Float>>()
     private val rhythmIntervals = mutableListOf<Long>()
     private val userPressIntervals = mutableListOf<Long>()
-    private val tolerance = 100L
     private var tempoBPM = 60
     private var isFirst = true
     private var start = true
@@ -40,9 +54,13 @@ class RhythmMode(
     private var lastRoundScore = 0.0f
     private var playingPattern = false
 
+    /**
+     * Creates and initializes the game scene.
+     * Sets up buttons, text, and event handling for gameplay.
+     */
     override fun returnGameModeScene(): Scene {
         Log.i(TAG, "Creating scene")
-        logAllQuestions() // Logowanie pytań z URL
+        logAllQuestions()
 
         val scene = Scene()
         scene.setBackground {
@@ -60,8 +78,9 @@ class RhythmMode(
         val final_score_text = context.getString(R.string.final_score_text)
         val finish_game_text = context.getString(R.string.finish_game_text)
 
+        // Configure scene elements
         scene.setInitScene {
-            // Graphic elements
+            // Add buttons, text boxes, and event listeners
             val scoreText = TextBox(initialText = "$scoreExampleText $accuracy", id = "scoreText")
             val playButton = Button(loadTextureBitmap("rhythm_mode/play.png", context), id = "playButton")
             val exitButton = Button(loadTextureBitmap("button.png", context), id = "exitButton")
@@ -72,6 +91,7 @@ class RhythmMode(
             )
             val roundText = TextBox(initialText = "$roundExampleText ${roundNumber + 1}", id = "roundText")
 
+            // Set positions and scaling for UI elements
             roundText.setOriginPosition(y = 0.8f, x = 0f)
             roundText.scale(0.5f)
             scoreText.setOriginPosition(y = 0.5f, x = 0f)
@@ -82,6 +102,7 @@ class RhythmMode(
 
             var currentPatternIndex = 0
 
+            // Add interaction logic to buttons
             tapButton.onClickAction {
                 if (unblocked && !playingPattern) {
                     startTime = System.currentTimeMillis()
@@ -144,6 +165,7 @@ class RhythmMode(
             playButton.setOriginPosition(y = -0.1f, x = 0.0f)
             playButton.scale(0.25f)
             playButton.onClickAction {
+                // Starts rhythm pattern playback
                 if (roundNumber < totalRounds) {
                     generateRhythmPattern()
                     startTime = System.currentTimeMillis()
@@ -165,7 +187,10 @@ class RhythmMode(
 
             exitButton.setOriginPosition(y = 0.2f, x = -0.5f)
             exitButton.scale(0.25f)
-            exitButton.onClickAction { changeModeCallback(GameModeName.MENU) }
+            exitButton.onClickAction {
+                // Exits the game mode
+                changeModeCallback(GameModeName.MENU)
+            }
             scene.addGameObject(exitButton)
 
             scene.addGameObject(popup)
@@ -185,6 +210,9 @@ class RhythmMode(
         return scene
     }
 
+    /**
+     * Logs all questions with their details.
+     */
     private fun logAllQuestions() {
         Log.i(TAG, "Logging all questions with full details:")
         for ((index, question) in questions.withIndex()) {
@@ -204,6 +232,9 @@ class RhythmMode(
     }
 
 
+    /**
+     * Generates a random rhythm pattern for the current round.
+     */
     fun generateRhythmPattern() {
         rhythmPattern.clear()
         rhythmIntervals.clear()
@@ -221,6 +252,9 @@ class RhythmMode(
         Log.i(TAG, "Generated Rhythm Pattern: $rhythmPattern")
     }
 
+    /**
+     * Plays the generated rhythm pattern and schedules user input.
+     */
     fun playRhythmPattern() {
         startTime = System.currentTimeMillis()
         lastPressTime = 0L
@@ -270,6 +304,9 @@ class RhythmMode(
         }, delay)
     }
 
+    /**
+     * Compares user input with the rhythm pattern to calculate accuracy.
+     */
     private fun checkAccuracy() {
         Log.i(TAG, "Checking accuracy")
         Log.i(TAG, "Generated Intervals: $rhythmIntervals")

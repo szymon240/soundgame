@@ -21,6 +21,15 @@ import java.io.FileOutputStream
 import java.net.URL
 import kotlinx.coroutines.GlobalScope
 
+/**
+ * SoundGame class extends the Game class and serves as the central controller for the game.
+ * It manages the game modes, handles fetching questions, downloading associated sounds,
+ * and manages the game scenes for different game modes.
+ *
+ * @param context The context used for application resources and initialization.
+ *
+ * @authors Adam Czyżak & Szymon Szymankiewicz
+ */
 internal class SoundGame(context: Context) : Game() {
     override var mScene: Scene
     private var gameMode: GameMode
@@ -42,6 +51,10 @@ internal class SoundGame(context: Context) : Game() {
         checkServerStatus()
     }
 
+    /**
+     * Checks the connection status of the server by requesting its status.
+     * It updates the connection status based on the server's response.
+     */
     private fun checkServerStatus() {
         commManager.getServerStatus { status ->
             if (status != null) {
@@ -54,13 +67,17 @@ internal class SoundGame(context: Context) : Game() {
         }
     }
 
+    /**
+     * Fetches questions from the server for the specified game mode and number of rounds.
+     * Initiates the sound download for the fetched questions.
+     *
+     * @param mode The game mode for which questions are to be fetched.
+     */
     private fun fetchQuestionsForMode(mode: GameModeName) {
         commManager.getQuestions(mode, rounds) { response ->
             if (response != null) {
                 questions = response.questions ?: emptyList()
 
-
-                // Launch coroutine to download sounds
                 GlobalScope.launch {
                     downloadSoundsForQuestions(questions)
                 }
@@ -71,31 +88,20 @@ internal class SoundGame(context: Context) : Game() {
         }
     }
 
-    private fun logAllQuestions(questions: List<Question>) {
-        Log.i(TAG, "Logging all fetched questions:")
-        for ((index, question) in questions.withIndex()) {
-            Log.i(
-                TAG, """
-                |Question ${index}:
-                |  Question Text: ${question.question}
-                |  Correct Answer: ${question.correctAnswer}
-                |  Answer 1: ${question.ans1}
-                |  Answer 2: ${question.ans2}
-                |  Answer 3: ${question.ans3}
-                |  Answer 4: ${question.ans4}
-                |  URL: ${question.url}
-                """.trimMargin()
-            )
-        }
-    }
+    /**
+     * Downloads a sound file from the provided URL.
+     * The sound file is saved to the app's cache directory.
+     *
+     * @param urlString The URL of the sound file to be downloaded.
+     * @return The downloaded sound file, or null if the download failed.
+     */
     private suspend fun downloadSound(urlString: String): File? {
-        return withContext(Dispatchers.IO) {  // Switch to background thread
+        return withContext(Dispatchers.IO) {
             try {
-                val url = URL(urlString)  // Use the modified URL
+                val url = URL(urlString)
                 val connection = url.openConnection()
                 val inputStream = connection.getInputStream()
 
-                // Extract original file name and extension
                 val originalFileName = urlString.substringAfterLast("/")
                 val soundFile = File(context.cacheDir, originalFileName)
 
@@ -112,12 +118,23 @@ internal class SoundGame(context: Context) : Game() {
         }
     }
 
-
+    /**
+     * Checks if the downloaded file is a valid audio file based on its extension.
+     *
+     * @param file The file to check.
+     * @return True if the file has a valid audio extension, false otherwise.
+     */
     private fun isValidAudioFile(file: File): Boolean {
         val validExtensions = listOf("mp3", "wav", "ogg")
         return validExtensions.any { file.extension.equals(it, ignoreCase = true) }
     }
 
+    /**
+     * Changes the current game mode. It initializes the new mode, fetches questions, and
+     * downloads the necessary sound files.
+     *
+     * @param newMode The new game mode to switch to.
+     */
     fun changeMode(newMode: GameModeName) {
         Log.i(TAG, "Changing mode to: $newMode")
 
@@ -154,6 +171,13 @@ internal class SoundGame(context: Context) : Game() {
         mScene.loadScene()
     }
 
+    /**
+     * Downloads sound files for each question in the list.
+     * Returns true if all sounds are downloaded successfully, false if any download fails.
+     *
+     * @param questions The list of questions for which sounds need to be downloaded.
+     * @return True if all sounds are downloaded, false if any download fails.
+     */
     private suspend fun downloadSoundsForQuestions(questions: List<Question>): Boolean {
         var allDownloaded = true
         for (question in questions) {

@@ -4,6 +4,14 @@ import android.content.Context
 import android.media.MediaPlayer
 import android.media.PlaybackParams
 
+/**
+ * A utility class for managing sound playback in the application.
+ * Supports playback from both local resources and remote URLs, as well as pitch adjustments.
+ *
+ * @param context The context used to access app resources and system services.
+ *
+ * @author Szymon Szymankiewicz
+ */
 class SoundPlayer(private val context: Context) {
 
     internal var mediaPlayer: MediaPlayer? = null
@@ -18,15 +26,12 @@ class SoundPlayer(private val context: Context) {
         Sound(id = 5, name = "Beat 3", resId = R.raw.beat3)
     )
 
-    fun initialize(mediaResId: Int) {
-        mediaPlayer = MediaPlayer.create(context, mediaResId)
-        currentSoundResId = mediaResId
-        mediaPlayer?.setOnPreparedListener {
-            println("Hot to go!")
-        }
-    }
-
-    // Creation of media player and setting a new sound
+    /**
+     * Changes the current sound and reinitializes the MediaPlayer.
+     * Releases the previous MediaPlayer instance if necessary.
+     *
+     * @param mediaResId Resource ID of the new sound to play.
+     */
     fun setSound(mediaResId: Int) {
         if (mediaResId != currentSoundResId) {
             mediaPlayer?.release()
@@ -39,56 +44,46 @@ class SoundPlayer(private val context: Context) {
         }
     }
 
-    fun play() {
-        if (!isPlaying()) {
-            mediaPlayer?.seekTo(pausedPosition)
-            mediaPlayer?.start()
-        }
-    }
-
-    fun pause() {
-        if (isPlaying()) {
-            pausedPosition = mediaPlayer?.currentPosition ?: 0
-            mediaPlayer?.pause()
-        }
-    }
-
-    fun resume() {
-        mediaPlayer?.let {
-            if (!isPlaying()) {
-                it.seekTo(pausedPosition)
-                it.start()
-            }
-        }
-    }
-
-    //Deletion of current sound from mediaPlayer
+    /**
+     * Releases the MediaPlayer resources and sets it to null.
+     */
     fun release() {
         mediaPlayer?.release()
         mediaPlayer = null
     }
 
+    /**
+     * Streams and plays audio from a given URL.
+     *
+     * @param url The URL of the audio to stream.
+     */
     fun playFromUrl(url: String) {
         mediaPlayer?.release()
         mediaPlayer = null
 
         try {
             mediaPlayer = MediaPlayer().apply {
-                setDataSource(url) // Ustawienie źródła strumienia
+                setDataSource(url)
                 setOnPreparedListener {
-                    start() // Rozpocznij odtwarzanie po przygotowaniu
+                    start()
                 }
                 setOnErrorListener { _, what, extra ->
                     println("Error occurred: what=$what, extra=$extra")
-                    false // Zwrot false oznacza, że MediaPlayer nie obsłuży błędu samodzielnie
+                    false
                 }
-                prepareAsync() // Przygotowanie odtwarzania w tle
+                prepareAsync()
             }
         } catch (e: Exception) {
             println("Error initializing MediaPlayer: ${e.message}")
         }
     }
 
+    /**
+     * Plays a sound with a specific pitch. Supports local resources and URLs.
+     *
+     * @param pitch The pitch to apply during playback.
+     * @param source The sound source, either a resource ID (Int) or a URL (String).
+     */
     fun playSoundWithPitch(pitch: Float, source: Any) {
         if (source is String) {
             playFromUrl(source)
@@ -98,7 +93,7 @@ class SoundPlayer(private val context: Context) {
                 mediaPlayer?.start()
             }
         } else if (source is Int) {
-            setSound(source) // Reuses existing method to initialize MediaPlayer for local resource
+            setSound(source)
             mediaPlayer?.let {
                 val playbackParams = PlaybackParams().apply { this.pitch = pitch }
                 it.playbackParams = playbackParams
@@ -110,28 +105,89 @@ class SoundPlayer(private val context: Context) {
     }
 
 
-    //Check if the media player is currently playing
+    /**
+     * Checks if the MediaPlayer is currently playing audio.
+     *
+     * @return True if playing, false otherwise.
+     */
     fun isPlaying(): Boolean {
         return mediaPlayer?.isPlaying ?: false
     }
 
+    /**
+     * Finds a sound in the predefined list by its ID.
+     *
+     * @param id The ID of the sound to retrieve.
+     * @return The matching Sound object, or null if not found.
+     */
     fun getSoundById(id: Int): Sound? {
         return soundList.find { it.id == id }
     }
 
+    /**
+     * Stops any currently playing sound and resets the MediaPlayer.
+     */
     fun stopAllSounds() {
         mediaPlayer?.let {
             try {
                 if (it.isPlaying) {
                     it.stop()
                 }
-                it.reset() // Reset the MediaPlayer to its uninitialized state
+                it.reset()
             } catch (e: IllegalStateException) {
                 println("MediaPlayer is not in a valid state to stop: ${e.message}")
             } finally {
-                release() // Always release resources
+                release()
             }
         }
     }
 
+    /**
+     * UNUSED FUNCTIONS (FOR FUTURE)
+     */
+
+    /**
+     * Initializes the MediaPlayer with a specific resource ID.
+     *
+     * @param mediaResId Resource ID of the sound to initialize.
+     */
+    fun initialize(mediaResId: Int) {
+        mediaPlayer = MediaPlayer.create(context, mediaResId)
+        currentSoundResId = mediaResId
+        mediaPlayer?.setOnPreparedListener {
+            println("Hot to go!")
+        }
+    }
+
+    /**
+     * Starts sound from the current position.
+     */
+    fun play() {
+        if (!isPlaying()) {
+            mediaPlayer?.seekTo(pausedPosition)
+            mediaPlayer?.start()
+        }
+    }
+
+    /**
+     * Pauses playback and stores the current position.
+     */
+    fun pause() {
+        if (isPlaying()) {
+            pausedPosition = mediaPlayer?.currentPosition ?: 0
+            mediaPlayer?.pause()
+        }
+    }
+
+    /**
+     * Resumes playback from the paused position.
+     */
+    fun resume() {
+        mediaPlayer?.let {
+            if (!isPlaying()) {
+                it.seekTo(pausedPosition)
+                it.start()
+            }
+        }
+    }
 }
