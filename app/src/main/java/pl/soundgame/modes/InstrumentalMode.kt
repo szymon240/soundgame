@@ -1,6 +1,7 @@
 package pl.soundgame.modes
 
 import android.content.Context
+import androidx.appcompat.view.menu.ActionMenuItemView.PopupCallback
 import pl.soundgame.R
 import pl.soundgame.SoundPlayer
 import pl.soundgame.connection.serializedclasses.Question
@@ -8,6 +9,7 @@ import pl.soundgame.engine.Scene
 import pl.soundgame.engine.background.SampleBackground
 import pl.soundgame.engine.gameobjects.Button
 import pl.soundgame.engine.gameobjects.Popup
+import pl.soundgame.engine.gameobjects.PopupDouble
 import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.engine.loadTextureBitmap
 import pl.soundgame.engine.shapes.createTextTexture
@@ -30,10 +32,10 @@ class InstrumentalMode(
     private var questions: List<Question>,
     private val totalRounds: Int
 ) : GameMode() {
-
     private val soundPlayer: SoundPlayer = SoundPlayer(context)
     private var currentRound = 0
     private var score = 0
+    private var lastScore = 0
 
     /**
      * Creates and returns the game mode's scene.
@@ -72,19 +74,20 @@ class InstrumentalMode(
             popupAnswer = context.getString(R.string.tutorial_rhythm_answer)
         )
 
-        roundText.setOriginPosition(y = 0.8f, x = 0f)
-        roundText.scale(0.5f)
-        scoreText.setOriginPosition(y = 0.7f, x = 0f)
-        scoreText.scale(0.5f)
-        scene.addGameObject(scoreText, roundText)
-
+        val exitPopup = PopupDouble(
+            loadTextureBitmap("popupBackgound.png", context),
+            context.getString(R.string.tutorial_instrumental),
+            popupAnswer1 = context.getString(R.string.tutorial_rhythm_answer),
+            popupAnswer2 = context.getString(R.string.tutorial_rhythm_answer)
+        )
 
         lateinit var ans1: Button
         lateinit var ans2: Button
         lateinit var ans3: Button
         lateinit var ans4: Button
 
-        val playMusicButton = Button(loadTextureBitmap("button.png", context), id = "playMusicButton")
+        val exitButton = Button(loadTextureBitmap("back.png", context), id = "exitButton")
+        val playMusicButton = Button(loadTextureBitmap("rhythm_mode/play.png", context), id = "playMusicButton")
 
         /**
          * Loads the questions for the Instrumental mode.
@@ -130,11 +133,38 @@ class InstrumentalMode(
             if (currentQuestion != null) {
                 if (selectedAnswer == currentQuestion.correctAnswer) {
                     score++
+                    lastScore = 1
                 }
+                else {
+                    lastScore = 0
+                }
+
+                playMusicButton.lock(); exitButton.lock()
+                ans1.lock(); ans2.lock(); ans3.lock(); ans4.lock()
+
+
                 currentRound++
                 if (currentRound < totalRounds) {
+                    popup.answerButton.displayedText = context.getString(R.string.next_instrumental)
+                    roundText.displayedText = "$roundExampleText $currentRound"
+                    scoreText.displayedText = "$scoreExampleText $score"
+                    val text = if (lastScore == 1 )
+                        context.getString(R.string.correct_instrumental)
+                    else
+                        "${context.getString(R.string.incorrect_instrumental)} ${getCorrectAnswer(currentQuestion)}"
+                    popup.popupTextBox.displayedText = "$text  Score: $score/$totalRounds"
+                    popup.showPopup()
                     refreshQuestion()
                 } else {
+                    popup.answerButton.displayedText = context.getString(R.string.last_instrumental)
+                    val text = if (lastScore == 1 )
+                        context.getString(R.string.correct_instrumental)
+                    else
+                        "${context.getString(R.string.correct_instrumental)} ${getCorrectAnswer(currentQuestion)}"
+                    popup.popupTextBox.displayedText = "$text  Score: $score/$totalRounds"
+                    popup.setPopupCallback { changeModeCallback(GameModeName.MENU) }
+                    popup.showPopup()
+
                     println("Game Over! Your final score: $score")
                 }
             }
@@ -156,12 +186,20 @@ class InstrumentalMode(
             return button
         }
 
+        playMusicButton.setOriginPosition(y = 0.2f, x = 0.0f)
+        playMusicButton.scale(0.25f)
+
+        roundText.setOriginPosition(y = 0.8f, x = 0f)
+        roundText.scale(0.5f)
+        scoreText.setOriginPosition(y = 0.7f, x = 0f)
+        scoreText.scale(0.5f)
+        scene.addGameObject(scoreText, roundText)
+
         ans1 = createAnswerButton(scene, 1, x = -0.5f, y = -0.2f)
         ans2 = createAnswerButton(scene, 2, x = 0.5f, y = -0.2f)
         ans3 = createAnswerButton(scene, 3, x = -0.5f, y = -0.6f)
         ans4 = createAnswerButton(scene, 4, x = 0.5f, y = -0.6f)
 
-        val exitButton = Button(loadTextureBitmap("button.png", context), id = "exitButton")
         exitButton.setOriginPosition(y = 0.85f, x = -0.65f)
         exitButton.scale(0.2f)
         exitButton.onClickAction {
@@ -169,7 +207,19 @@ class InstrumentalMode(
             changeModeCallback(GameModeName.MENU)
         }
 
-        scene.addGameObject(playMusicButton, exitButton, ans1, ans2, ans3, ans4)
         refreshQuestion()
+
+        popup.setPopupCallback {
+            playMusicButton.unlock(); exitButton.unlock()
+            ans1.unlock(); ans2.unlock(); ans3.unlock(); ans4.unlock()
+        }
+        popup.popupTextBox.size = 26f
+
+        playMusicButton.lock(); exitButton.lock()
+        ans1.lock(); ans2.lock(); ans3.lock(); ans4.lock()
+        popup.showPopup()
+
+        scene.addGameObject(playMusicButton, exitButton, ans1, ans2, ans3, ans4, popup)
+
     }
 }

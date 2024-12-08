@@ -12,4 +12,8 @@
     <string name="tutorial_rhythm_answer">Let\'s begin!</string>
     <string name="rhythm_popup_answser">Okay!</string>
     <string name="tutorial_instrumental">Start game by pressing \"play\" Then choose from four anwsers what did you hear.</string>
+    <string name="correct_instrumental">Correct!</string>
+    <string name="incorrect_instrumental">"Incorrect! The answer was: "</string>
+    <string name="next_instrumental">Next!</string>
+    <string name="last_instrumental">Back to the menu</string>
 </resources>

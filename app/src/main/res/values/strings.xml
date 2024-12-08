@@ -11,4 +11,8 @@
     <string name="tutorial_rhythm_answer">tutorial_rhythm_answer</string>
     <string name="rhythm_popup_answser">ok</string>
     <string name="tutorial_instrumental">tutorial_instrumental</string>
+    <string name="correct_instrumental">Correct!</string>
+    <string name="incorrect_instrumental">Incorrect</string>
+    <string name="next_instrumental">next</string>
+    <string name="last_instrumental">Back to the menu</string>
 </resources>

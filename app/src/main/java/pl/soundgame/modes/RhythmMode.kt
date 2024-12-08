@@ -75,15 +75,15 @@ class RhythmMode(
 
         val scoreExampleText = context.getString(R.string.score_example_text)
         val roundExampleText = context.getString(R.string.round_example_text)
-        val final_score_text = context.getString(R.string.final_score_text)
-        val finish_game_text = context.getString(R.string.finish_game_text)
+        val finalScoreText = context.getString(R.string.final_score_text)
+        val finishGameText = context.getString(R.string.finish_game_text)
 
         // Configure scene elements
         scene.setInitScene {
             // Add buttons, text boxes, and event listeners
             val scoreText = TextBox(initialText = "$scoreExampleText $accuracy", id = "scoreText")
             val playButton = Button(loadTextureBitmap("rhythm_mode/play.png", context), id = "playButton")
-            val exitButton = Button(loadTextureBitmap("button.png", context), id = "exitButton")
+            val exitButton = Button(loadTextureBitmap("back.png", context), id = "exitButton")
             val tapButton = Button(
                 loadTextureBitmap("rhythm_mode/roundbutton_off.png", context),
                 id = "tapButton",
@@ -147,8 +147,8 @@ class RhythmMode(
                             tapButton.lock()
                             popup.showPopup()
                         } else {
-                            scoreText.displayedText = "$final_score_text ${"%.2f".format(accuracy)}"
-                            roundText.displayedText = "$finish_game_text"
+                            scoreText.displayedText = "$finalScoreText ${"%.2f".format(accuracy)}"
+                            roundText.displayedText = "$finishGameText"
                             popup.setPopupCallback { changeModeCallback(GameModeName.MENU) }
                             popup.popupTextBox.displayedText = "$roundExampleText ${roundNumber}\n $scoreExampleText ${"%.2f".format(lastRoundScore)}/${totalRounds * 100}"
                             playButton.lock()
@@ -173,10 +173,10 @@ class RhythmMode(
                     unblocked = true
                     start = false
                 } else {
-                    scoreText.displayedText = "$final_score_text ${"%.2f".format(accuracy)}"
-                    roundText.displayedText = "$finish_game_text"
+                    scoreText.displayedText = "$finalScoreText ${"%.2f".format(accuracy)}"
+                    roundText.displayedText = "$finishGameText"
                     popup.setPopupCallback { changeModeCallback(GameModeName.MENU) }
-                    popup.popupTextBox.displayedText = "$final_score_text ${"%.2f".format(accuracy)}"
+                    popup.popupTextBox.displayedText = "$finalScoreText ${"%.2f".format(accuracy)}"
                     playButton.lock()
                     exitButton.lock()
                     tapButton.lock()

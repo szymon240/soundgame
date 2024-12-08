@@ -19,7 +19,10 @@ import pl.soundgame.engine.shapes.createTextTexture
  * @param size Text font size in points
  * @param color Color of text font
  * @param background Bitmap image to be displayed behind the text, if null the background will be transparent but still clickable
+ *
+ * @author Adam Czyżak
  */
+
 class TextBox(
     id: String = "",
     initialText: String = "",

@@ -13,15 +13,16 @@ import pl.soundgame.engine.shapes.Color
  * @param background  background bitmap image for given popup
  * @param popupText  text that will appear in the top of popup - required parameter
  * @param popupAnswer  text on a button to skip such popup
- * @param id identification for one popup for using in collections
+ * @param id identification for one popup for using in
  *
  * @author Adam Czyżak
  */
-class Popup(background: Bitmap, popupText: String, popupAnswer: String = "", val duration: Int = -1, id: String = "") : GameObject(bitmap = background , id= id) {
+class PopupDouble(background: Bitmap, popupText: String, popupAnswer1: String = "", popupAnswer2: String = "", val duration: Int = -1, id: String = "") : GameObject(bitmap = background , id= id) {
     private val timedPopup: Boolean
     private var popupOn: Boolean = false
     private var currentDuration = duration
-    private var popupCallback: (() -> Unit)? = null
+    private var popupCallback1: (() -> Unit)? = null
+    private var popupCallback2: (() -> Unit)? = null
     private var framesOn: Int = 0
 
     /**
@@ -34,24 +35,37 @@ class Popup(background: Bitmap, popupText: String, popupAnswer: String = "", val
         }
 
     /**
-     * Text on the bottom of popup - can be clicked to dismiss a popup
+     * First text on the bottom of popup - can be clicked to dismiss a popup
      */
-    var popupAnswer: String = popupAnswer
+    var popupAnswer1: String = popupAnswer1
+        get() = field
+        set(value){
+            field = value
+        }
+    /**
+     * Second text on the bottom of popup - can be clicked to dismiss a popup
+     */
+    var popupAnswer2: String = popupAnswer2
         get() = field
         set(value){
             field = value
         }
 
     var popupTextBox: TextBox
-    var answerButton: TextBox
+    var answerButton1: TextBox
+    var answerButton2: TextBox
 
     /**
      * Sets function that will be called after popup disappears
      *
      * @param func Function to be called after popup disappears
      */
-    fun setPopupCallback(func: ()->Unit){
-        popupCallback = func
+    fun setPopupCallback1(func: ()->Unit){
+        popupCallback1 = func
+    }
+
+    fun setPopupCallback2(func: ()->Unit){
+        popupCallback2 = func
     }
     init{
         if(duration > 0) timedPopup = true
@@ -63,11 +77,13 @@ class Popup(background: Bitmap, popupText: String, popupAnswer: String = "", val
         popupTextBox.setOriginPosition(y = 0.1f)
         popupTextBox.scale(0.5f)
 
-        answerButton = TextBox(id = "${id} - Answer", size = 32f, initialText = popupAnswer, color = Color.GREEN)
-        answerButton.setOriginPosition(y = -0.2f)
-        answerButton.scale(0.5f)
+        answerButton1 = TextBox(id = "${id} - Answer", size = 32f, initialText = popupAnswer1, color = Color.GREEN)
+        answerButton1.setOriginPosition(y = -0.15f)
+        answerButton1.scale(0.5f)
 
-
+        answerButton2 = TextBox(id = "${id} - Answer", size = 32f, initialText = popupAnswer2, color = Color.RED)
+        answerButton2.setOriginPosition(y = -0.3f)
+        answerButton2.scale(0.5f)
     }
 
     /**
@@ -80,14 +96,15 @@ class Popup(background: Bitmap, popupText: String, popupAnswer: String = "", val
         if(currentDuration > 0){
             currentDuration--
             if (currentDuration <1) {
-                popupOn = false; popupCallback?.let { it() }
+                popupOn = false; popupCallback1?.let { it() }
             }
         }
         if(popupOn) {
             framesOn++
             super.draw(shaderProgram, vPMatrix)
             popupTextBox.draw(shaderProgram, vPMatrix)
-            answerButton.draw(shaderProgram, vPMatrix)
+            answerButton1.draw(shaderProgram, vPMatrix)
+            answerButton2.draw(shaderProgram, vPMatrix)
         }
     }
 
@@ -100,14 +117,21 @@ class Popup(background: Bitmap, popupText: String, popupAnswer: String = "", val
             currentDuration = duration; return
         }
 
-        answerButton.onClickAction {
+        answerButton1.onClickAction {
             println("Click detected")
             popupOn = false;
             framesOn = 0
-            popupCallback?.let { it() };
-            answerButton.removeClickAction()
+            popupCallback1?.let { it() };
+            answerButton1.removeClickAction()
         }
 
+        answerButton2.onClickAction {
+            println("Click detected")
+            popupOn = false;
+            framesOn = 0
+            popupCallback2?.let { it() };
+            answerButton2.removeClickAction()
+        }
     }
 
     /**
@@ -122,13 +146,17 @@ class Popup(background: Bitmap, popupText: String, popupAnswer: String = "", val
     override fun click(x: Float, y: Float): Boolean {
         if (!popupOn || framesOn < 30 ) return false
 
-        return answerButton.click(x, y)
+        return answerButton1.click(x, y) || answerButton2.click(x, y)
     }
     private fun updatePopupText(){
         popupTextBox.displayedText = popupText
     }
 
-    private fun updatePopupAnwser(){
-        answerButton.displayedText = popupAnswer
+    private fun updatePopupAnwser1(){
+        answerButton1.displayedText = popupAnswer1
+    }
+
+    private fun updatePopupAnwser2(){
+        answerButton2.displayedText = popupAnswer2
     }
 }
