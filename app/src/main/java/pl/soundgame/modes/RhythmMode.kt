@@ -35,7 +35,8 @@ class RhythmMode(
     var context: Context,
     private val changeModeCallback: (GameModeName) -> Unit,
     private val questions: List<Question>,
-    private val totalRounds: Int
+    private val totalRounds: Int,
+    private val onCompleteCallback: (Double) -> Unit
 ) : GameMode() {
 
     private val soundPlayer: SoundPlayer = SoundPlayer(context)
@@ -145,6 +146,9 @@ class RhythmMode(
                         userPressIntervals.clear()
                         if (roundNumber < totalRounds) {
                             roundNumber++
+                            if (roundNumber >= totalRounds) {
+                                sendScore()
+                            }
                             scoreText.displayedText = "$scoreExampleText ${"%.2f".format(accuracy)}"
                             roundText.displayedText = "$roundExampleText $roundNumber"
                             popup.popupTextBox.size = 32f
@@ -349,5 +353,9 @@ class RhythmMode(
         lastRoundScore = (score / (rhythmIntervals.size - 1))
         accuracy += lastRoundScore
         Log.i(TAG, "Score: ${"%.2f".format(accuracy)}")
+    }
+
+    private fun sendScore() {
+        onCompleteCallback(accuracy)
     }
 }

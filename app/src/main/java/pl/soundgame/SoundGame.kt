@@ -20,6 +20,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
 import kotlinx.coroutines.GlobalScope
+import pl.soundgame.connection.serializedclasses.ScoreRequest
+import pl.soundgame.connection.serializedclasses.ScoreResponse
 
 /**
  * SoundGame class extends the Game class and serves as the central controller for the game.
@@ -40,6 +42,7 @@ internal class SoundGame(context: Context) : Game() {
     private var rounds = 3
     private val commManager = CommunicationManager()
     private var questions: List<Question> = emptyList()
+    private var score = 0.0
 
     init {
         this.context = context
@@ -129,6 +132,33 @@ internal class SoundGame(context: Context) : Game() {
         return validExtensions.any { file.extension.equals(it, ignoreCase = true) }
     }
 
+    private fun onRhythmModeComplete(finalAccuracy: Double) {
+        score = finalAccuracy
+        Log.i(TAG, "Final accuracy after all rounds: $score")
+
+        sendScore(gameModeName, score)
+    }
+
+    private fun sendScore(mode: GameModeName, score: Double) {
+        val roundedScore = String.format("%.2f", score)
+        val formattedScore = roundedScore.replace(",", ".").toDouble()
+        val username = "player"
+
+        commManager.postScore(mode, username, formattedScore) { response ->
+            if (response != null) {
+                val status = response.status
+                if (status == "ok") {
+                    Log.i(TAG, "Score successfully posted to the server!")
+                } else {
+                    Log.e(TAG, "Failed to post score to the server. Status: $status")
+                }
+            } else {
+                Log.e(TAG, "Failed to post score to the server.")
+            }
+        }
+
+    }
+
     /**
      * Changes the current game mode. It initializes the new mode, fetches questions, and
      * downloads the necessary sound files.
@@ -161,8 +191,8 @@ internal class SoundGame(context: Context) : Game() {
 
         gameMode = when (newMode) {
             GameModeName.MENU -> Menu(this.context, changeModeCallback)
-            GameModeName.RHYTHM -> RhythmMode(this.context, changeModeCallback, questions, rounds)
-            GameModeName.INSTRUMENTAL -> InstrumentalMode(this.context, changeModeCallback, questions, rounds)
+            GameModeName.RHYTHM -> RhythmMode(this.context, changeModeCallback, questions, rounds, ::onRhythmModeComplete)
+            GameModeName.INSTRUMENTAL -> InstrumentalMode(this.context, changeModeCallback, questions, rounds, ::onRhythmModeComplete)
             GameModeName.SETTINGS -> Settings(this.context, changeModeCallback)
         }
 

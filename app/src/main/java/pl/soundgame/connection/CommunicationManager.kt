@@ -9,6 +9,8 @@ import kotlinx.coroutines.withContext
 import pl.soundgame.connection.serializedclasses.Question
 import pl.soundgame.connection.serializedclasses.Request
 import pl.soundgame.connection.serializedclasses.Response
+import pl.soundgame.connection.serializedclasses.ScoreRequest
+import pl.soundgame.connection.serializedclasses.ScoreResponse
 import pl.soundgame.connection.serializedclasses.StatusResponse
 import pl.soundgame.modes.GameModeName
 import java.io.BufferedReader
@@ -85,10 +87,60 @@ class CommunicationManager {
         }
     }
 
+    fun postScore(
+        mode: GameModeName,
+        username: String,
+        score: Double,
+        onResult: (ScoreResponse?) -> Unit
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val url = URL(SCORE_URL)
+            val request = ScoreRequest(mode = mode.name.lowercase(), username = username, score = score)
+
+            try {
+                val requestBody = parser.toJson(request)
+                Log.i(TAG, "Request Body: $requestBody")
+
+                with(url.openConnection() as HttpURLConnection) {
+                    requestMethod = "POST"
+                    doOutput = true
+                    setRequestProperty("Content-Type", "application/json")
+
+                    outputStream.use { os ->
+                        os.write(requestBody.toByteArray())
+                        os.flush()
+                    }
+
+                    val responseCode = responseCode
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        val jsonResponse = inputStream.bufferedReader().use { it.readText() }
+                        val response = parser.fromJson(jsonResponse, ScoreResponse::class.java)
+
+                        withContext(Dispatchers.Main) {
+                            onResult(response)
+                        }
+                    } else {
+                        Log.e(TAG, "HTTP error: $responseCode")
+                        withContext(Dispatchers.Main) {
+                            onResult(null)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in postScore: ${e.message}", e)
+                withContext(Dispatchers.Main) {
+                    onResult(null)
+                }
+            }
+        }
+    }
+
+
     companion object URLs {
         val STATUS_URL = "https://springboot-kotlin-app-84877666332.europe-west1.run.app/api/status"
         val QUESTIONS_URL =
             "https://springboot-kotlin-app-84877666332.europe-west1.run.app/api/audio/questions"
+        val SCORE_URL = "https://springboot-kotlin-app-84877666332.europe-west1.run.app/api/scores/add"
         val AUDIO_URL = "https://springboot-kotlin-app-84877666332.europe-west1.run.app"
     }
  }

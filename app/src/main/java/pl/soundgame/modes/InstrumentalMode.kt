@@ -30,7 +30,8 @@ class InstrumentalMode(
     var context: Context,
     private val changeModeCallback: (GameModeName) -> Unit,
     private var questions: List<Question>,
-    private val totalRounds: Int
+    private val totalRounds: Int,
+    private val onCompleteCallback: (Double) -> Unit
 ) : GameMode() {
     private val soundPlayer: SoundPlayer = SoundPlayer(context)
     private var currentRound = 0
@@ -156,6 +157,7 @@ class InstrumentalMode(
                     popup.showPopup()
                     refreshQuestion()
                 } else {
+                    sendScore()
                     popup.answerButton.displayedText = context.getString(R.string.last_instrumental)
                     val text = if (lastScore == 1 )
                         context.getString(R.string.correct_instrumental)
@@ -234,5 +236,9 @@ class InstrumentalMode(
 
         scene.addGameObject(playMusicButton, exitButton, ans1, ans2, ans3, ans4, popup, exitPopup)
 
+    }
+
+    private fun sendScore() {
+        onCompleteCallback(score.toDouble())
     }
 }
