@@ -59,7 +59,7 @@ abstract class Game {
 
     fun clickHandle(x: Float, y: Float){
         // Convert screen coordinates to normalized device coordinates (NDC)
-        val xInClipSpace = (2.0f * x / width - 1.0f) * ratio
+        val xInClipSpace = (4.0f * (x / width ) * ratio) - 1.0f
         val yInClipSpace = 1.0f - 2.0f * y / height
 
         Log.i(TAG, "pressed: x = $xInClipSpace, y = $yInClipSpace")
