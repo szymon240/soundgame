@@ -157,6 +157,7 @@ class InstrumentalMode(
                     popup.showPopup()
                     refreshQuestion()
                 } else {
+                    sendScore()
                     popup.answerButton.displayedText = context.getString(R.string.last_instrumental)
                     val text = if (lastScore == 1 )
                         context.getString(R.string.correct_instrumental)
