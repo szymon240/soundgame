@@ -28,7 +28,8 @@ class InstrumentalMode(
     var context: Context,
     private val changeModeCallback: (GameModeName) -> Unit,
     private var questions: List<Question>,
-    private val totalRounds: Int
+    private val totalRounds: Int,
+    private val onCompleteCallback: (Double) -> Unit
 ) : GameMode() {
 
     private val soundPlayer: SoundPlayer = SoundPlayer(context)
@@ -135,6 +136,7 @@ class InstrumentalMode(
                 if (currentRound < totalRounds) {
                     refreshQuestion()
                 } else {
+                    sendScore()
                     println("Game Over! Your final score: $score")
                 }
             }
@@ -171,5 +173,9 @@ class InstrumentalMode(
 
         scene.addGameObject(playMusicButton, exitButton, ans1, ans2, ans3, ans4)
         refreshQuestion()
+    }
+
+    private fun sendScore() {
+        onCompleteCallback(score.toDouble())
     }
 }

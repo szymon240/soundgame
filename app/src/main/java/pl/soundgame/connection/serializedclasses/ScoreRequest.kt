@@ -1,6 +1,7 @@
 package pl.soundgame.connection.serializedclasses
 
-data class Request(
+data class ScoreRequest(
     val mode: String,
-    val questions: Int,
+    val username: String,
+    val score: Double,
 )
