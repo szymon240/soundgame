@@ -27,7 +27,7 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
     protected var clickAction: (() -> Unit)? = null
     private var width: Float
     private var height: Float
-
+    private var widthScaler: Float = 1f
     protected var baseBitmap: Bitmap
 
     var visible = true
@@ -103,6 +103,7 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
         Matrix.scaleM(mMatrix, 0, ratio, ratio, ratio)
         width *= ratio
         height *= ratio
+        widthScaler = ratio
         updateHitbox()
     }
 
@@ -110,6 +111,7 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
         Matrix.scaleM(mMatrix, 0, x, y, z)
         width *= x
         height *= y
+        widthScaler = y
         updateHitbox()
     }
 
@@ -132,25 +134,12 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
 
     private fun updateHitbox() {
         // Update the hitbox based on the GameObject's position and size
-        println("${ mPosition[0] } ${ mPosition[1] }")
+        println("${mPosition[0]} ${mPosition[1]}")
 
-        if(mPosition[0] < 0.0f) {
-            val newX = mPosition[0]
-            val newY = mPosition[1] + height / 2
-            mHitbox.updatePosition(newX, newY)
-            mHitbox.updateSize(width, height)
-        }else if(mPosition[0] == 0.0f){
-            val newX = mPosition[0] - width /2
-            val newY = mPosition[1] + height / 2
-            mHitbox.updatePosition(newX, newY)
-            mHitbox.updateSize(width, height)
-        } else{
 
-            val newX = mPosition[0] - width
-            val newY = mPosition[1] + height / 2
-            //Log.i("${mId}"," ${newX}, ${width} ${newX + width}" )
-            mHitbox.updatePosition(newX, newY)
-            mHitbox.updateSize(width, height)
-        }
+        val newX = (mPosition[0] - width)
+        val newY = mPosition[1] + height / 2
+        mHitbox.updatePosition(newX, newY)
+        mHitbox.updateSize(2 *  width , height)
     }
 }

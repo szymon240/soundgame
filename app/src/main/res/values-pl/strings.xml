@@ -16,4 +16,7 @@
     <string name="incorrect_instrumental">"Źle! Poprawną odpowiedzią było: "</string>
     <string name="next_instrumental">Previous</string>
     <string name="last_instrumental">Wróć do menu</string>
+    <string name="exit_popup_text">Powrócić do menu? Utracisz swój postęp</string>
+    <string name="exit_yes">Tak, opuść</string>
+    <string name="exit_no">Nie, pozostań</string>
 </resources>

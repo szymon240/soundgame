@@ -16,4 +16,7 @@
     <string name="incorrect_instrumental">"Incorrect! The answer was: "</string>
     <string name="next_instrumental">Next!</string>
     <string name="last_instrumental">Back to the menu</string>
+    <string name="exit_popup_text">Go back to menu? Progress will be lost!</string>
+    <string name="exit_yes">Yes, leave</string>
+    <string name="exit_no">No, stay</string>
 </resources>

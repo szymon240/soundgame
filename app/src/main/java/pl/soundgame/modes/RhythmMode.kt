@@ -11,6 +11,7 @@ import pl.soundgame.engine.Scene
 import pl.soundgame.engine.background.SampleBackground
 import pl.soundgame.engine.gameobjects.Button
 import pl.soundgame.engine.gameobjects.Popup
+import pl.soundgame.engine.gameobjects.PopupDouble
 import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.engine.loadTextureBitmap
 import kotlin.random.Random
@@ -90,6 +91,12 @@ class RhythmMode(
                 alternateBitmap = loadTextureBitmap("rhythm_mode/roundbutton_on.png", context)
             )
             val roundText = TextBox(initialText = "$roundExampleText ${roundNumber + 1}", id = "roundText")
+            val exitPopup = PopupDouble(
+                loadTextureBitmap("popupBackgound.png", context),
+                context.getString(R.string.exit_popup_text),
+                popupAnswer1 = context.getString(R.string.exit_no),
+                popupAnswer2 = context.getString(R.string.exit_yes)
+            )
 
             // Set positions and scaling for UI elements
             roundText.setOriginPosition(y = 0.8f, x = 0f)
@@ -188,12 +195,26 @@ class RhythmMode(
             exitButton.setOriginPosition(y = 0.2f, x = -0.5f)
             exitButton.scale(0.25f)
             exitButton.onClickAction {
-                // Exits the game mode
-                changeModeCallback(GameModeName.MENU)
+                exitPopup.showPopup()
+                playButton.lock()
+                exitButton.lock()
+                tapButton.lock()
             }
             scene.addGameObject(exitButton)
 
-            scene.addGameObject(popup)
+            exitPopup.setPopupCallback1 {
+                exitPopup.hidePopup()
+                playButton.unlock()
+                exitButton.unlock()
+                tapButton.unlock()
+            }
+
+            exitPopup.setPopupCallback2 {
+                soundPlayer.stopAllSounds()
+                changeModeCallback(GameModeName.MENU)
+            }
+
+            scene.addGameObject(popup, exitPopup)
             popup.setPopupCallback {
                 popup.answerButton.displayedText = context.getString(R.string.rhythm_popup_answser)
                 playButton.unlock()

@@ -76,9 +76,9 @@ class InstrumentalMode(
 
         val exitPopup = PopupDouble(
             loadTextureBitmap("popupBackgound.png", context),
-            context.getString(R.string.tutorial_instrumental),
-            popupAnswer1 = context.getString(R.string.tutorial_rhythm_answer),
-            popupAnswer2 = context.getString(R.string.tutorial_rhythm_answer)
+            context.getString(R.string.exit_popup_text),
+            popupAnswer1 = context.getString(R.string.exit_no),
+            popupAnswer2 = context.getString(R.string.exit_yes)
         )
 
         lateinit var ans1: Button
@@ -200,11 +200,24 @@ class InstrumentalMode(
         ans3 = createAnswerButton(scene, 3, x = -0.5f, y = -0.6f)
         ans4 = createAnswerButton(scene, 4, x = 0.5f, y = -0.6f)
 
+        exitPopup.setPopupCallback1 {
+            exitPopup.hidePopup()
+            playMusicButton.unlock(); exitButton.unlock()
+            ans1.unlock(); ans2.unlock(); ans3.unlock(); ans4.unlock()
+        }
+
+        exitPopup.setPopupCallback2 {
+            soundPlayer.stopAllSounds()
+            changeModeCallback(GameModeName.MENU)
+        }
+
+
         exitButton.setOriginPosition(y = 0.85f, x = -0.65f)
         exitButton.scale(0.2f)
         exitButton.onClickAction {
-            soundPlayer.stopAllSounds()
-            changeModeCallback(GameModeName.MENU)
+            playMusicButton.lock(); exitButton.lock()
+            ans1.lock(); ans2.lock(); ans3.lock(); ans4.lock()
+            exitPopup.showPopup()
         }
 
         refreshQuestion()
@@ -219,7 +232,7 @@ class InstrumentalMode(
         ans1.lock(); ans2.lock(); ans3.lock(); ans4.lock()
         popup.showPopup()
 
-        scene.addGameObject(playMusicButton, exitButton, ans1, ans2, ans3, ans4, popup)
+        scene.addGameObject(playMusicButton, exitButton, ans1, ans2, ans3, ans4, popup, exitPopup)
 
     }
 }

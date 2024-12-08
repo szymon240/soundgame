@@ -77,13 +77,13 @@ class PopupDouble(background: Bitmap, popupText: String, popupAnswer1: String = 
         popupTextBox.setOriginPosition(y = 0.1f)
         popupTextBox.scale(0.5f)
 
-        answerButton1 = TextBox(id = "${id} - Answer", size = 32f, initialText = popupAnswer1, color = Color.GREEN)
+        answerButton1 = TextBox(id = "${id} - Answer", size = 32f, initialText = popupAnswer1, color = Color.GREEN, height = 150, width = 300)
         answerButton1.setOriginPosition(y = -0.15f)
-        answerButton1.scale(0.5f)
+        answerButton1.scale(0.25f)
 
-        answerButton2 = TextBox(id = "${id} - Answer", size = 32f, initialText = popupAnswer2, color = Color.RED)
+        answerButton2 = TextBox(id = "${id} - Answer", size = 32f, initialText = popupAnswer2, color = Color.RED, height = 150, width = 300)
         answerButton2.setOriginPosition(y = -0.3f)
-        answerButton2.scale(0.5f)
+        answerButton2.scale(0.25f)
     }
 
     /**
@@ -119,17 +119,17 @@ class PopupDouble(background: Bitmap, popupText: String, popupAnswer1: String = 
 
         answerButton1.onClickAction {
             println("Click detected")
-            popupOn = false;
+            popupOn = false
             framesOn = 0
-            popupCallback1?.let { it() };
+            popupCallback1?.let { it() }
             answerButton1.removeClickAction()
         }
 
         answerButton2.onClickAction {
             println("Click detected")
-            popupOn = false;
+            popupOn = false
             framesOn = 0
-            popupCallback2?.let { it() };
+            popupCallback2?.let { it() }
             answerButton2.removeClickAction()
         }
     }
