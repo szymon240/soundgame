@@ -28,6 +28,7 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             title.scale(0.5f)
             val popup = Popup(loadTextureBitmap("popupBackgound.png", context), popupText = "Testowy\n popup\nbaredzo długa linijka z dużą ilością zbędnego tekstu", popupAnswer = "Continue", id = "popup", duration = -1)
 
+
             val rhythmModeButton =
                 Button(loadTextureBitmap("rhythmMode2.png", context), id = "rhythmModeButton")
             rhythmModeButton.setOriginPosition(

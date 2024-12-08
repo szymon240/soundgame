@@ -84,7 +84,7 @@ class RhythmMode(
             // Add buttons, text boxes, and event listeners
             val scoreText = TextBox(initialText = "$scoreExampleText $accuracy", id = "scoreText")
             val playButton = Button(loadTextureBitmap("rhythm_mode/play.png", context), id = "playButton")
-            val exitButton = Button(loadTextureBitmap("button.png", context), id = "exitButton")
+            val exitButton = Button(loadTextureBitmap("back.png", context), id = "exitButton")
             val tapButton = Button(
                 loadTextureBitmap("rhythm_mode/roundbutton_off.png", context),
                 id = "tapButton",

@@ -168,7 +168,7 @@ internal class SoundGame(context: Context) : Game() {
     fun changeMode(newMode: GameModeName) {
         Log.i(TAG, "Changing mode to: $newMode")
 
-        if (newMode != GameModeName.MENU) {
+        if (newMode != GameModeName.MENU && newMode != GameModeName.SETTINGS) {
             fetchQuestionsForMode(newMode)
 
             if (questions.isEmpty()) {
