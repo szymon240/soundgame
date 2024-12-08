@@ -1,6 +1,7 @@
 package pl.soundgame.modes
 
 import android.content.Context
+import android.util.Log
 import androidx.appcompat.view.menu.ActionMenuItemView.PopupCallback
 import pl.soundgame.R
 import pl.soundgame.SoundPlayer
@@ -37,6 +38,7 @@ class InstrumentalMode(
     private var currentRound = 0
     private var score = 0
     private var lastScore = 0
+    private val TAG = "Instrumental Mode"
 
     /**
      * Creates and returns the game mode's scene.
@@ -86,7 +88,7 @@ class InstrumentalMode(
         lateinit var ans2: Button
         lateinit var ans3: Button
         lateinit var ans4: Button
-
+        var currentURL = "";
         val exitButton = Button(loadTextureBitmap("back.png", context), id = "exitButton")
         val playMusicButton = Button(loadTextureBitmap("rhythm_mode/play.png", context), id = "playMusicButton")
 
@@ -95,13 +97,13 @@ class InstrumentalMode(
          * This could involve processing or validating the questions.
          */
         fun refreshQuestion() {
-            val q = questions[currentRound]
+            var q = questions[currentRound]
             ans1.changeBaseBitmap(createTextTexture(text = "${q.ans1}", size = 90f, background = loadTextureBitmap("button.png", context)))
             ans2.changeBaseBitmap(createTextTexture(text = "${q.ans2}", size = 90f, background = loadTextureBitmap("button.png", context)))
             ans3.changeBaseBitmap(createTextTexture(text = "${q.ans3}", size = 90f, background = loadTextureBitmap("button.png", context)))
             ans4.changeBaseBitmap(createTextTexture(text = "${q.ans4}", size = 90f, background = loadTextureBitmap("button.png", context)))
-
-            playMusicButton.onClickAction { soundPlayer.playFromUrl(q.url) }
+            currentURL = q.url
+            playMusicButton.onClickAction {             Log.i(TAG, "${currentURL}" );soundPlayer.playFromUrl(currentURL) }
         }
 
         /**
@@ -235,7 +237,6 @@ class InstrumentalMode(
         popup.showPopup()
 
         scene.addGameObject(playMusicButton, exitButton, ans1, ans2, ans3, ans4, popup, exitPopup)
-
     }
 
     private fun sendScore() {

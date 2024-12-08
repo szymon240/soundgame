@@ -136,7 +136,6 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
         // Update the hitbox based on the GameObject's position and size
         println("${mPosition[0]} ${mPosition[1]}")
 
-
         val newX = (mPosition[0] - width)
         val newY = mPosition[1] + height / 2
         mHitbox.updatePosition(newX, newY)
