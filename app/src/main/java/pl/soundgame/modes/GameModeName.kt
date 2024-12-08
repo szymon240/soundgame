@@ -4,5 +4,6 @@ enum class GameModeName {
     MENU,
     RHYTHM,
     INSTRUMENTAL,
-    SETTINGS
+    SETTINGS,
+    EMPTY
 }
