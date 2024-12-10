@@ -20,10 +20,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
 import kotlinx.coroutines.GlobalScope
-import org.w3c.dom.Text
-import pl.soundgame.connection.serializedclasses.ScoreRequest
-import pl.soundgame.connection.serializedclasses.ScoreResponse
-import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.modes.Empty
 
 /**
@@ -42,7 +38,7 @@ internal class SoundGame(context: Context) : Game() {
     private var gameModeName: GameModeName
     private var TAG = "SoundGame Main Object"
     private var changeModeCallback: (GameModeName) -> Unit = { mode -> changeMode(mode) }
-    private var rounds = 5
+    private var rounds = 4
     private val commManager = CommunicationManager()
     private var questions: List<Question> = emptyList()
     private var score = 0.0

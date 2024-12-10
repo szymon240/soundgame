@@ -14,6 +14,7 @@ import pl.soundgame.engine.gameobjects.Popup
 import pl.soundgame.engine.gameobjects.PopupDouble
 import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.engine.loadTextureBitmap
+import kotlin.math.min
 import kotlin.random.Random
 
 
@@ -117,7 +118,7 @@ class RhythmMode(
                     val pitch = if (currentPatternIndex < rhythmPattern.size) rhythmPattern[currentPatternIndex].second else 1.0f
                     currentPatternIndex++
 
-                    val soundFile = questions[roundNumber]?.url?.let { context.cacheDir.resolve(it.substringAfterLast("/")) }
+                    val soundFile = questions[0]?.url?.let { context.cacheDir.resolve(it.substringAfterLast("/")) }  //FIXME tutaj roundNumber gdy do kazdego pytania jest URL
                     if (soundFile?.exists() == true) {
                         soundPlayer.playSoundWithPitch(pitch, soundFile.absolutePath)
                     }
@@ -151,7 +152,7 @@ class RhythmMode(
                                 sendScore()
                             }
                             scoreText.displayedText = "$scoreExampleText ${"%.2f".format(accuracy)}"
-                            roundText.displayedText = "$roundExampleText ${roundNumber+1}"
+                            roundText.displayedText = "$roundExampleText ${min(roundNumber+1, totalRounds)}"
                             popup.popupTextBox.size = 32f
                             popup.popupTextBox.displayedText = "$roundExampleText ${roundNumber}\n $scoreExampleText ${"%.2f".format(lastRoundScore)}/100"
                             playButton.lock()
@@ -291,7 +292,7 @@ class RhythmMode(
         var isFirst = true
         var delay = 0L
         val beatInterval = (60000L / (tempoBPM * 2))
-        val question = questions.getOrNull(roundNumber)
+        val question = questions.getOrNull(0) //FIXME tutaj roundNumber gdy do kazdego pytania jest URL zamiast 0
         var lastDelay = 0L
 
         for ((playSound, pitch) in rhythmPattern) {
