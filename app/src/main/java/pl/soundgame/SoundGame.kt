@@ -20,8 +20,11 @@ import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
 import kotlinx.coroutines.GlobalScope
+import org.w3c.dom.Text
 import pl.soundgame.connection.serializedclasses.ScoreRequest
 import pl.soundgame.connection.serializedclasses.ScoreResponse
+import pl.soundgame.engine.gameobjects.TextBox
+import pl.soundgame.modes.Empty
 
 /**
  * SoundGame class extends the Game class and serves as the central controller for the game.
@@ -47,9 +50,9 @@ internal class SoundGame(context: Context) : Game() {
     init {
         this.context = context
         gameMode = Menu(this.context, changeModeCallback)
-        gameModeName = GameModeName.MENU
+        gameModeName = GameModeName.EMPTY
         mScene = gameMode.returnGameModeScene()
-        changeMode(GameModeName.MENU)
+        changeMode(GameModeName.EMPTY)
 
         checkServerStatus()
     }
@@ -194,6 +197,7 @@ internal class SoundGame(context: Context) : Game() {
             GameModeName.RHYTHM -> RhythmMode(this.context, changeModeCallback, questions, rounds, ::onRhythmModeComplete)
             GameModeName.INSTRUMENTAL -> InstrumentalMode(this.context, changeModeCallback, questions, rounds, ::onRhythmModeComplete)
             GameModeName.SETTINGS -> Settings(this.context, changeModeCallback)
+            GameModeName.EMPTY -> Empty(this.context, changeModeCallback)
         }
 
         gameModeName = newMode

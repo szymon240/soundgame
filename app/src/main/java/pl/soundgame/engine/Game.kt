@@ -13,7 +13,7 @@ abstract class Game {
     private  var ratio: Float = 0.0f
     abstract var mScene: Scene
     lateinit var mShaderProgram: ShaderProgram
-    private val vPMatrix = FloatArray(16)
+    protected val vPMatrix = FloatArray(16)
     private val projectionMatrix = FloatArray(16)
     private val viewMatrix = FloatArray(16)
     private var sceneStorage = mutableMapOf<String, Scene>()
