@@ -117,16 +117,17 @@ class RhythmMode(
                     val pitch = if (currentPatternIndex < rhythmPattern.size) rhythmPattern[currentPatternIndex].second else 1.0f
                     currentPatternIndex++
 
-                    val questionUrl = questions.getOrNull(roundNumber)?.url
-
-                    if (!questionUrl.isNullOrEmpty()) {
-                        soundPlayer.playSoundWithPitch(pitch, questionUrl)
-                    } else {
-                        val beatSound = soundPlayer.getSoundById(4)
-                        beatSound?.let {
-                            soundPlayer.playSoundWithPitch(pitch, it.resId)
-                        }
+                    val soundFile = questions[roundNumber]?.url?.let { context.cacheDir.resolve(it.substringAfterLast("/")) }
+                    if (soundFile?.exists() == true) {
+                        soundPlayer.playSoundWithPitch(pitch, soundFile.absolutePath)
                     }
+                    //FIXME if something goes wrong uncomment it pls
+//                    else {
+//                        val beatSound = soundPlayer.getSoundById(4)
+//                        beatSound?.let {
+//                            soundPlayer.playSoundWithPitch(pitch, it.resId)
+//                        }
+//                    }
 
                     val pressTime = System.currentTimeMillis()
                     if (isFirst) {
@@ -150,7 +151,7 @@ class RhythmMode(
                                 sendScore()
                             }
                             scoreText.displayedText = "$scoreExampleText ${"%.2f".format(accuracy)}"
-                            roundText.displayedText = "$roundExampleText $roundNumber"
+                            roundText.displayedText = "$roundExampleText ${roundNumber+1}"
                             popup.popupTextBox.size = 32f
                             popup.popupTextBox.displayedText = "$roundExampleText ${roundNumber}\n $scoreExampleText ${"%.2f".format(lastRoundScore)}/100"
                             playButton.lock()
