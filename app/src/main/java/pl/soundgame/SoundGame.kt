@@ -39,7 +39,7 @@ internal class SoundGame(context: Context) : Game() {
     private var gameModeName: GameModeName
     private var TAG = "SoundGame Main Object"
     private var changeModeCallback: (GameModeName) -> Unit = { mode -> changeMode(mode) }
-    private var rounds = 3
+    private var rounds = 5
     private val commManager = CommunicationManager()
     private var questions: List<Question> = emptyList()
     private var score = 0.0

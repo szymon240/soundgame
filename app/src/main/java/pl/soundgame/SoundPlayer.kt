@@ -3,6 +3,7 @@ package pl.soundgame
 import android.content.Context
 import android.media.MediaPlayer
 import android.media.PlaybackParams
+import java.io.File
 
 /**
  * A utility class for managing sound playback in the application.
@@ -145,6 +146,32 @@ class SoundPlayer(private val context: Context) {
     /**
      * UNUSED FUNCTIONS (FOR FUTURE)
      */
+
+    /**
+     * Plays a sound from a local file.
+     *
+     * @param soundFile The local file containing the audio to play.
+     */
+    fun playFromFile(soundFile: File) {
+        mediaPlayer?.release()
+        mediaPlayer = null
+
+        try {
+            mediaPlayer = MediaPlayer().apply {
+                setDataSource(soundFile.absolutePath)
+                setOnPreparedListener {
+                    start()
+                }
+                setOnErrorListener { _, what, extra ->
+                    println("Error occurred: what=$what, extra=$extra")
+                    false
+                }
+                prepareAsync()
+            }
+        } catch (e: Exception) {
+            println("Error initializing MediaPlayer: ${e.message}")
+        }
+    }
 
     /**
      * Initializes the MediaPlayer with a specific resource ID.

@@ -14,6 +14,7 @@ import pl.soundgame.engine.gameobjects.PopupDouble
 import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.engine.loadTextureBitmap
 import pl.soundgame.engine.shapes.createTextTexture
+import java.io.File
 
 /**
  * InstrumentalMode - a game mode where players answer questions based on audio cues.
@@ -103,7 +104,13 @@ class InstrumentalMode(
             ans3.changeBaseBitmap(createTextTexture(text = "${q.ans3}", size = 90f, background = loadTextureBitmap("button.png", context)))
             ans4.changeBaseBitmap(createTextTexture(text = "${q.ans4}", size = 90f, background = loadTextureBitmap("button.png", context)))
             currentURL = q.url
-            playMusicButton.onClickAction {             Log.i(TAG, "${currentURL}" );soundPlayer.playFromUrl(currentURL) }
+            playMusicButton.onClickAction {
+                Log.i(TAG, "${currentURL}" );
+                val soundFile = questions[currentRound]?.url?.let { context.cacheDir.resolve(it.substringAfterLast("/")) }
+                if (soundFile?.exists() == true) {
+                    soundPlayer.playSoundWithPitch(1.0f, soundFile.absolutePath)
+                }
+            }
         }
 
         /**
