@@ -223,8 +223,8 @@ class InstrumentalMode(
         }
 
 
-        exitButton.setOriginPosition(y = 0.85f, x = -0.65f)
-        exitButton.scale(0.2f)
+        exitButton.setOriginPosition(y = 0.8f, x = -0.75f)
+        exitButton.scale(0.15f)
         exitButton.onClickAction {
             playMusicButton.lock(); exitButton.lock()
             ans1.lock(); ans2.lock(); ans3.lock(); ans4.lock()

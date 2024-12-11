@@ -25,4 +25,5 @@
     <string name="loading">Ładowanie...</string>
     <string name="msg_no_connection">Nie udało się połączyć do serwera. Połączenie jest wymagane do gry.</string>
     <string name="msg_error_downloading">Nastąpił nieoczekiwany błąd serwera</string>
+    <string name="authors_info">Autorzy:\n  Adam Czyżak\n Szymon Szymankiewicz\n  Maria Nowicka\n\n  Licencja: MIT</string>
 </resources>

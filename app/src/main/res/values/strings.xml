@@ -24,4 +24,5 @@
     <string name="loading">Loading...</string>
     <string name="msg_no_connection">Couldn\'t connect to the server</string>
     <string name="msg_error_downloading">Some server error occured</string>
+    <string name="authors_info">Authors:\n Adam Czyżak\n  Szymon Szymankiewicz\n  Maria Nowicka\n\nLicence: MIT</string>
 </resources>
