@@ -19,4 +19,7 @@
     <string name="exit_popup_text">Powrócić do menu? Utracisz swój postęp</string>
     <string name="exit_yes">Tak, opuść</string>
     <string name="exit_no">Nie, pozostań</string>
+    <string name="settings">Ustawienia</string>
+    <string name="rhythm">Tryb rytmiczny</string>
+    <string name="instrumental">Tryb instrumentalny</string>
 </resources>

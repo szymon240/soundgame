@@ -18,4 +18,7 @@
     <string name="exit_popup_text">Go back to menu? Progress will be lost!</string>
     <string name="exit_yes">Yes, leave</string>
     <string name="exit_no">No, stay and play</string>
+    <string name="settings">Settings</string>
+    <string name="rhythm">Rhythm Mode</string>
+    <string name="instrumental">Instrumental Mode</string>
 </resources>

@@ -22,7 +22,23 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             SampleBackground(context)
         }
 
+        val settings = context.getString(R.string.settings)
+        val rhythm = context.getString(R.string.rhythm)
+        val instrumental = context.getString(R.string.instrumental)
+
         scene.setInitScene {
+            val settings = TextBox(initialText = "$settings", id = "settings")
+            val rhythm = TextBox(initialText = "$rhythm", id = "rhythm")
+            val instrumental = TextBox(initialText = "$instrumental", id = "instrumental")
+
+            settings.setOriginPosition(y = -0.06f, x = 0.5f)
+            settings.scale(0.5f)
+            rhythm.setOriginPosition(y = 0.57f, x = -0.5f)
+            rhythm.scale(0.5f)
+            instrumental.setOriginPosition(y = 0.6f, x = 0.5f)
+            instrumental.scale(0.5f)
+            scene.addGameObject(settings, rhythm, instrumental)
+
             val title = GameObject(loadTextureBitmap("title.png", context), "title")
             title.setOriginPosition(y = 0.8f)
             title.scale(0.5f)
@@ -59,7 +75,7 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             val settingsButton =
                 Button(loadTextureBitmap("settings.png", context), id = "settings Button")
             settingsButton.setOriginPosition(
-                y = -0.3f,
+                y = -0.33f,
                 x = 0.5f
             )  // Position button below the Rhythm button
             settingsButton.scale(0.4f)
