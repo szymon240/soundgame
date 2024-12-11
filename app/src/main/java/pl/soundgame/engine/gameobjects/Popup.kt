@@ -131,4 +131,10 @@ class Popup(background: Bitmap, popupText: String, popupAnswer: String = "", val
     private fun updatePopupAnwser(){
         answerButton.displayedText = popupAnswer
     }
+
+    override fun refresh() {
+        super.refresh()
+        answerButton.refresh()
+        popupTextBox.refresh()
+    }
 }

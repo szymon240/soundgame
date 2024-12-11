@@ -21,7 +21,8 @@ class Scene {
     private var backgroundInitialized: Boolean = false
     private var beforeDrawFrame: (() -> Unit)? = null
     private var afterDrawFrame: (() -> Unit)? = null
-
+    private var timesRefreshed: Int = 0
+    private var framesPassed: UInt = 0u
     var id: String = ""
         get() = field
         set(value) {
@@ -63,6 +64,12 @@ class Scene {
             gameObject.draw(shaderProgram,vPMatrix)
         }
         afterDrawFrame?.invoke()
+        if ( framesPassed == 10u)
+        {
+            timesRefreshed++
+            this.refreshAll()
+        }
+        framesPassed++
         //GLES20.glDisable(GLES20.GL_BLEND)
     }
 
@@ -87,7 +94,11 @@ class Scene {
         }
     }
 
-
+    fun refreshAll(){
+        for( obj in mObjects){
+            obj.refresh()
+        }
+    }
     /**
      * Sets init scene
      *

@@ -10,7 +10,7 @@ import pl.soundgame.engine.background.SampleBackground
 import pl.soundgame.engine.gameobjects.Button
 import pl.soundgame.engine.loadTextureBitmap
 
-class Empty(var context: Context, private val changeModeCallback: (GameModeName) -> Unit) : GameMode() {
+class Empty(var context: Context, private val changeModeCallback: (GameModeName) -> Unit, private val changeTo: GameModeName) : GameMode() {
 
     override fun returnGameModeScene(): Scene {
         val scene = Scene()
@@ -18,10 +18,7 @@ class Empty(var context: Context, private val changeModeCallback: (GameModeName)
             SampleBackground(context)
         }
         scene.setInitScene {
-            CoroutineScope(Dispatchers.Main).launch {
-                delay(1000)
-                changeModeCallback(GameModeName.MENU)
-            }
+            changeModeCallback(changeTo)
         }
 
         return scene

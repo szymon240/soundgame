@@ -120,7 +120,7 @@ class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) :
         return darkenedBitmap
     }
 
-    fun changeBaseBitmap(newBitmap: Bitmap){
+    override fun changeBaseBitmap(newBitmap: Bitmap){
         super.swapSprite(newBitmap)
         baseBitmap = newBitmap
         alternateBitmap = darkenBitmap(newBitmap)

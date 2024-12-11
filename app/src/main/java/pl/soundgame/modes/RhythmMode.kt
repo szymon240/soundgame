@@ -4,6 +4,10 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import pl.soundgame.R
 import pl.soundgame.SoundPlayer
 import pl.soundgame.connection.serializedclasses.Question
@@ -226,6 +230,7 @@ class RhythmMode(
                 playButton.unlock()
                 exitButton.unlock()
                 tapButton.unlock()
+                scene.refreshAll()
             }
             popup.popupTextBox.size = 24f
             playButton.lock()

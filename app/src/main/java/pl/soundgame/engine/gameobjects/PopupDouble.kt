@@ -159,4 +159,11 @@ class PopupDouble(background: Bitmap, popupText: String, popupAnswer1: String = 
     private fun updatePopupAnwser2(){
         answerButton2.displayedText = popupAnswer2
     }
+
+    override fun refresh() {
+        super.refresh()
+        answerButton1.refresh()
+        answerButton2.refresh()
+        popupTextBox.refresh()
+    }
 }

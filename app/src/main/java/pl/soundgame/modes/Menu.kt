@@ -110,7 +110,7 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
                     }
                     scene.modifyGameObjectsById("connImage") { obj ->
                         if (obj != null) {
-                            obj.swapSprite(loadTextureBitmap("connection/failed.png", context))
+                            obj.changeBaseBitmap(loadTextureBitmap("connection/failed.png", context))
                             displayedConnectionStatus = ConnectionStatus.FAILED
                         }
                     }
@@ -126,7 +126,7 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
                     }
                     scene.modifyGameObjectsById("connImage") { obj ->
                         if (obj != null) {
-                            obj.swapSprite(loadTextureBitmap("connection/success.png", context))
+                            obj.changeBaseBitmap(loadTextureBitmap("connection/success.png", context))
                             displayedConnectionStatus = ConnectionStatus.SUCCESS
                         }
                     }

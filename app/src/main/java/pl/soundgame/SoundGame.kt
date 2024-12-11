@@ -1,6 +1,7 @@
 package pl.soundgame
 
 import android.content.Context
+import android.provider.Settings.Global
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,6 +21,9 @@ import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.w3c.dom.Text
 import pl.soundgame.connection.serializedclasses.ScoreRequest
 import pl.soundgame.connection.serializedclasses.ScoreResponse
@@ -180,10 +184,9 @@ internal class SoundGame(context: Context) : Game() {
                     Log.e(TAG, "No questions available for mode: $newMode. Retrying...")
                     if (retries > 0) {
                         retries--
-                        GlobalScope.launch {
-                            withContext(Dispatchers.IO) {
-                                Thread.sleep(1000)  // Wait 1 second before retrying
-                            }
+                        MainScope().launch {
+                            Thread.sleep(1000)  // Wait 1 second before retrying
+
                             tryChangeMode()
                         }
                     } else {
@@ -193,15 +196,14 @@ internal class SoundGame(context: Context) : Game() {
                 }
 
                 // Launch a coroutine to download sounds
-                GlobalScope.launch {
+                MainScope().launch {
                     val allSoundsDownloaded = downloadSoundsForQuestions(questions)
                     if (!allSoundsDownloaded) {
                         Log.e(TAG, "Not all sounds are downloaded. Retrying...")
                         if (retries > 0) {
                             retries--
-                            withContext(Dispatchers.IO) {
                                 Thread.sleep(1000)  // Wait 1 second before retrying
-                            }
+
                             tryChangeMode()
                         } else {
                             Log.e(TAG, "Failed to download sounds for mode: $newMode after retries. Staying in current mode.")
@@ -228,12 +230,14 @@ internal class SoundGame(context: Context) : Game() {
             GameModeName.RHYTHM -> RhythmMode(this.context, changeModeCallback, questions, rounds, ::onRhythmModeComplete)
             GameModeName.INSTRUMENTAL -> InstrumentalMode(this.context, changeModeCallback, questions, rounds, ::onRhythmModeComplete)
             GameModeName.SETTINGS -> Settings(this.context, changeModeCallback)
-            GameModeName.EMPTY -> Empty(this.context, changeModeCallback)
+            GameModeName.EMPTY -> Empty(this.context, changeModeCallback, GameModeName.MENU)
         }
 
         gameModeName = newMode
         mScene = gameMode.returnGameModeScene()
         mScene.loadScene()
+
+        GlobalScope.launch {  delay(500) ; withContext(Dispatchers.Main){ } }
     }
 
     /**

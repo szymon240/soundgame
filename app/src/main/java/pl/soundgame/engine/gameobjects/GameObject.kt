@@ -58,7 +58,10 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
                 "click function bound: ${clickAction != null}\n")
     }
 
-    open fun beforeDraw() {}
+    open fun changeBaseBitmap(newBitmap: Bitmap) {
+        this.swapSprite(newBitmap)
+        baseBitmap = newBitmap
+    }
     override fun draw(shaderProgram: Int, vPMatrix: FloatArray) {
         if (visible) {
             val scratch = FloatArray(16)
@@ -88,6 +91,9 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
 
     open fun afterClickDetected(){}
 
+    open fun refresh(){
+        swapSprite(baseBitmap)
+    }
     open fun click(x: Float, y: Float): Boolean {
         //mHitbox.logInfo(mId)
         return if (mHitbox.isClicked(x, y)) {
