@@ -12,3 +12,4 @@ fun getScreenResolution(context: Context): Pair<Int, Int> {
 
     return Pair(width, height)
 }
+

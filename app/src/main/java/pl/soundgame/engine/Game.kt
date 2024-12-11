@@ -13,7 +13,7 @@ abstract class Game {
     private  var ratio: Float = 0.0f
     abstract var mScene: Scene
     lateinit var mShaderProgram: ShaderProgram
-    private val vPMatrix = FloatArray(16)
+    protected val vPMatrix = FloatArray(16)
     private val projectionMatrix = FloatArray(16)
     private val viewMatrix = FloatArray(16)
     private var sceneStorage = mutableMapOf<String, Scene>()
@@ -25,8 +25,11 @@ abstract class Game {
 
     fun onCrateSurface(){
         Log.d(TAG, "Initializing game" )
+        GLES20.glEnable(GLES20.GL_BLEND)
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
         mScene.loadScene()
         if(afterCreateSurface != null) {afterCreateSurface?.invoke()}
+
     }
 
     fun setShaderProgram(shaderProgram: ShaderProgram){
@@ -56,7 +59,7 @@ abstract class Game {
 
     fun clickHandle(x: Float, y: Float){
         // Convert screen coordinates to normalized device coordinates (NDC)
-        val xInClipSpace = (2.0f * x / width - 1.0f) * ratio
+        val xInClipSpace = (4.0f * (x / width ) * ratio) - 1.0f
         val yInClipSpace = 1.0f - 2.0f * y / height
 
         Log.i(TAG, "pressed: x = $xInClipSpace, y = $yInClipSpace")

@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.opengl.Matrix
 import android.util.Log
 import pl.soundgame.engine.shapes.Drawable
+import pl.soundgame.engine.shapes.Hitbox
 import pl.soundgame.engine.shapes.Sprite
 
 
@@ -20,13 +21,13 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
     protected var mSprite: Sprite
     override val mMatrix = FloatArray(16)
     protected val mMatrixFrameChange = FloatArray(16)
-    private var mId: String =""
+    private var mId: String = id
     private var mHitbox: Hitbox
     private var mPosition = arrayOf(0.0f, 0.0f, 0.0f)  // Position of the GameObject
     protected var clickAction: (() -> Unit)? = null
     private var width: Float
     private var height: Float
-
+    private var widthScaler: Float = 1f
     protected var baseBitmap: Bitmap
 
     var visible = true
@@ -43,18 +44,24 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
         val initialHeight = 1.0f
         width = initialWidth
         height = initialHeight
-
         // Adjusted hitbox positioning based on GameObject size
         this.mHitbox = Hitbox(-0.5f * width, 0.5f * height, initialWidth, initialHeight)
     }
 
+    /**
+     * Prints in logcat base info about object
+     *
+     */
     fun logObjectInfo(){
         Log.i("Sprite: ${mId}", "Object ${mId} exists in Scene\n" +
                 "visible: $visible\n" +
                 "click function bound: ${clickAction != null}\n")
     }
 
-    open fun beforeDraw() {}
+    open fun changeBaseBitmap(newBitmap: Bitmap) {
+        this.swapSprite(newBitmap)
+        baseBitmap = newBitmap
+    }
     override fun draw(shaderProgram: Int, vPMatrix: FloatArray) {
         if (visible) {
             val scratch = FloatArray(16)
@@ -64,7 +71,7 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
         }
         Matrix.setIdentityM(mMatrixFrameChange, 0)
     }
-    fun swapSprite(newBitmap: Bitmap){
+    open fun swapSprite(newBitmap: Bitmap){
         mSprite.swapImage(newBitmap)
     }
     fun setId(pId: String){
@@ -84,7 +91,10 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
 
     open fun afterClickDetected(){}
 
-    fun click(x: Float, y: Float): Boolean {
+    open fun refresh(){
+        swapSprite(baseBitmap)
+    }
+    open fun click(x: Float, y: Float): Boolean {
         //mHitbox.logInfo(mId)
         return if (mHitbox.isClicked(x, y)) {
             clickAction?.invoke()
@@ -99,6 +109,7 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
         Matrix.scaleM(mMatrix, 0, ratio, ratio, ratio)
         width *= ratio
         height *= ratio
+        widthScaler = ratio
         updateHitbox()
     }
 
@@ -106,6 +117,7 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
         Matrix.scaleM(mMatrix, 0, x, y, z)
         width *= x
         height *= y
+        widthScaler = y
         updateHitbox()
     }
 
@@ -124,27 +136,12 @@ open class GameObject(bitmap: Bitmap, id: String = "") : Drawable() {
         updateHitbox()
     }
 
+
+
     private fun updateHitbox() {
-        // Update the hitbox based on the GameObject's position and size
-        println("${ mPosition[0] } ${ mPosition[1] }")
-
-        if(mPosition[0] < 0.0f) {
-            val newX = mPosition[0]
-            val newY = mPosition[1] + height / 2
-            mHitbox.updatePosition(newX, newY)
-            mHitbox.updateSize(width, height)
-        }else if(mPosition[0] == 0.0f){
-            val newX = mPosition[0] - width /2
-            val newY = mPosition[1] + height / 2
-            mHitbox.updatePosition(newX, newY)
-            mHitbox.updateSize(width, height)
-        } else{
-
-            val newX = mPosition[0] - width
-            val newY = mPosition[1] + height / 2
-            //Log.i("${mId}"," ${newX}, ${width} ${newX + width}" )
-            mHitbox.updatePosition(newX, newY)
-            mHitbox.updateSize(width, height)
-        }
+        val newX = (mPosition[0] - width)
+        val newY = mPosition[1] + height / 2
+        mHitbox.updatePosition(newX, newY)
+        mHitbox.updateSize(2 *  width , height)
     }
 }

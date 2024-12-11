@@ -1,6 +1,7 @@
 package pl.soundgame.engine
 
 import android.content.Context
+import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.util.Log
 import android.view.MotionEvent
@@ -16,7 +17,6 @@ class GameGLSurfaceView(context: Context, game: Game) : GLSurfaceView(context) {
         Log.d(TAG, "Creating surface...")
         // Create an OpenGL ES 2.0 context
         setEGLContextClientVersion(2)
-
         renderer = GameGLRenderer(context, game)
         // Set the Renderer for drawing on the GLSurfaceView
         setRenderer(renderer)

@@ -16,34 +16,42 @@ fun loadTextureBitmap(textureName: String, context: Context): Bitmap {
 }
 
 
-class GameGLRenderer(context: Context, game: Game): GLSurfaceView.Renderer {
+class GameGLRenderer(context: Context, game: Game) : GLSurfaceView.Renderer {
     private var context: Context
-    private var height: Float =  1.0f
-    private var width: Float =  1.0f
-    private var ratio: Float = 1.0f
-    private val projectionMatrix = FloatArray(16)
     private val TAG = "Renderer"
     private var game: Game
 
+    private val pendingGLTasks = mutableListOf<() -> Unit>()
+    var isContextReady = false
+        private set
+
     init {
-        Log.d(TAG,"Initializing renderer")
+        Log.d(TAG, "Initializing renderer")
         this.context = context
         this.game = game
     }
 
-    fun setContext(context: Context){
+    fun setContext(context: Context) {
         this.context = context
     }
 
-
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
-        Log.d(TAG,"Creating surface...")
-
+        Log.d(TAG, "Creating surface...")
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
-        game.mShaderProgram = ShaderProgram("foreground_vertex_shader.glsl","foreground_fragment_shader.glsl", context)
-        // initialize a triangle
+
+        // OpenGL initialization code
+        game.mShaderProgram = ShaderProgram("foreground_vertex_shader.glsl", "foreground_fragment_shader.glsl", context)
+
+        GLES20.glEnable(GLES20.GL_BLEND)
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
         game.onCrateSurface()
-        Log.d(TAG,"Surface created!")
+        isContextReady = true
+        Log.d(TAG, "Surface created!")
+
+        synchronized(pendingGLTasks) {
+            pendingGLTasks.forEach { it.invoke() }
+            pendingGLTasks.clear()
+        }
     }
 
     override fun onDrawFrame(unused: GL10) {
@@ -51,12 +59,24 @@ class GameGLRenderer(context: Context, game: Game): GLSurfaceView.Renderer {
     }
 
     override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
-        Log.d(TAG,"Surface changed!")
+        Log.d(TAG, "Surface changed!")
         GLES20.glViewport(0, 0, width, height)
         game.onSurfaceChanged(width, height)
     }
 
+    fun runWhenReady(task: () -> Unit) {
+        if (isContextReady) {
+            task.invoke()
+        } else {
+            synchronized(pendingGLTasks) {
+                pendingGLTasks.add(task)
+            }
+        }
+    }
+
     fun clickHandling(x: Float, y: Float) {
-        game.clickHandle(x,y)
+        runWhenReady {
+            game.clickHandle(x, y)
+        }
     }
 }

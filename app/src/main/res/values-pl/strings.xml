@@ -5,4 +5,25 @@
     <string name="round_example_text">Runda: </string>
     <string name="final_score_text">Twój ostateczny wynik: </string>
     <string name="finish_game_text">Koniec gry!</string>
+    <string name="connection_success">Połączono!</string>
+    <string name="connection_failed">Nie udało sie połączyć z serwerem gry</string>
+    <string name="connecting">Szukanie serwera...</string>
+    <string name="tutorial_rhythm">"Rozpocznij grę naciskając przycisk \"play\", następnie odtwórz rytm  poprzez wciskanie przycisku. "</string>
+    <string name="tutorial_rhythm_answer">Zaczynamy!</string>
+    <string name="rhythm_popup_answser">Okej!</string>
+    <string name="tutorial_instrumental">Rozpocznij grę naciskając \"start\", a następnie wybierz spośród 4 opcji poprawną nazwę instrumentu.</string>
+    <string name="correct_instrumental">Dobrze!</string>
+    <string name="incorrect_instrumental">"Źle! Poprawną odpowiedzią było: "</string>
+    <string name="next_instrumental">Dalej!</string>
+    <string name="last_instrumental">Wróć do menu</string>
+    <string name="exit_popup_text">Powrócić do menu? Utracisz swój postęp</string>
+    <string name="exit_yes">Tak, opuść</string>
+    <string name="exit_no">Nie, pozostań</string>
+    <string name="settings">Ustawienia</string>
+    <string name="rhythm">Tryb rytmiczny</string>
+    <string name="instrumental">Tryb instrumentalny</string>
+    <string name="loading">Ładowanie...</string>
+    <string name="msg_no_connection">Nie udało się połączyć do serwera. Połączenie jest wymagane do gry.</string>
+    <string name="msg_error_downloading">Nastąpił nieoczekiwany błąd serwera</string>
+    <string name="authors_info">Autorzy:\n  Adam Czyżak\n Szymon Szymankiewicz\n  Maria Nowicka\n\n  Licencja: MIT</string>
 </resources>

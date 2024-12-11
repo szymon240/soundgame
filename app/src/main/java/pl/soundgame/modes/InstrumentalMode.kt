@@ -1,24 +1,51 @@
 package pl.soundgame.modes
 
 import android.content.Context
+import android.util.Log
+import androidx.appcompat.view.menu.ActionMenuItemView.PopupCallback
+import pl.soundgame.R
 import pl.soundgame.SoundPlayer
+import pl.soundgame.connection.serializedclasses.Question
 import pl.soundgame.engine.Scene
-import pl.soundgame.engine.gameobjects.GameObject
-import pl.soundgame.engine.loadTextureBitmap
-import android.os.Handler
-import android.os.Looper
 import pl.soundgame.engine.background.SampleBackground
 import pl.soundgame.engine.gameobjects.Button
-import kotlin.random.Random
+import pl.soundgame.engine.gameobjects.Popup
+import pl.soundgame.engine.gameobjects.PopupDouble
+import pl.soundgame.engine.gameobjects.TextBox
+import pl.soundgame.engine.loadTextureBitmap
+import pl.soundgame.engine.shapes.createTextTexture
+import java.io.File
 
-class InstrumentalMode(var context: Context, private val changeModeCallback: (GameModeName) -> Unit) : GameMode() {
+/**
+ * InstrumentalMode - a game mode where players answer questions based on audio cues.
+ * This mode uses audio playback and user interaction through a series of buttons
+ * representing possible answers.
+ *
+ * @property context Android context for loading resources and interacting with the system.
+ * @property changeModeCallback Callback for switching to a different game mode.
+ * @property questions List of questions used in the game, each containing answers and a sound URL.
+ * @property totalRounds Total number of rounds for the game session.
+ *
+ * @author Szymon Szymankiewicz
+ */
+class InstrumentalMode(
+    var context: Context,
+    private val changeModeCallback: (GameModeName) -> Unit,
+    private var questions: List<Question>,
+    private val totalRounds: Int,
+    private val onCompleteCallback: (Double) -> Unit
+) : GameMode() {
     private val soundPlayer: SoundPlayer = SoundPlayer(context)
-    private val instruments = listOf("Guitar", "Piano", "Drums", "Violin", "Flute", "Trumpet", "Harp", "Saxophone") // Możliwość dodania większej liczby instrumentów
-    private var currentInstrument = ""
-    private var answerOptions = listOf<String>()
+    private var currentRound = 0
     private var score = 0
-    
+    private var lastScore = 0
+    private val TAG = "Instrumental Mode"
 
+    /**
+     * Creates and returns the game mode's scene.
+     *
+     * @return Scene containing all UI elements and gameplay logic for the instrumental mode.
+     */
     override fun returnGameModeScene(): Scene {
         val scene = Scene()
         scene.setBackground {
@@ -26,77 +53,200 @@ class InstrumentalMode(var context: Context, private val changeModeCallback: (Ga
         }
 
         scene.setInitScene {
-            generateNewQuestion()
-
-            // Przycisk powrotu
-            val exitButton = Button(loadTextureBitmap("button.png", context), id = "exitButton")
-            exitButton.setOriginPosition(y = 0.85f, x = -0.65f)
-            exitButton.scale(0.2f)
-            exitButton.onClickAction { changeModeCallback(GameModeName.MENU) }
-            scene.addGameObject(exitButton)
-
-            // Przycisk do puszczania muzyki
-            val playMusicButton = Button(loadTextureBitmap("button.png", context), id = "playMusicButton")
-            playMusicButton.setOriginPosition(x = 0.0f, y = 0.4f)
-            playMusicButton.scale(0.25f)
-            playMusicButton.onClickAction { playInstrumentSound(currentInstrument) }
-            scene.addGameObject(playMusicButton)
-
-            // Tworzenie przycisków odpowiedzi na podstawie answerOptions
-            val answerButton1 = Button(loadTextureBitmap("button.png", context), id = "answerButton1")
-            answerButton1.setOriginPosition(x = -0.5f, y = -0.2f)
-            answerButton1.scale(0.25f)
-            answerButton1.onClickAction { checkAnswer(answerOptions[0]) }
-            scene.addGameObject(answerButton1)
-
-            val answerButton2 = Button(loadTextureBitmap("button.png", context), id = "answerButton2")
-            answerButton2.setOriginPosition(x = 0.5f, y = -0.2f)
-            answerButton2.scale(0.25f)
-            answerButton2.onClickAction { checkAnswer(answerOptions[1]) }
-            scene.addGameObject(answerButton2)
-
-            val answerButton3 = Button(loadTextureBitmap("button.png", context), id = "answerButton3")
-            answerButton3.setOriginPosition(x = -0.5f, y = -0.6f)
-            answerButton3.scale(0.25f)
-            answerButton3.onClickAction { checkAnswer(answerOptions[2]) }
-            scene.addGameObject(answerButton3)
-
-            val answerButton4 = Button(loadTextureBitmap("button.png", context), id = "answerButton4")
-            answerButton4.setOriginPosition(x = 0.5f, y = -0.6f)
-            answerButton4.scale(0.25f)
-            answerButton4.onClickAction { checkAnswer(answerOptions[3]) }
-            scene.addGameObject(answerButton4)
+            setupScene(scene)
         }
-
         return scene
     }
 
-    private fun playInstrumentSound(instrument: String) {
-        val soundId = instruments.indexOf(instrument) + 1 // Założenie: ID odpowiadają indeksowi +1
-        val sound = soundPlayer.getSoundById(soundId)
-        sound?.let {
-            soundPlayer.setSound(it.resId)
-            soundPlayer.play()
+    private val scoreExampleText = context.getString(R.string.score_example_text)
+    private val roundExampleText = context.getString(R.string.round_example_text)
+    private val finalScoreText = context.getString(R.string.final_score_text)
+    private val finishGameText = context.getString(R.string.finish_game_text)
+
+    /**
+     * Sets up the scene by adding buttons, text boxes, and the music playback feature.
+     *
+     * @param scene The scene object to which game objects will be added.
+     */
+    private fun setupScene(scene: Scene) {
+        val scoreText = TextBox(initialText = "$scoreExampleText $score", id = "scoreText")
+        val roundText = TextBox(initialText = "$roundExampleText $currentRound", id = "roundText")
+
+        val popup = Popup(
+            loadTextureBitmap("popupBackgound.png", context),
+            context.getString(R.string.tutorial_instrumental),
+            popupAnswer = context.getString(R.string.tutorial_rhythm_answer)
+        )
+
+        val exitPopup = PopupDouble(
+            loadTextureBitmap("popupBackgound.png", context),
+            context.getString(R.string.exit_popup_text),
+            popupAnswer1 = context.getString(R.string.exit_no),
+            popupAnswer2 = context.getString(R.string.exit_yes)
+        )
+
+        lateinit var ans1: Button
+        lateinit var ans2: Button
+        lateinit var ans3: Button
+        lateinit var ans4: Button
+        var currentURL = "";
+        val exitButton = Button(loadTextureBitmap("back.png", context), id = "exitButton")
+        val playMusicButton = Button(loadTextureBitmap("rhythm_mode/play.png", context), id = "playMusicButton")
+
+        /**
+         * Loads the questions for the Instrumental mode.
+         * This could involve processing or validating the questions.
+         */
+        fun refreshQuestion() {
+            var q = questions[currentRound]
+            ans1.changeBaseBitmap(createTextTexture(text = "${q.ans1}", size = 90f, background = loadTextureBitmap("button.png", context)))
+            ans2.changeBaseBitmap(createTextTexture(text = "${q.ans2}", size = 90f, background = loadTextureBitmap("button.png", context)))
+            ans3.changeBaseBitmap(createTextTexture(text = "${q.ans3}", size = 90f, background = loadTextureBitmap("button.png", context)))
+            ans4.changeBaseBitmap(createTextTexture(text = "${q.ans4}", size = 90f, background = loadTextureBitmap("button.png", context)))
+            currentURL = q.url
+            playMusicButton.onClickAction {
+                Log.i(TAG, "${currentURL}" );
+                val soundFile = questions[currentRound]?.url?.let { context.cacheDir.resolve(it.substringAfterLast("/")) }
+                if (soundFile?.exists() == true) {
+                    soundPlayer.playSoundWithPitch(1.0f, soundFile.absolutePath)
+                }
+            }
         }
+
+        /**
+         * Retrieves the correct answer for the given question.
+         *
+         * @param question The question object from which the correct answer is retrieved.
+         * @return The correct answer as a string.
+         */
+        fun getCorrectAnswer(question: Question): String? {
+            return when (question.correctAnswer) {
+                1 -> question.ans1 ?: ""
+                2 -> question.ans2 ?: ""
+                3 -> question.ans3 ?: ""
+                4 -> question.ans4 ?: ""
+                else -> ""
+            }
+        }
+
+        /**
+         * Checks if the player's answer matches the correct answer for the question.
+         *
+         * @param question The question object containing the correct answer.
+         * @param playerAnswer The answer provided by the player.
+         * @return True if the player's answer is correct, false otherwise.
+         */
+        fun checkAnswer(selectedAnswer: Int) {
+            soundPlayer.stopAllSounds()
+
+            val currentQuestion = questions.getOrNull(currentRound)
+            if (currentQuestion != null) {
+                if (selectedAnswer == currentQuestion.correctAnswer) {
+                    score++
+                    lastScore = 1
+                }
+                else {
+                    lastScore = 0
+                }
+
+                playMusicButton.lock(); exitButton.lock()
+                ans1.lock(); ans2.lock(); ans3.lock(); ans4.lock()
+
+
+                currentRound++
+                if (currentRound < totalRounds) {
+                    popup.answerButton.displayedText = context.getString(R.string.next_instrumental)
+                    roundText.displayedText = "$roundExampleText $currentRound"
+                    scoreText.displayedText = "$scoreExampleText $score"
+                    val text = if (lastScore == 1 )
+                        context.getString(R.string.correct_instrumental)
+                    else
+                        "${context.getString(R.string.incorrect_instrumental)} ${getCorrectAnswer(currentQuestion)}"
+                    popup.popupTextBox.displayedText = "$text  $scoreExampleText $score/$totalRounds"
+                    popup.showPopup()
+                    refreshQuestion()
+                } else {
+                    sendScore()
+                    popup.answerButton.displayedText = context.getString(R.string.last_instrumental)
+                    val text = if (lastScore == 1 )
+                        context.getString(R.string.correct_instrumental)
+                    else
+                        "${context.getString(R.string.correct_instrumental)} ${getCorrectAnswer(currentQuestion)}"
+                    popup.popupTextBox.displayedText = "$text  Score: $score/$totalRounds"
+                    popup.setPopupCallback { changeModeCallback(GameModeName.MENU) }
+                    popup.showPopup()
+
+                    println("Game Over! Your final score: $score")
+                }
+            }
+        }
+
+        /**
+         * Creates a clickable button for a given answer option.
+         *
+         * @param context The application context for creating the button.
+         * @param answerText The text to display on the button.
+         * @param onClickAction The action to perform when the button is clicked.
+         * @return A Button object configured with the given parameters.
+         */
+        fun createAnswerButton(scene: Scene, answer: Int, x: Float, y: Float): Button {
+            val button = Button(loadTextureBitmap("button.png", context), id = "answerButton-$answer")
+            button.setOriginPosition(x = x, y = y)
+            button.scale(0.25f)
+            button.onClickAction { checkAnswer(answer) }
+            return button
+        }
+
+        playMusicButton.setOriginPosition(y = 0.2f, x = 0.0f)
+        playMusicButton.scale(0.25f)
+
+        roundText.setOriginPosition(y = 0.8f, x = 0f)
+        roundText.scale(0.5f)
+        scoreText.setOriginPosition(y = 0.7f, x = 0f)
+        scoreText.scale(0.5f)
+        scene.addGameObject(scoreText, roundText)
+
+        ans1 = createAnswerButton(scene, 1, x = -0.5f, y = -0.2f)
+        ans2 = createAnswerButton(scene, 2, x = 0.5f, y = -0.2f)
+        ans3 = createAnswerButton(scene, 3, x = -0.5f, y = -0.6f)
+        ans4 = createAnswerButton(scene, 4, x = 0.5f, y = -0.6f)
+
+        exitPopup.setPopupCallback1 {
+            exitPopup.hidePopup()
+            playMusicButton.unlock(); exitButton.unlock()
+            ans1.unlock(); ans2.unlock(); ans3.unlock(); ans4.unlock()
+        }
+
+        exitPopup.setPopupCallback2 {
+            soundPlayer.stopAllSounds()
+            changeModeCallback(GameModeName.MENU)
+        }
+
+
+        exitButton.setOriginPosition(y = 0.8f, x = -0.75f)
+        exitButton.scale(0.15f)
+        exitButton.onClickAction {
+            playMusicButton.lock(); exitButton.lock()
+            ans1.lock(); ans2.lock(); ans3.lock(); ans4.lock()
+            exitPopup.showPopup()
+        }
+
+        refreshQuestion()
+
+        popup.setPopupCallback {
+            playMusicButton.unlock(); exitButton.unlock()
+            ans1.unlock(); ans2.unlock(); ans3.unlock(); ans4.unlock()
+        }
+        popup.popupTextBox.size = 26f
+
+        playMusicButton.lock(); exitButton.lock()
+        ans1.lock(); ans2.lock(); ans3.lock(); ans4.lock()
+        popup.showPopup()
+
+        scene.addGameObject(playMusicButton, exitButton, ans1, ans2, ans3, ans4, popup, exitPopup)
     }
 
-    private fun checkAnswer(selectedInstrument: String) {
-        if (selectedInstrument == currentInstrument) {
-            println("Correct! It was $currentInstrument.")
-        } else {
-            println("Wrong! It was $currentInstrument.")
-        }
-        generateNewQuestion()
-    }
-
-    private fun generateNewQuestion() {
-        // Wybieranie poprawnej odpowiedzi
-        currentInstrument = instruments.random()
-
-        // Generowanie 3 losowych, różnych od currentInstrument opcji
-        val incorrectAnswers = instruments.filter { it != currentInstrument }.shuffled().take(3)
-
-        // Łączenie poprawnej odpowiedzi z trzema niepoprawnymi i mieszanie
-        answerOptions = (incorrectAnswers + currentInstrument).shuffled()
+    private fun sendScore() {
+        onCompleteCallback(score.toDouble())
     }
 }
