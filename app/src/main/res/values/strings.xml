@@ -7,13 +7,13 @@
     <string name="connection_success">Connected!</string>
     <string name="connection_failed">Connection to game server failed!</string>
     <string name="connecting">Connecting...</string>
-    <string name="tutorial_rhythm">tutorial_rhythm</string>
-    <string name="tutorial_rhythm_answer">tutorial_rhythm_answer</string>
-    <string name="rhythm_popup_answser">ok</string>
-    <string name="tutorial_instrumental">tutorial_instrumental</string>
+    <string name="tutorial_rhythm">Start game by pressing \"play\" button, then try to repeat pattern by pressing red button.</string>
+    <string name="tutorial_rhythm_answer">Let\'s begin!</string>
+    <string name="rhythm_popup_answser">Okay!</string>
+    <string name="tutorial_instrumental">Start game by pressing \"play\" Then choose from four answers what did you hear.</string>
     <string name="correct_instrumental">Correct!</string>
     <string name="incorrect_instrumental">Incorrect</string>
-    <string name="next_instrumental">next</string>
+    <string name="next_instrumental">Next!</string>
     <string name="last_instrumental">Back to the menu</string>
     <string name="exit_popup_text">Go back to menu? Progress will be lost!</string>
     <string name="exit_yes">Yes, leave</string>
@@ -22,4 +22,6 @@
     <string name="rhythm">Rhythm Mode</string>
     <string name="instrumental">Instrumental Mode</string>
     <string name="loading">Loading...</string>
+    <string name="msg_no_connection">Couldn\'t connect to the server</string>
+    <string name="msg_error_downloading">Some server error occured</string>
 </resources>

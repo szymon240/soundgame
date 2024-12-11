@@ -1,8 +1,10 @@
 package pl.soundgame
 
 import android.content.Context
+import android.os.Looper
 import android.provider.Settings.Global
 import android.util.Log
+import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -25,6 +27,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.w3c.dom.Text
+import pl.soundgame.connection.NetworkMonitor
 import pl.soundgame.connection.serializedclasses.ScoreRequest
 import pl.soundgame.connection.serializedclasses.ScoreResponse
 import pl.soundgame.engine.gameobjects.Popup
@@ -51,7 +54,7 @@ internal class SoundGame(context: Context) : Game() {
     private val commManager = CommunicationManager()
     private var questions: List<Question> = emptyList()
     private var score = 0.0
-
+    private val networkMonitor = NetworkMonitor(context)
     init {
         this.context = context
         gameMode = Menu(this.context, changeModeCallback)
@@ -60,6 +63,15 @@ internal class SoundGame(context: Context) : Game() {
         changeMode(GameModeName.MENU)
 
         checkServerStatus()
+        networkMonitor.registerNetworkCallback { isConnected ->
+            CONNECTION_STATUS = ConnectionStatus.CONNECTING
+            checkServerStatus()
+            if (isConnected) {
+                Log.d("NetworkStatus", "Connected to the internet")
+            } else {
+                Log.d("NetworkStatus", "Disconnected from the internet")
+            }
+        }
     }
 
     /**
@@ -175,10 +187,20 @@ internal class SoundGame(context: Context) : Game() {
      */
     fun changeMode(newMode: GameModeName) {
         Log.i(TAG, "Changing mode to: $newMode")
-        var retries = 3  // Number of retries allowed
+        var retries = 6  // Number of retries allowed
 
         fun tryChangeMode() {
             if (newMode != GameModeName.MENU && newMode != GameModeName.SETTINGS) {
+                if (CONNECTION_STATUS != ConnectionStatus.SUCCESS){
+                    MainScope().launch {
+                        val text = context.getString(R.string.msg_no_connection)
+                        val duration = Toast.LENGTH_SHORT
+                        val toast = Toast.makeText(context, text, duration) // in Activity
+                        toast.show()
+                    }
+                    return
+                }
+
                 mScene.lockAllButtons()
                 fetchQuestionsForMode(newMode)
                 mScene.modifyGameObjectsById("popup_loading") { obj ->
@@ -196,8 +218,17 @@ internal class SoundGame(context: Context) : Game() {
                             tryChangeMode()
                         }
                     } else {
+                        val text = context.getString(R.string.msg_error_downloading)
+                        val duration = Toast.LENGTH_SHORT
+                        val toast = Toast.makeText(context, text, duration) // in Activity
+                        toast.show()
                         Log.e(TAG, "Failed to load mode: $newMode after retries. Staying in current mode.")
                         mScene.unlockAllButtons()
+                        mScene.modifyGameObjectsById("popup_loading") { obj ->
+                            if(obj is Popup){
+                                obj.hidePopup()
+                            }
+                        }
                     }
                     return
                 }
@@ -213,8 +244,17 @@ internal class SoundGame(context: Context) : Game() {
 
                             tryChangeMode()
                         } else {
+                            val text = context.getString(R.string.msg_error_downloading)
+                            val duration = Toast.LENGTH_SHORT
+                            val toast = Toast.makeText(context, text, duration) // in Activity
+                            toast.show()
                             Log.e(TAG, "Failed to download sounds for mode: $newMode after retries. Staying in current mode.")
                             mScene.unlockAllButtons()
+                            mScene.modifyGameObjectsById("popup_loading") { obj ->
+                                if(obj is Popup){
+                                    obj.hidePopup()
+                                }
+                            }
                         }
                         return@launch
                     }

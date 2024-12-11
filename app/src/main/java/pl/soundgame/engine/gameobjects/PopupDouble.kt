@@ -82,7 +82,7 @@ class PopupDouble(background: Bitmap, popupText: String, popupAnswer1: String = 
         answerButton1.setOriginPosition(y = -0.15f)
         answerButton1.scale(0.25f)
 
-        answerButton2 = TextBox(id = "${id} - Answer", size = 32f, initialText = popupAnswer2,
+        answerButton2 = TextBox(id = "${id} - Answer", size = 24f, initialText = popupAnswer2,
             color = Color.RED, height = 100, width = 300)
         answerButton2.setOriginPosition(y = -0.3f)
         answerButton2.scale(0.25f)

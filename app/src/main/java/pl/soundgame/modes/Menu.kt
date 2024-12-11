@@ -32,7 +32,7 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             val rhythm = TextBox(initialText = "$rhythm", id = "rhythm")
             val instrumental = TextBox(initialText = "$instrumental", id = "instrumental")
             val popupLoading = Popup(popupText= "", background
-            = createTextTexture(text = context.getString(R.string.loading)), id = "popup_loading", duration = 120)
+            = createTextTexture(text = context.getString(R.string.loading)), id = "popup_loading", duration = 1200)
             popupLoading.hidePopup()
             settings.setOriginPosition(y = -0.06f, x = 0.5f)
             settings.scale(0.5f)
