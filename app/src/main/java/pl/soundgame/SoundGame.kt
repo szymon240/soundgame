@@ -27,6 +27,7 @@ import kotlinx.coroutines.runBlocking
 import org.w3c.dom.Text
 import pl.soundgame.connection.serializedclasses.ScoreRequest
 import pl.soundgame.connection.serializedclasses.ScoreResponse
+import pl.soundgame.engine.gameobjects.Popup
 import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.modes.Empty
 
@@ -54,9 +55,9 @@ internal class SoundGame(context: Context) : Game() {
     init {
         this.context = context
         gameMode = Menu(this.context, changeModeCallback)
-        gameModeName = GameModeName.EMPTY
+        gameModeName = GameModeName.MENU
         mScene = gameMode.returnGameModeScene()
-        changeMode(GameModeName.EMPTY)
+        changeMode(GameModeName.MENU)
 
         checkServerStatus()
     }
@@ -178,8 +179,13 @@ internal class SoundGame(context: Context) : Game() {
 
         fun tryChangeMode() {
             if (newMode != GameModeName.MENU && newMode != GameModeName.SETTINGS) {
+                mScene.lockAllButtons()
                 fetchQuestionsForMode(newMode)
-
+                mScene.modifyGameObjectsById("popup_loading") { obj ->
+                    if(obj is Popup){
+                        obj.showPopup()
+                    }
+                }
                 if (questions.isEmpty()) {
                     Log.e(TAG, "No questions available for mode: $newMode. Retrying...")
                     if (retries > 0) {
@@ -191,6 +197,7 @@ internal class SoundGame(context: Context) : Game() {
                         }
                     } else {
                         Log.e(TAG, "Failed to load mode: $newMode after retries. Staying in current mode.")
+                        mScene.unlockAllButtons()
                     }
                     return
                 }
@@ -207,6 +214,7 @@ internal class SoundGame(context: Context) : Game() {
                             tryChangeMode()
                         } else {
                             Log.e(TAG, "Failed to download sounds for mode: $newMode after retries. Staying in current mode.")
+                            mScene.unlockAllButtons()
                         }
                         return@launch
                     }

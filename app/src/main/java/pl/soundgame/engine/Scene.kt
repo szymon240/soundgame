@@ -3,7 +3,9 @@ package pl.soundgame.engine
 import android.opengl.GLES20
 import android.util.Log
 import pl.soundgame.engine.background.Background
+import pl.soundgame.engine.gameobjects.Button
 import pl.soundgame.engine.gameobjects.GameObject
+import java.util.Objects
 
 /**
  * Scene - abstract class for storing and managing elements of segment of the game. To create concrete
@@ -149,4 +151,19 @@ class Scene {
         afterDrawFrame = fn
     }
 
+    fun lockAllButtons(){
+        for(obj in mObjects){
+            if(obj is Button){
+                obj.lock()
+            }
+        }
+    }
+
+    fun unlockAllButtons(){
+        for(obj in mObjects){
+            if(obj is Button){
+                obj.unlock()
+            }
+        }
+    }
 }

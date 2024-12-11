@@ -13,6 +13,7 @@ import pl.soundgame.engine.gameobjects.GameObject
 import pl.soundgame.engine.gameobjects.Popup
 import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.engine.loadTextureBitmap
+import pl.soundgame.engine.shapes.createTextTexture
 
 class Menu(var context: Context, private val changeModeCallback: (GameModeName) -> Unit) : GameMode() {
     private var displayedConnectionStatus = ConnectionStatus.CONNECTING
@@ -30,14 +31,16 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             val settings = TextBox(initialText = "$settings", id = "settings")
             val rhythm = TextBox(initialText = "$rhythm", id = "rhythm")
             val instrumental = TextBox(initialText = "$instrumental", id = "instrumental")
-
+            val popupLoading = Popup(popupText= "", background
+            = createTextTexture(text = context.getString(R.string.loading)), id = "popup_loading", duration = 120)
+            popupLoading.hidePopup()
             settings.setOriginPosition(y = -0.06f, x = 0.5f)
             settings.scale(0.5f)
             rhythm.setOriginPosition(y = 0.57f, x = -0.5f)
             rhythm.scale(0.5f)
             instrumental.setOriginPosition(y = 0.6f, x = 0.5f)
             instrumental.scale(0.5f)
-            scene.addGameObject(settings, rhythm, instrumental)
+            scene.addGameObject(settings, rhythm, instrumental, popupLoading)
 
             val title = GameObject(loadTextureBitmap("title.png", context), "title")
             title.setOriginPosition(y = 0.8f)
