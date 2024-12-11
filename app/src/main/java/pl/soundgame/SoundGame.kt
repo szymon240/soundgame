@@ -42,7 +42,7 @@ internal class SoundGame(context: Context) : Game() {
     private var gameModeName: GameModeName
     private var TAG = "SoundGame Main Object"
     private var changeModeCallback: (GameModeName) -> Unit = { mode -> changeMode(mode) }
-    private var rounds = 6
+    private var rounds = 4
     private val commManager = CommunicationManager()
     private var questions: List<Question> = emptyList()
     private var score = 0.0
@@ -80,8 +80,6 @@ internal class SoundGame(context: Context) : Game() {
      * @param mode The game mode for which questions are to be fetched.
      */
     private fun fetchQuestionsForMode(mode: GameModeName) {
-
-
         commManager.getQuestions(mode, rounds) { response ->
             if (response != null) {
                 questions = response.questions ?: emptyList()
@@ -172,28 +170,59 @@ internal class SoundGame(context: Context) : Game() {
      */
     fun changeMode(newMode: GameModeName) {
         Log.i(TAG, "Changing mode to: $newMode")
+        var retries = 3  // Number of retries allowed
 
-        if (newMode != GameModeName.MENU && newMode != GameModeName.SETTINGS) {
-            fetchQuestionsForMode(newMode)
+        fun tryChangeMode() {
+            if (newMode != GameModeName.MENU && newMode != GameModeName.SETTINGS) {
+                fetchQuestionsForMode(newMode)
 
-            if (questions.isEmpty()) {
-                Log.e(TAG, "No questions available for mode: $newMode. Staying in the current mode.")
-                return
-            }
-
-            // Launch a coroutine to download sounds
-            GlobalScope.launch {
-                val allSoundsDownloaded = downloadSoundsForQuestions(questions)
-                if (!allSoundsDownloaded) {
-                    Log.e(TAG, "Not all sounds are downloaded. Staying in the current mode.")
-                    return@launch
+                if (questions.isEmpty()) {
+                    Log.e(TAG, "No questions available for mode: $newMode. Retrying...")
+                    if (retries > 0) {
+                        retries--
+                        GlobalScope.launch {
+                            withContext(Dispatchers.IO) {
+                                Thread.sleep(1000)  // Wait 1 second before retrying
+                            }
+                            tryChangeMode()
+                        }
+                    } else {
+                        Log.e(TAG, "Failed to load mode: $newMode after retries. Staying in current mode.")
+                    }
+                    return
                 }
+
+                // Launch a coroutine to download sounds
+                GlobalScope.launch {
+                    val allSoundsDownloaded = downloadSoundsForQuestions(questions)
+                    if (!allSoundsDownloaded) {
+                        Log.e(TAG, "Not all sounds are downloaded. Retrying...")
+                        if (retries > 0) {
+                            retries--
+                            withContext(Dispatchers.IO) {
+                                Thread.sleep(1000)  // Wait 1 second before retrying
+                            }
+                            tryChangeMode()
+                        } else {
+                            Log.e(TAG, "Failed to download sounds for mode: $newMode after retries. Staying in current mode.")
+                        }
+                        return@launch
+                    }
+
+                    // Proceed with mode initialization once everything is ready
+                    initializeGameMode(newMode)
+                }
+            } else {
+                questions = emptyList()
+                Log.i(TAG, "Cleared questions and related data.")
+                initializeGameMode(newMode)
             }
-        } else {
-            questions = emptyList()
-            Log.i(TAG, "Cleared questions and related data.")
         }
 
+        tryChangeMode()
+    }
+
+    private fun initializeGameMode(newMode: GameModeName) {
         gameMode = when (newMode) {
             GameModeName.MENU -> Menu(this.context, changeModeCallback)
             GameModeName.RHYTHM -> RhythmMode(this.context, changeModeCallback, questions, rounds, ::onRhythmModeComplete)

@@ -14,6 +14,7 @@ import pl.soundgame.engine.gameobjects.PopupDouble
 import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.engine.loadTextureBitmap
 import pl.soundgame.engine.shapes.createTextTexture
+import java.io.File
 
 /**
  * InstrumentalMode - a game mode where players answer questions based on audio cues.
@@ -61,26 +62,6 @@ class InstrumentalMode(
     private val roundExampleText = context.getString(R.string.round_example_text)
     private val finalScoreText = context.getString(R.string.final_score_text)
     private val finishGameText = context.getString(R.string.finish_game_text)
-    /**
-     * Logs all questions with their details.
-     */
-    private fun logAllQuestions() {
-        Log.i(TAG, "Logging all questions with full details:")
-        for ((index, question) in questions.withIndex()) {
-            Log.i(
-                TAG, """
-            |Question ${index + 1}:
-            |  Question Text: ${question.question}
-            |  Correct Answer: ${question.correctAnswer}
-            |  Answer 1: ${question.ans1}
-            |  Answer 2: ${question.ans2}
-            |  Answer 3: ${question.ans3}
-            |  Answer 4: ${question.ans4}
-            |  URL: ${question.url}
-            """.trimMargin()
-            )
-        }
-    }
 
     /**
      * Sets up the scene by adding buttons, text boxes, and the music playback feature.
@@ -90,7 +71,7 @@ class InstrumentalMode(
     private fun setupScene(scene: Scene) {
         val scoreText = TextBox(initialText = "$scoreExampleText $score", id = "scoreText")
         val roundText = TextBox(initialText = "$roundExampleText $currentRound", id = "roundText")
-        logAllQuestions()
+
         val popup = Popup(
             loadTextureBitmap("popupBackgound.png", context),
             context.getString(R.string.tutorial_instrumental),
@@ -124,7 +105,11 @@ class InstrumentalMode(
             ans4.changeBaseBitmap(createTextTexture(text = "${q.ans4}", size = 90f, background = loadTextureBitmap("button.png", context)))
             currentURL = q.url
             playMusicButton.onClickAction {
-                Log.i(TAG, "${currentURL}" );soundPlayer.playFromUrl(currentURL)
+                Log.i(TAG, "${currentURL}" );
+                val soundFile = questions[currentRound]?.url?.let { context.cacheDir.resolve(it.substringAfterLast("/")) }
+                if (soundFile?.exists() == true) {
+                    soundPlayer.playSoundWithPitch(1.0f, soundFile.absolutePath)
+                }
             }
         }
 
