@@ -42,7 +42,7 @@ internal class SoundGame(context: Context) : Game() {
     private var gameModeName: GameModeName
     private var TAG = "SoundGame Main Object"
     private var changeModeCallback: (GameModeName) -> Unit = { mode -> changeMode(mode) }
-    private var rounds = 3
+    private var rounds = 6
     private val commManager = CommunicationManager()
     private var questions: List<Question> = emptyList()
     private var score = 0.0
@@ -80,6 +80,8 @@ internal class SoundGame(context: Context) : Game() {
      * @param mode The game mode for which questions are to be fetched.
      */
     private fun fetchQuestionsForMode(mode: GameModeName) {
+
+
         commManager.getQuestions(mode, rounds) { response ->
             if (response != null) {
                 questions = response.questions ?: emptyList()

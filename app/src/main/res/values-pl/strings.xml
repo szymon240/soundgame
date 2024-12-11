@@ -11,10 +11,10 @@
     <string name="tutorial_rhythm">"Rozpocznij grę naciskając przycisk \"play\", następnie odtwórz rytm  poprzez wciskanie przycisku. "</string>
     <string name="tutorial_rhythm_answer">Zaczynamy!</string>
     <string name="rhythm_popup_answser">Okej!</string>
-    <string name="tutorial_instrumental">Rozpocznij grę naciskając \"start\", a następnie wybierz spośród 4 opcji to co uznajesz</string>
+    <string name="tutorial_instrumental">Rozpocznij grę naciskając \"start\", a następnie wybierz spośród 4 opcji poprawną nazwę instrumentu.</string>
     <string name="correct_instrumental">Dobrze!</string>
     <string name="incorrect_instrumental">"Źle! Poprawną odpowiedzią było: "</string>
-    <string name="next_instrumental">Previous</string>
+    <string name="next_instrumental">Dalej!</string>
     <string name="last_instrumental">Wróć do menu</string>
     <string name="exit_popup_text">Powrócić do menu? Utracisz swój postęp</string>
     <string name="exit_yes">Tak, opuść</string>

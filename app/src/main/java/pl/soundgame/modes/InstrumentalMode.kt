@@ -61,6 +61,26 @@ class InstrumentalMode(
     private val roundExampleText = context.getString(R.string.round_example_text)
     private val finalScoreText = context.getString(R.string.final_score_text)
     private val finishGameText = context.getString(R.string.finish_game_text)
+    /**
+     * Logs all questions with their details.
+     */
+    private fun logAllQuestions() {
+        Log.i(TAG, "Logging all questions with full details:")
+        for ((index, question) in questions.withIndex()) {
+            Log.i(
+                TAG, """
+            |Question ${index + 1}:
+            |  Question Text: ${question.question}
+            |  Correct Answer: ${question.correctAnswer}
+            |  Answer 1: ${question.ans1}
+            |  Answer 2: ${question.ans2}
+            |  Answer 3: ${question.ans3}
+            |  Answer 4: ${question.ans4}
+            |  URL: ${question.url}
+            """.trimMargin()
+            )
+        }
+    }
 
     /**
      * Sets up the scene by adding buttons, text boxes, and the music playback feature.
@@ -70,7 +90,7 @@ class InstrumentalMode(
     private fun setupScene(scene: Scene) {
         val scoreText = TextBox(initialText = "$scoreExampleText $score", id = "scoreText")
         val roundText = TextBox(initialText = "$roundExampleText $currentRound", id = "roundText")
-
+        logAllQuestions()
         val popup = Popup(
             loadTextureBitmap("popupBackgound.png", context),
             context.getString(R.string.tutorial_instrumental),
@@ -103,7 +123,9 @@ class InstrumentalMode(
             ans3.changeBaseBitmap(createTextTexture(text = "${q.ans3}", size = 90f, background = loadTextureBitmap("button.png", context)))
             ans4.changeBaseBitmap(createTextTexture(text = "${q.ans4}", size = 90f, background = loadTextureBitmap("button.png", context)))
             currentURL = q.url
-            playMusicButton.onClickAction {             Log.i(TAG, "${currentURL}" );soundPlayer.playFromUrl(currentURL) }
+            playMusicButton.onClickAction {
+                Log.i(TAG, "${currentURL}" );soundPlayer.playFromUrl(currentURL)
+            }
         }
 
         /**
@@ -155,7 +177,7 @@ class InstrumentalMode(
                         context.getString(R.string.correct_instrumental)
                     else
                         "${context.getString(R.string.incorrect_instrumental)} ${getCorrectAnswer(currentQuestion)}"
-                    popup.popupTextBox.displayedText = "$text  Score: $score/$totalRounds"
+                    popup.popupTextBox.displayedText = "$text  $scoreExampleText $score/$totalRounds"
                     popup.showPopup()
                     refreshQuestion()
                 } else {

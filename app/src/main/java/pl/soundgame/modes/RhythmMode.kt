@@ -196,8 +196,8 @@ class RhythmMode(
             }
             scene.addGameObject(playButton)
 
-            exitButton.setOriginPosition(y = 0.2f, x = -0.5f)
-            exitButton.scale(0.25f)
+            exitButton.setOriginPosition(y = 0.8f, x = -0.75f)
+            exitButton.scale(0.15f)
             exitButton.onClickAction {
                 exitPopup.showPopup()
                 playButton.lock()
