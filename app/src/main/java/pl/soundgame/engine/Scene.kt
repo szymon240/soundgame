@@ -66,7 +66,7 @@ class Scene {
             gameObject.draw(shaderProgram,vPMatrix)
         }
         afterDrawFrame?.invoke()
-        if ( framesPassed == 10u)
+        if ( framesPassed < 40u && framesPassed % 10u == 0u )
         {
             timesRefreshed++
             this.refreshAll()

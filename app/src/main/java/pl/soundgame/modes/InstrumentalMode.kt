@@ -156,13 +156,13 @@ class InstrumentalMode(
                 currentRound++
                 if (currentRound < totalRounds) {
                     popup.answerButton.displayedText = context.getString(R.string.next_instrumental)
-                    roundText.displayedText = "$roundExampleText $currentRound"
-                    scoreText.displayedText = "$scoreExampleText $score"
+                    roundText.displayedText = "$roundExampleText ${currentRound + 1}"
+                    scoreText.displayedText = "$scoreExampleText ${score * 100}"
                     val text = if (lastScore == 1 )
                         context.getString(R.string.correct_instrumental)
                     else
                         "${context.getString(R.string.incorrect_instrumental)} ${getCorrectAnswer(currentQuestion)}"
-                    popup.popupTextBox.displayedText = "$text  $scoreExampleText $score/$totalRounds"
+                    popup.popupTextBox.displayedText = "$text  $scoreExampleText $ ${score * 100}/${totalRounds * 100}"
                     popup.showPopup()
                     refreshQuestion()
                 } else {
@@ -171,8 +171,8 @@ class InstrumentalMode(
                     val text = if (lastScore == 1 )
                         context.getString(R.string.correct_instrumental)
                     else
-                        "${context.getString(R.string.correct_instrumental)} ${getCorrectAnswer(currentQuestion)}"
-                    popup.popupTextBox.displayedText = "$text  Score: $score/$totalRounds"
+                        "${context.getString(R.string.incorrect_instrumental)} ${getCorrectAnswer(currentQuestion)}"
+                    popup.popupTextBox.displayedText = "$text $scoreExampleText :  ${score * 100}/${totalRounds * 100}"
                     popup.setPopupCallback { changeModeCallback(GameModeName.MENU) }
                     popup.showPopup()
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Gra Dźwiękowa!</string>
+    <string name="app_name">Sound Game</string>
     <string name="score_example_text">Wynik: </string>
     <string name="round_example_text">Runda: </string>
     <string name="final_score_text">Twój ostateczny wynik: </string>

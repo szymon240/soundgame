@@ -8,19 +8,11 @@ import pl.soundgame.engine.gameobjects.Button
 import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.engine.loadTextureBitmap
 import android.content.res.Configuration
+import changeLocale
 import java.util.Locale
 
 class Settings(var context: Context, private val changeModeCallback: (GameModeName) -> Unit) : GameMode() {
-
-    fun changeLocale(context: Context, languageCode: String): Context {
-        val locale = Locale(languageCode)
-        Locale.setDefault(locale)
-        val config = Configuration(context.resources.configuration)
-        config.setLocale(locale)
-        return context.createConfigurationContext(config)
-    }
-
-    private fun applyLocaleChange(languageCode: String) {
+     private fun applyLocaleChange(languageCode: String) {
         context = changeLocale(context, languageCode)
 
         // Save the selected language to SharedPreferences
