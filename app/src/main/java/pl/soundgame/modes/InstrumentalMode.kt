@@ -162,17 +162,18 @@ class InstrumentalMode(
                         context.getString(R.string.correct_instrumental)
                     else
                         "${context.getString(R.string.incorrect_instrumental)} ${getCorrectAnswer(currentQuestion)}"
-                    popup.popupTextBox.displayedText = "$text  $scoreExampleText $ ${score * 100}/${totalRounds * 100}"
+                    popup.popupTextBox.displayedText = "$text  $scoreExampleText ${score * 100}/${totalRounds * 100}"
                     popup.showPopup()
                     refreshQuestion()
                 } else {
+                    scoreText.displayedText = "$scoreExampleText ${score * 100}"
                     sendScore()
                     popup.answerButton.displayedText = context.getString(R.string.last_instrumental)
                     val text = if (lastScore == 1 )
                         context.getString(R.string.correct_instrumental)
                     else
                         "${context.getString(R.string.incorrect_instrumental)} ${getCorrectAnswer(currentQuestion)}"
-                    popup.popupTextBox.displayedText = "$text $scoreExampleText :  ${score * 100}/${totalRounds * 100}"
+                    popup.popupTextBox.displayedText = "$text $scoreExampleText  ${score * 100}/${totalRounds * 100}"
                     popup.setPopupCallback { changeModeCallback(GameModeName.MENU) }
                     popup.showPopup()
 
@@ -247,6 +248,6 @@ class InstrumentalMode(
     }
 
     private fun sendScore() {
-        onCompleteCallback(score.toDouble())
+        onCompleteCallback(score.toDouble() * 100)
     }
 }
