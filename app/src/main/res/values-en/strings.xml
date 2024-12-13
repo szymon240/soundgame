@@ -26,4 +26,7 @@
     <string name="msg_no_connection">Couldn\'t connect to the server. Connection is required to play the game.</string>
     <string name="msg_error_downloading">Some server error occured</string>
     <string name="authors_info">Authors:\n Adam Czyżak,  Szymon Szymankiewicz\n, Maria Nowicka\n\n Licence: MIT</string>
+    <string name="popupText">Enter your nickname</string>
+    <string name="nickname_popup_save">Save</string>
+    <string name="nickname_popup_cancel">Cancel</string>
 </resources>

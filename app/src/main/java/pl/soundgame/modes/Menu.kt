@@ -49,6 +49,14 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             title.scale(0.5f)
             val popup = Popup(loadTextureBitmap("popupBackgound.png", context), popupText = "Testowy\n popup\nbaredzo długa linijka z dużą ilością zbędnego tekstu", popupAnswer = "Continue", id = "popup", duration = -1)
 
+            val nicknamePopup = PopupDouble(
+                popupText = context.getString(R.string.popupText),
+                popupAnswer1 = context.getString(R.string.nickname_popup_save),
+                popupAnswer2 = context.getString(R.string.nickname_popup_cancel),
+                background = loadTextureBitmap("popupBackgound.png", context),
+                id = "nicknamePopup",
+                duration = -1
+            )
 
             val rhythmModeButton =
                 Button(loadTextureBitmap("rhythmMode2.png", context), id = "rhythmModeButton")
@@ -95,14 +103,8 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             nicknameButton.setOriginPosition(y = -0.33f, x = -0.5f)
             nicknameButton.scale(0.4f)
             nicknameButton.onClickAction {
-                val nicknamePopup = PopupDouble(
-                    popupText = "Enter your nickname:",
-                    popupAnswer1 = "Save",
-                    popupAnswer2 = "Cancel",
-                    background = loadTextureBitmap("popupBackgound.png", context),
-                    id = "nicknamePopup",
-                    duration = -1
-                )
+                //nicknameButton.lock() // Lock the nickname button to prevent multiple clicks
+                nicknamePopup.showPopup()
 
                 nicknamePopup.setPopupCallback1 {
                     val inputText = nicknamePopup.popupText
@@ -119,10 +121,7 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
                     nicknameButton.unlock() // Unlock the nickname button after the popup is dismissed
                 }
 
-                nicknameButton.lock() // Lock the nickname button to prevent multiple clicks
-                nicknamePopup.showPopup()
             }
-            scene.addGameObject(nicknameButton)
 
             val connectionStatusText = TextBox(initialText =  context.getString(R.string.connecting), width =  500, id = "connText")
             connectionStatusText.setOriginPosition(y = -0.8f)
@@ -131,7 +130,7 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             connectionImage.setOriginPosition(y = -0.8f, x = -0.5f )
             connectionImage.scale(0.1f)
 
-            scene.addGameObject(title, instrumentalModeButton, popup, connectionStatusText, connectionImage, settingsButton, nicknameButton)
+            scene.addGameObject(title, instrumentalModeButton, popup, connectionStatusText, connectionImage, settingsButton, nicknameButton, nicknamePopup)
 
         }
 
