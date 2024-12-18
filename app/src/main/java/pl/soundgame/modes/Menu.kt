@@ -7,6 +7,7 @@ import pl.soundgame.SoundGame
 import pl.soundgame.connection.ConnectionStatus
 import pl.soundgame.engine.Game
 import pl.soundgame.engine.Scene
+import pl.soundgame.engine.UserManager
 import pl.soundgame.engine.background.SampleBackground
 import pl.soundgame.engine.gameobjects.Button
 import pl.soundgame.engine.gameobjects.GameObject
@@ -18,7 +19,9 @@ import pl.soundgame.engine.shapes.createTextTexture
 import java.io.File
 
 class Menu(var context: Context, private val changeModeCallback: (GameModeName) -> Unit) : GameMode() {
+    private val userManager: UserManager = UserManager.getInstance(context)
     private var displayedConnectionStatus = ConnectionStatus.CONNECTING
+
     override fun returnGameModeScene(): Scene {
         val scene = Scene()
         scene.setBackground {
@@ -30,6 +33,8 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
         val instrumental = context.getString(R.string.instrumental)
 
         scene.setInitScene {
+            userManager.testSaveData()
+
             val settings = TextBox(initialText = "$settings", id = "settings")
             val rhythm = TextBox(initialText = "$rhythm", id = "rhythm")
             val instrumental = TextBox(initialText = "$instrumental", id = "instrumental")
@@ -109,7 +114,8 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
                 nicknamePopup.setPopupCallback1 {
                     val inputText = nicknamePopup.popupText
                     if (inputText.isNotBlank()) {
-                        saveNicknameToFile(inputText)
+                        userManager.setNickname(inputText)
+                        Log.i("Menu", "Nickname updated to: ${userManager.getNickname()}")
                     }
                     nicknamePopup.hidePopup()
                     nicknameButton.unlock() // Unlock the nickname button after the popup is dismissed
@@ -172,14 +178,5 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
         }
 
         return scene
-    }
-    private fun saveNicknameToFile(nickname: String) {
-        try {
-            val file = File(context.filesDir, "nickname.txt")
-            file.writeText(nickname)
-            Log.i("Menu", "Nickname saved: $nickname")
-        } catch (e: Exception) {
-            Log.e("Menu", "Error saving nickname: ${e.message}", e)
-        }
     }
 }
