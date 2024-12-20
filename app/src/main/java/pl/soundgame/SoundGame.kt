@@ -30,6 +30,7 @@ import org.w3c.dom.Text
 import pl.soundgame.connection.NetworkMonitor
 import pl.soundgame.connection.serializedclasses.ScoreRequest
 import pl.soundgame.connection.serializedclasses.ScoreResponse
+import pl.soundgame.engine.UserManager
 import pl.soundgame.engine.gameobjects.Popup
 import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.modes.Empty
@@ -51,6 +52,7 @@ internal class SoundGame(context: Context) : Game() {
     private var TAG = "SoundGame Main Object"
     private var changeModeCallback: (GameModeName) -> Unit = { mode -> changeMode(mode) }
     private var rounds = 4
+    private val userManager: UserManager = UserManager.getInstance(context)
     private val commManager = CommunicationManager()
     private var questions: List<Question> = emptyList()
     private var score = 0.0
@@ -162,7 +164,7 @@ internal class SoundGame(context: Context) : Game() {
     private fun sendScore(mode: GameModeName, score: Double) {
         val roundedScore = String.format("%.2f", score)
         val formattedScore = roundedScore.replace(",", ".").toDouble()
-        val username = "player"
+        val username = userManager.getNickname()
 
         commManager.postScore(mode, username, formattedScore) { response ->
             if (response != null) {

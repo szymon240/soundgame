@@ -79,16 +79,44 @@ class UserManager private constructor(private val context: Context) {
         return userData["achievements"] as? List<String> ?: emptyList()
     }
 
+    // Function to clear all achievements
+    fun clearAchievements() {
+        val achievements = mutableListOf<String>()
+        userData["achievements"] = achievements
+        saveUserData()
+    }
+
     fun testSaveData() {
-        // Set a test nickname and achievements
-        setNickname("TestUser")
-        addAchievement("FirstAchievement")
-        addAchievement("SecondAchievement")
+        clearAchievements()
 
         // Log the file contents for verification
         val file = File(context.filesDir, fileName)
         if (file.exists()) {
             val jsonString = file.readText()
+            println("Test file content: $jsonString")
+        }
+    }
+    fun testSaveData2() {
+        setNickname("TestUser")
+        addAchievement("FirstAchievement")
+        addAchievement("SecOndAchievement")
+
+        // Log the file contents for verification
+        val file2 = File(context.filesDir, fileName)
+        if (file2.exists()) {
+            val jsonString = file2.readText()
+            println("Test file content: $jsonString")
+        }
+    }
+    fun testSaveData3() {
+        setNickname("TesUser")
+        addAchievement("FirstAchievement")
+        addAchievement("SecondddAchievement")
+
+        // Log the file contents for verification
+        val file3 = File(context.filesDir, fileName)
+        if (file3.exists()) {
+            val jsonString = file3.readText()
             println("Test file content: $jsonString")
         }
     }
