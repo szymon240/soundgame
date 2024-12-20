@@ -75,7 +75,7 @@ class RhythmMode(
         }
 
         val popup = Popup(
-            loadTextureBitmap("popupBackgound.png", context),
+            loadTextureBitmap("popupBackground.png", context),
             context.getString(R.string.tutorial_rhythm),
             popupAnswer = context.getString(R.string.tutorial_rhythm_answer)
         )
@@ -98,7 +98,7 @@ class RhythmMode(
             )
             val roundText = TextBox(initialText = "$roundExampleText ${roundNumber + 1}", id = "roundText")
             val exitPopup = PopupDouble(
-                loadTextureBitmap("popupBackgound.png", context),
+                loadTextureBitmap("popupBackground.png", context),
                 context.getString(R.string.exit_popup_text),
                 popupAnswer1 = context.getString(R.string.exit_no),
                 popupAnswer2 = context.getString(R.string.exit_yes)

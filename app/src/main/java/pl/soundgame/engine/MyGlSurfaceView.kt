@@ -8,6 +8,13 @@ import android.view.MotionEvent
 import pl.soundgame.engine.Game
 
 private const val TOUCH_SCALE_FACTOR: Float = 180.0f / 320f
+
+/***
+ * Class for su
+ * 
+ * @author Adam Czyżak
+ */
+
 class GameGLSurfaceView(context: Context, game: Game) : GLSurfaceView(context) {
     private val TAG = "SurfaceView"
     private val renderer: GameGLRenderer
@@ -22,7 +29,31 @@ class GameGLSurfaceView(context: Context, game: Game) : GLSurfaceView(context) {
         setRenderer(renderer)
         Log.d(TAG, "Surface Created!")
     }
+    private val targetAspectRatio = 9 / 16f// Example aspect ratio (16:9)
 
+
+    private val aspectRatios = listOf(
+        9f / 16f, // 9:16
+        10f / 20f, // 10:20
+        2f / 3f    // 2:3
+    )
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val originalWidth = MeasureSpec.getSize(widthMeasureSpec)
+        val originalHeight = MeasureSpec.getSize(heightMeasureSpec)
+        val screenAspectRatio = originalWidth.toFloat() / originalHeight
+
+        val targetAspectRatio = aspectRatios.minByOrNull { Math.abs(it - screenAspectRatio) } ?: 9f / 16f
+
+        val calculatedHeight = (originalWidth / targetAspectRatio).toInt()
+        val calculatedWidth = (originalHeight * targetAspectRatio).toInt()
+
+        if (calculatedHeight > originalHeight) {
+            setMeasuredDimension(calculatedWidth, originalHeight)
+        } else {
+            setMeasuredDimension(originalWidth, calculatedHeight)
+        }
+    }
     override fun onTouchEvent(e: MotionEvent): Boolean {
         val x: Float = e.x
         val y: Float = e.y

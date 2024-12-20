@@ -73,13 +73,13 @@ class InstrumentalMode(
         val roundText = TextBox(initialText = "$roundExampleText $currentRound", id = "roundText")
 
         val popup = Popup(
-            loadTextureBitmap("popupBackgound.png", context),
+            loadTextureBitmap("popupBackground.png", context),
             context.getString(R.string.tutorial_instrumental),
             popupAnswer = context.getString(R.string.tutorial_rhythm_answer)
         )
 
         val exitPopup = PopupDouble(
-            loadTextureBitmap("popupBackgound.png", context),
+            loadTextureBitmap("popupBackground.png", context),
             context.getString(R.string.exit_popup_text),
             popupAnswer1 = context.getString(R.string.exit_no),
             popupAnswer2 = context.getString(R.string.exit_yes)
