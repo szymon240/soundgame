@@ -164,7 +164,7 @@ internal class SoundGame(context: Context) : Game() {
     private fun sendScore(mode: GameModeName, score: Double) {
         val roundedScore = String.format("%.2f", score)
         val formattedScore = roundedScore.replace(",", ".").toDouble()
-        val username = userManager.getNickname()
+        val username = userManager.getNickname()?.takeIf { it.isNotBlank() } ?: "player"
 
         commManager.postScore(mode, username, formattedScore) { response ->
             if (response != null) {
