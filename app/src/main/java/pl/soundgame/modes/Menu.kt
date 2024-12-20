@@ -7,16 +7,21 @@ import pl.soundgame.SoundGame
 import pl.soundgame.connection.ConnectionStatus
 import pl.soundgame.engine.Game
 import pl.soundgame.engine.Scene
+import pl.soundgame.engine.UserManager
 import pl.soundgame.engine.background.SampleBackground
 import pl.soundgame.engine.gameobjects.Button
 import pl.soundgame.engine.gameobjects.GameObject
 import pl.soundgame.engine.gameobjects.Popup
+import pl.soundgame.engine.gameobjects.PopupDouble
 import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.engine.loadTextureBitmap
 import pl.soundgame.engine.shapes.createTextTexture
+import java.io.File
 
 class Menu(var context: Context, private val changeModeCallback: (GameModeName) -> Unit) : GameMode() {
+    private val userManager: UserManager = UserManager.getInstance(context)
     private var displayedConnectionStatus = ConnectionStatus.CONNECTING
+
     override fun returnGameModeScene(): Scene {
         val scene = Scene()
         scene.setBackground {
@@ -28,6 +33,8 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
         val instrumental = context.getString(R.string.instrumental)
 
         scene.setInitScene {
+            userManager.testSaveData()
+
             val settings = TextBox(initialText = "$settings", id = "settings")
             val rhythm = TextBox(initialText = "$rhythm", id = "rhythm")
             val instrumental = TextBox(initialText = "$instrumental", id = "instrumental")
@@ -47,6 +54,14 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             title.scale(0.5f)
             val popup = Popup(loadTextureBitmap("popupBackgound.png", context), popupText = "Testowy\n popup\nbaredzo długa linijka z dużą ilością zbędnego tekstu", popupAnswer = "Continue", id = "popup", duration = -1)
 
+            val nicknamePopup = PopupDouble(
+                popupText = context.getString(R.string.popupText),
+                popupAnswer1 = context.getString(R.string.nickname_popup_save),
+                popupAnswer2 = context.getString(R.string.nickname_popup_cancel),
+                background = loadTextureBitmap("popupBackgound.png", context),
+                id = "nicknamePopup",
+                duration = -1
+            )
 
             val rhythmModeButton =
                 Button(loadTextureBitmap("rhythmMode2.png", context), id = "rhythmModeButton")
@@ -89,6 +104,31 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
                 //  popup.showPopup()
             }
 
+            val nicknameButton = Button(loadTextureBitmap("settings.png", context), id = "nicknameButton")
+            nicknameButton.setOriginPosition(y = -0.33f, x = -0.5f)
+            nicknameButton.scale(0.4f)
+            nicknameButton.onClickAction {
+                //nicknameButton.lock() // Lock the nickname button to prevent multiple clicks
+                nicknamePopup.showPopup()
+
+                nicknamePopup.setPopupCallback1 {
+                    val inputText = nicknamePopup.popupText
+                    if (inputText.isNotBlank()) {
+                        userManager.setNickname(inputText)
+                        Log.i("Menu", "Nickname updated to: ${userManager.getNickname()}")
+                    }
+                    nicknamePopup.hidePopup()
+                    nicknameButton.unlock() // Unlock the nickname button after the popup is dismissed
+                }
+
+                nicknamePopup.setPopupCallback2 {
+                    Log.i("Menu", "Nickname input cancelled")
+                    nicknamePopup.hidePopup()
+                    nicknameButton.unlock() // Unlock the nickname button after the popup is dismissed
+                }
+
+            }
+
             val connectionStatusText = TextBox(initialText =  context.getString(R.string.connecting), width =  500, id = "connText")
             connectionStatusText.setOriginPosition(y = -0.8f)
             connectionStatusText.scale(0.3f)
@@ -96,7 +136,7 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             connectionImage.setOriginPosition(y = -0.8f, x = -0.5f )
             connectionImage.scale(0.1f)
 
-            scene.addGameObject(title, instrumentalModeButton, popup, connectionStatusText, connectionImage, settingsButton )
+            scene.addGameObject(title, instrumentalModeButton, popup, connectionStatusText, connectionImage, settingsButton, nicknameButton, nicknamePopup)
 
         }
 
