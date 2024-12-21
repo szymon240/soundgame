@@ -6,6 +6,7 @@ import pl.soundgame.MainActivity
 import pl.soundgame.R
 import pl.soundgame.SoundGame
 import pl.soundgame.connection.ConnectionStatus
+import pl.soundgame.engine.AchievementManager
 import pl.soundgame.engine.Game
 import pl.soundgame.engine.Scene
 import pl.soundgame.engine.UserManager
@@ -22,6 +23,7 @@ import java.io.File
 
 class Menu(var context: Context, private val changeModeCallback: (GameModeName) -> Unit) : GameMode() {
     private val userManager: UserManager = UserManager.getInstance(context)
+    private val achievementManager: AchievementManager = AchievementManager.getInstance(userManager)
     private var displayedConnectionStatus = ConnectionStatus.CONNECTING
 
     override fun returnGameModeScene(): Scene {
@@ -36,6 +38,8 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
 
         scene.setInitScene {
             userManager.testSaveData()
+            achievementManager.checkAndUnlockAchievements()
+            achievementManager.checkRemainingAchievements()
 
             val settings = TextBox(initialText = "$settings", id = "settings")
             val rhythm = TextBox(initialText = "$rhythm", id = "rhythm")
