@@ -11,7 +11,9 @@ import kotlinx.coroutines.withContext
 import pl.soundgame.R
 import pl.soundgame.SoundPlayer
 import pl.soundgame.connection.serializedclasses.Question
+import pl.soundgame.engine.AchievementManager
 import pl.soundgame.engine.Scene
+import pl.soundgame.engine.UserManager
 import pl.soundgame.engine.background.SampleBackground
 import pl.soundgame.engine.gameobjects.Button
 import pl.soundgame.engine.gameobjects.Popup
@@ -60,6 +62,8 @@ class RhythmMode(
     private val TAG = "RHYTHM MODE"
     private var lastRoundScore = 0.0f
     private var playingPattern = false
+    private val userManager: UserManager = UserManager.getInstance(context)
+    private val achievementManager: AchievementManager = AchievementManager.getInstance(userManager)
 
     /**
      * Creates and initializes the game scene.
@@ -363,6 +367,22 @@ class RhythmMode(
     }
 
     private fun sendScore() {
+        // Log the final score
+        Log.i(TAG, "Sending score: $accuracy")
+
+        // Simulate gameplay statistics update
+        val currentGameScore = accuracy // Keep it as a Double, as accuracy is a Double
+
+        // Update game stats
+        userManager.incrementGameStat("gamesPlayed")
+        userManager.updateHighScore("rhythm", currentGameScore) // Ensure this accepts Double values
+        userManager.incrementTotalScore(currentGameScore) // Increment by the accuracy score (Double)
+
+        achievementManager.checkAndUnlockAchievements()
+        achievementManager.checkRemainingAchievements()
+
+        // Trigger the completion callback with the final score
         onCompleteCallback(accuracy)
     }
+
 }
