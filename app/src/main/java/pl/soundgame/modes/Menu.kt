@@ -37,9 +37,12 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
         val instrumental = context.getString(R.string.instrumental)
 
         scene.setInitScene {
+            userManager.logUserData()
+            userManager.logRawFileContents()
             achievementManager.checkAndUnlockAchievements()
             achievementManager.checkRemainingAchievements()
-
+            userManager.logUserData()
+            print(userManager.getGameStat("gamesPlayed"))
 
             val settings = TextBox(initialText = "$settings", id = "settings")
             val rhythm = TextBox(initialText = "$rhythm", id = "rhythm")

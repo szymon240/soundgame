@@ -9,9 +9,14 @@ class AchievementManager private constructor(private val userManager: UserManage
             requirement = { userManager.getGameStat("gamesPlayed") >= 1 }
         ),
         Achievement(
-            name = "High Scorer",
-            description = "Score 100 points in a single game.",
-            requirement = { userManager.getGameStat("highScores") >= 100 }
+            name = "High Scorer - Rhythm",
+            description = "Score 100 points in Rhythm Mode.",
+            requirement = { userManager.getHighScore("rhythm") >= 100 }
+        ),
+        Achievement(
+            name = "High Scorer - Instrumental",
+            description = "Score 100 points in Instrumental Mode.",
+            requirement = { userManager.getHighScore("instrumental") >= 100 }
         ),
         Achievement(
             name = "Dedicated Player",
@@ -42,13 +47,17 @@ class AchievementManager private constructor(private val userManager: UserManage
         val userAchievements = userManager.getAchievements().toMutableSet()
 
         achievements.forEach { achievement ->
-            if (!userAchievements.contains(achievement.name) && achievement.requirement()) {
+            val isUnlocked = achievement.requirement()
+            println("Checking achievement: ${achievement.name}, Unlocked: $isUnlocked")
+
+            if (!userAchievements.contains(achievement.name) && isUnlocked) {
                 userManager.addAchievement(achievement.name)
                 userAchievements.add(achievement.name)
                 println("Unlocked achievement: ${achievement.name}")
             }
         }
     }
+
 
     fun checkRemainingAchievements(): List<Achievement> {
         val userAchievements = userManager.getAchievements().toSet()
