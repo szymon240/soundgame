@@ -4,6 +4,12 @@ import android.util.DisplayMetrics
 import android.view.WindowManager
 import java.util.Locale
 
+/**
+ * Gets Pair of screen resolution values
+ *
+ * @param context Main activity app context
+ * @return Pair object of two Ints - width and height
+ */
 fun getScreenResolution(context: Context): Pair<Int, Int> {
     val displayMetrics = DisplayMetrics()
     val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -15,15 +21,17 @@ fun getScreenResolution(context: Context): Pair<Int, Int> {
     return Pair(width, height)
 }
 
+/**
+ * Changes localization of app
+ *
+ * @param context
+ * @param languageCode
+ * @return
+ */
 fun changeLocale(context: Context, languageCode: String): Context {
-    // Set the desired locale (you can change this dynamically based on the language code)
     val locale = Locale(languageCode)
     Locale.setDefault(locale)
-
-    // Create a new configuration object to apply the new locale
     val config = Configuration(context.resources.configuration)
     config.setLocale(locale)
-
-    // Apply the new configuration to the context and return the updated context
     return context.createConfigurationContext(config)
 }

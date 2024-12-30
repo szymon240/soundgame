@@ -10,12 +10,38 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.util.Log
 import pl.soundgame.engine.Game
+import java.io.FileNotFoundException
 
+/**
+ * Loads texture image from app assets to memory as Bitmap object
+ *
+ * @param textureName file path in assets/textures/
+ * @param context App context for getting access to app assets
+ * @return Bitmap object loaded from assets if textureName is present, missing_texture.png otherwise
+ */
 fun loadTextureBitmap(textureName: String, context: Context): Bitmap {
-    return BitmapFactory.decodeStream(context.assets.open("textures/$textureName"))
+    return try {
+        BitmapFactory.decodeStream(context.assets.open("textures/$textureName"))
+    } catch (e: FileNotFoundException) {
+        Log.e("Loading texture ERROR","Error, texture name not found: FileNotFoundException ${e.message}")
+        BitmapFactory.decodeStream(context.assets.open("textures/missing_texture.png"))
+    } catch (e: Exception) {
+        Log.e("Loading texture ERROR","Error, texture couldn't be loaded:  ${e.message}")
+        BitmapFactory.decodeStream(context.assets.open("textures/missing_texture.png"))
+    }
 }
 
-
+/**
+ * Class that extends OpenGL Renderer to be used for rendering 2D graphics in 3D space for the game
+ *
+ * @constructor
+ * Create new instance of rednerer to be used in GLSurface
+ *
+ * @param context App main activity context
+ * @param game Game object which GameObjects will be rendered and handel
+ *
+ * @author Adam Czyżak
+ */
 class GameGLRenderer(context: Context, game: Game) : GLSurfaceView.Renderer {
     private var context: Context
     private val TAG = "Renderer"

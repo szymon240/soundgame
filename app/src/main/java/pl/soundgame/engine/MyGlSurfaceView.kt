@@ -10,7 +10,7 @@ import pl.soundgame.engine.Game
 private const val TOUCH_SCALE_FACTOR: Float = 180.0f / 320f
 
 /***
- * Class for su
+ * Class for OpenGL surface that can be displayed on Android xml layout
  * 
  * @author Adam Czyżak
  */

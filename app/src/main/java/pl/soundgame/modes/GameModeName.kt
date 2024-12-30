@@ -5,5 +5,6 @@ enum class GameModeName {
     RHYTHM,
     INSTRUMENTAL,
     SETTINGS,
-    EMPTY
+    EMPTY,
+    RANKING_SCREEN
 }

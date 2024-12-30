@@ -18,7 +18,6 @@ val TEXTURE_COORDINATES = floatArrayOf(
     1.0f, 0.0f,
 )
 class Sprite(bitmap: Bitmap) {
-
     var aspectRatio: Float = bitmap.width.toFloat() / bitmap.height.toFloat()
     var width: Float =  bitmap.width.toFloat()
     var height: Float = bitmap.height.toFloat()
@@ -60,7 +59,6 @@ class Sprite(bitmap: Bitmap) {
     }
 
     fun swapImage(newBitmap: Bitmap) {
-        Log.d(TAG, "Swapping sprite")
         // Generate and bind a new texture unit
         GLES20.glDeleteTextures(1,textureUnit,0)
 

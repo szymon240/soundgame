@@ -4,16 +4,12 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import pl.soundgame.R
 import pl.soundgame.SoundPlayer
 import pl.soundgame.connection.serializedclasses.Question
-import pl.soundgame.engine.AchievementManager
+import pl.soundgame.playerutils.AchievementManager
 import pl.soundgame.engine.Scene
-import pl.soundgame.engine.UserManager
+import pl.soundgame.playerutils.UserManager
 import pl.soundgame.engine.background.SampleBackground
 import pl.soundgame.engine.gameobjects.Button
 import pl.soundgame.engine.gameobjects.Popup
@@ -375,7 +371,7 @@ class RhythmMode(
 
         // Update game stats
         Log.i(TAG, "Updating game stat: gamesPlayed")
-        userManager.incrementGameStat("gamesPlayed")
+        userManager.incrementGamesPlayed()
 
         Log.i(TAG, "Updating high score for rhythm with score: $currentGameScore")
         userManager.updateHighScore("rhythm", currentGameScore)

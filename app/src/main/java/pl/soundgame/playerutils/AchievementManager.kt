@@ -1,4 +1,4 @@
-package pl.soundgame.engine
+package pl.soundgame.playerutils
 
 class AchievementManager private constructor(private val userManager: UserManager) {
 
@@ -6,7 +6,7 @@ class AchievementManager private constructor(private val userManager: UserManage
         Achievement(
             name = "First Steps",
             description = "Complete your first game.",
-            requirement = { userManager.getGameStat("gamesPlayed") >= 1 }
+            requirement = { userManager.getGamesPlayed() >= 1 }
         ),
         Achievement(
             name = "High Scorer - Rhythm",
@@ -21,12 +21,12 @@ class AchievementManager private constructor(private val userManager: UserManage
         Achievement(
             name = "Dedicated Player",
             description = "Play 10 games.",
-            requirement = { userManager.getGameStat("gamesPlayed") >= 10 }
+            requirement = { userManager.getGamesPlayed() >= 10 }
         ),
         Achievement(
             name = "Score Chaser",
             description = "Achieve a total score of 300.",
-            requirement = { userManager.getGameStat("totalScore") >= 300 }
+            requirement = { userManager.getTotalScore() >= 300 }
         )
     )
 

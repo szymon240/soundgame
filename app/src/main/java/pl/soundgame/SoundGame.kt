@@ -1,8 +1,6 @@
 package pl.soundgame
 
 import android.content.Context
-import android.os.Looper
-import android.provider.Settings.Global
 import android.util.Log
 import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
@@ -25,15 +23,11 @@ import java.net.URL
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
-import org.w3c.dom.Text
 import pl.soundgame.connection.NetworkMonitor
-import pl.soundgame.connection.serializedclasses.ScoreRequest
-import pl.soundgame.connection.serializedclasses.ScoreResponse
-import pl.soundgame.engine.UserManager
+import pl.soundgame.playerutils.UserManager
 import pl.soundgame.engine.gameobjects.Popup
-import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.modes.Empty
+import pl.soundgame.modes.RankingScreen
 
 /**
  * SoundGame class extends the Game class and serves as the central controller for the game.
@@ -74,6 +68,8 @@ internal class SoundGame(context: Context) : Game() {
                 Log.d("NetworkStatus", "Disconnected from the internet")
             }
         }
+
+
     }
 
     /**
@@ -190,9 +186,8 @@ internal class SoundGame(context: Context) : Game() {
     fun changeMode(newMode: GameModeName) {
         Log.i(TAG, "Changing mode to: $newMode")
         var retries = 6  // Number of retries allowed
-
         fun tryChangeMode() {
-            if (newMode != GameModeName.MENU && newMode != GameModeName.SETTINGS) {
+            if (newMode != GameModeName.MENU && newMode != GameModeName.SETTINGS && newMode != GameModeName.RANKING_SCREEN) {
                 if (CONNECTION_STATUS != ConnectionStatus.SUCCESS){
                     MainScope().launch {
                         val text = context.getString(R.string.msg_no_connection)
@@ -281,6 +276,7 @@ internal class SoundGame(context: Context) : Game() {
             GameModeName.INSTRUMENTAL -> InstrumentalMode(this.context, changeModeCallback, questions, rounds, ::onRhythmModeComplete)
             GameModeName.SETTINGS -> Settings(this.context, changeModeCallback)
             GameModeName.EMPTY -> Empty(this.context, changeModeCallback, GameModeName.MENU)
+            GameModeName.RANKING_SCREEN -> RankingScreen(this.context, commManager, changeModeCallback)
         }
 
         gameModeName = newMode

@@ -6,20 +6,17 @@ import pl.soundgame.MainActivity
 import pl.soundgame.R
 import pl.soundgame.SoundGame
 import pl.soundgame.connection.ConnectionStatus
-import pl.soundgame.engine.AchievementManager
-import pl.soundgame.engine.Game
+import pl.soundgame.playerutils.AchievementManager
 import pl.soundgame.engine.Scene
-import pl.soundgame.engine.UserManager
+import pl.soundgame.playerutils.UserManager
 import pl.soundgame.engine.background.SampleBackground
 import pl.soundgame.engine.gameobjects.Button
 import pl.soundgame.engine.gameobjects.GameObject
 import pl.soundgame.engine.gameobjects.Popup
-import pl.soundgame.engine.gameobjects.PopupDouble
 import pl.soundgame.engine.gameobjects.PopupTextfield
 import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.engine.loadTextureBitmap
 import pl.soundgame.engine.shapes.createTextTexture
-import java.io.File
 
 class Menu(var context: Context, private val changeModeCallback: (GameModeName) -> Unit) : GameMode() {
     private val userManager: UserManager = UserManager.getInstance(context)
@@ -38,11 +35,9 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
 
         scene.setInitScene {
             userManager.logUserData()
-            userManager.logRawFileContents()
             achievementManager.checkAndUnlockAchievements()
             achievementManager.checkRemainingAchievements()
             userManager.logUserData()
-            print(userManager.getGameStat("gamesPlayed"))
 
             val settings = TextBox(initialText = "$settings", id = "settings")
             val rhythm = TextBox(initialText = "$rhythm", id = "rhythm")
@@ -120,7 +115,8 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
 
             nicknameButton.onClickAction {
                 //nicknameButton.lock() // Lock the nickname button to prevent multiple clicks
-                nicknamePopup.showPopup()
+                //nicknamePopup.showPopup()
+                changeModeCallback(GameModeName.RANKING_SCREEN)
                 settingsButton.lock()
                 instrumentalModeButton.lock()
                 rhythmModeButton.lock()

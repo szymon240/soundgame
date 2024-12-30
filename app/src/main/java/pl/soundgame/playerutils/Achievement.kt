@@ -1,4 +1,4 @@
-package pl.soundgame.engine
+package pl.soundgame.playerutils
 
 data class Achievement(
     val name: String,

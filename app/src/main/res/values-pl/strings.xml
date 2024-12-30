@@ -30,4 +30,7 @@
     <string name="nickname_popup_save">Zapisz</string>
     <string name="nickname_popup_cancel">Anuluj</string>
     <string name="username_query">Wpisz nazwę użytkownika</string>
+    <string name="player_nick">Gracz:</string>
+    <string name="nickname_change_button">Zmień swój nick</string>
+    <string name="incorrect_nickname">Podany nick jest nie poprawny, jest zbyt długi lub pusty</string>
 </resources>

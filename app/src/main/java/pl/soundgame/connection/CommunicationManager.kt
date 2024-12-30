@@ -2,6 +2,7 @@ package pl.soundgame.connection
 
 import android.util.Log
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -11,6 +12,7 @@ import pl.soundgame.connection.serializedclasses.Request
 import pl.soundgame.connection.serializedclasses.Response
 import pl.soundgame.connection.serializedclasses.ScoreRequest
 import pl.soundgame.connection.serializedclasses.ScoreResponse
+import pl.soundgame.connection.serializedclasses.ScoreTop10Response
 import pl.soundgame.connection.serializedclasses.StatusResponse
 import pl.soundgame.modes.GameModeName
 import java.io.BufferedReader
@@ -136,11 +138,92 @@ class CommunicationManager {
     }
 
 
+    fun getScoresRhythm(onResult: (List<ScoreTop10Response>?) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val url = URL(TOP10_RHYTHM)
+            try {
+                with(url.openConnection() as HttpURLConnection) {
+                    requestMethod = "GET"
+                    doOutput = false
+                    setRequestProperty("Content-Type", "application/json")
+
+                    val responseCode = responseCode
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        val jsonResponse = inputStream.bufferedReader().use { it.readText() }
+                        println(jsonResponse)
+
+                        // Parse as a list of ScoreTop10Response
+                        val response: List<ScoreTop10Response> = parser.fromJson(
+                            jsonResponse,
+                            object : TypeToken<List<ScoreTop10Response>>() {}.type
+                        )
+
+                        withContext(Dispatchers.Main) {
+                            onResult(response)
+                        }
+
+                    } else {
+                        Log.e(TAG, "HTTP error: $responseCode")
+                        withContext(Dispatchers.Main) {
+                            onResult(null)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in getScoresRhythm: ${e.message}", e)
+                withContext(Dispatchers.Main) {
+                    onResult(null)
+                }
+            }
+        }
+    }
+    fun getScoresInstrumental(onResult: (List<ScoreTop10Response>?) -> Unit){
+        CoroutineScope(Dispatchers.IO).launch {
+            val url = URL(TOP10_INSTRUMENTAL)
+            try {
+                with(url.openConnection() as HttpURLConnection) {
+                    requestMethod = "GET"
+                    doOutput = false
+                    setRequestProperty("Content-Type", "application/json")
+
+                    val responseCode = responseCode
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        val jsonResponse = inputStream.bufferedReader().use { it.readText() }
+                        println(jsonResponse)
+
+                        // Parse as a list of ScoreTop10Response
+                        val response: List<ScoreTop10Response> = parser.fromJson(
+                            jsonResponse,
+                            object : TypeToken<List<ScoreTop10Response>>() {}.type
+                        )
+
+                        withContext(Dispatchers.Main) {
+                            onResult(response)
+                        }
+
+                    } else {
+                        Log.e(TAG, "HTTP error: $responseCode")
+                        withContext(Dispatchers.Main) {
+                            onResult(null)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in getScoresRhythm: ${e.message}", e)
+                withContext(Dispatchers.Main) {
+                    onResult(null)
+                }
+            }
+        }
+    }
+
     companion object URLs {
         val STATUS_URL = "https://springboot-kotlin-app-84877666332.europe-west1.run.app/api/status"
         val QUESTIONS_URL =
             "https://springboot-kotlin-app-84877666332.europe-west1.run.app/api/audio/questions"
         val SCORE_URL = "https://springboot-kotlin-app-84877666332.europe-west1.run.app/api/scores/add"
+        val TOP10_RHYTHM = "https://springboot-kotlin-app-84877666332.europe-west1.run.app/api/scores/top10/rhythm"
+        val TOP10_INSTRUMENTAL = "https://springboot-kotlin-app-84877666332.europe-west1.run.app/api/scores/top10/instrumental"
         val AUDIO_URL = "https://springboot-kotlin-app-84877666332.europe-west1.run.app"
     }
  }
