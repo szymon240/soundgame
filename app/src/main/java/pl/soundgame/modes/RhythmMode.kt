@@ -366,18 +366,15 @@ class RhythmMode(
         // Log the final score
         Log.i(TAG, "Sending score: $accuracy")
 
-        // Simulate gameplay statistics update
-        val currentGameScore = accuracy // Keep it as a Double, as accuracy is a Double
-
         // Update game stats
         Log.i(TAG, "Updating game stat: gamesPlayed")
         userManager.incrementGamesPlayed()
 
-        Log.i(TAG, "Updating high score for rhythm with score: $currentGameScore")
-        userManager.updateHighScore("rhythm", currentGameScore)
+        Log.i(TAG, "Updating high score for rhythm with score: $accuracy")
+        userManager.updateHighScore("rhythm", accuracy)
 
-        Log.i(TAG, "Incrementing total score by: $currentGameScore")
-        userManager.incrementTotalScore(currentGameScore)
+        Log.i(TAG, "Incrementing total score by: $accuracy")
+        userManager.incrementTotalScore(accuracy)
 
 
         achievementManager.checkAndUnlockAchievements()

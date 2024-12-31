@@ -14,6 +14,8 @@ import pl.soundgame.engine.gameobjects.PopupDouble
 import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.engine.loadTextureBitmap
 import pl.soundgame.engine.shapes.createTextTexture
+import pl.soundgame.playerutils.AchievementManager
+import pl.soundgame.playerutils.UserManager
 import java.io.File
 
 /**
@@ -40,6 +42,8 @@ class InstrumentalMode(
     private var score = 0
     private var lastScore = 0
     private val TAG = "Instrumental Mode"
+    private val userManager: UserManager = UserManager.getInstance(context)
+    private val achievementManager: AchievementManager = AchievementManager.getInstance(userManager)
 
     /**
      * Creates and returns the game mode's scene.
@@ -248,6 +252,26 @@ class InstrumentalMode(
     }
 
     private fun sendScore() {
-        onCompleteCallback(score.toDouble() * 100)
+        // Simulate gameplay statistics update
+        val currentGameScore = score.toDouble() * 100 // Keep it as a Double, as accuracy is a Double
+
+        // Log the final score
+        Log.i(TAG, "Sending score: $currentGameScore")
+
+        // Update game stats
+        Log.i(TAG, "Updating game stat: gamesPlayed")
+        userManager.incrementGamesPlayed()
+
+        Log.i(TAG, "Updating high score for rhythm with score: $currentGameScore")
+        userManager.updateHighScore("instrumental", currentGameScore)
+
+        Log.i(TAG, "Incrementing total score by: $currentGameScore")
+        userManager.incrementTotalScore(currentGameScore)
+
+
+        achievementManager.checkAndUnlockAchievements()
+        achievementManager.checkRemainingAchievements()
+
+        onCompleteCallback(currentGameScore)
     }
 }
