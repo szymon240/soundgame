@@ -42,6 +42,8 @@ class AchievementManager private constructor(private val userManager: UserManage
         )
     )
 
+    private var remainingAchievements = mutableListOf<Achievement>()
+
     companion object {
         @Volatile
         private var INSTANCE: AchievementManager? = null
@@ -55,19 +57,30 @@ class AchievementManager private constructor(private val userManager: UserManage
         }
     }
 
-    fun checkAndUnlockAchievements() {
+    /**
+     * Checks and unlocks if any achievement should be unlocked after the game - Must be called after finished game
+     *
+     * @return list of newly unlocked achievements
+     */
+    fun checkAndUnlockAchievements(): List<Achievement> {
         val userAchievements = userManager.getAchievements().toMutableSet()
-
+        val newAchievements = mutableListOf<Achievement>()
         achievements.forEach { achievement ->
             val isUnlocked = achievement.requirement()
-            println("Checking achievement: ${achievement.name}, Unlocked: $isUnlocked")
+            //println("Checking achievement: ${achievement.name}, Unlocked: $isUnlocked")
 
             if (!userAchievements.contains(achievement.name) && isUnlocked) {
                 userManager.addAchievement(achievement.name)
                 userAchievements.add(achievement.name)
-                println("Unlocked achievement: ${achievement.name}")
+                newAchievements.add(achievement)
+
+               // println("Unlocked achievement: ${achievement.name}")
             }
         }
+        newAchievements.forEach {achievement ->
+            remainingAchievements.add(achievement)
+        }
+        return newAchievements
     }
 
 
@@ -75,12 +88,18 @@ class AchievementManager private constructor(private val userManager: UserManage
         val userAchievements = userManager.getAchievements().toSet()
         val remainingAchievements = achievements.filter { !userAchievements.contains(it.name) }
 
-        println("Remaining Achievements:")
+      //  println("Remaining Achievements:")
         remainingAchievements.forEach { achievement ->
-            println("Name: ${achievement.name}, Description: ${achievement.description}")
+            //println("Name: ${achievement.name}, Description: ${achievement.description}")
         }
 
         return remainingAchievements
+    }
+
+    fun getNotDisplayedAchievements(): List<Achievement>{
+        val achievementsToDisplay = remainingAchievements
+        remainingAchievements = mutableListOf()
+        return achievementsToDisplay
     }
 
     fun getAllAchievements(): List<Achievement>{

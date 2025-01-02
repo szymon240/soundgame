@@ -16,6 +16,7 @@ import pl.soundgame.engine.gameobjects.Popup
 import pl.soundgame.engine.gameobjects.PopupDouble
 import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.engine.loadTextureBitmap
+import pl.soundgame.playerutils.Achievement
 import kotlin.math.min
 import kotlin.random.Random
 
@@ -39,7 +40,7 @@ class RhythmMode(
     private val changeModeCallback: (GameModeName) -> Unit,
     private val questions: List<Question>,
     private val totalRounds: Int,
-    private val onCompleteCallback: (Double) -> Unit
+    private val onCompleteCallback: (Double, List<Achievement>) -> Unit
 ) : GameMode() {
 
     private val soundPlayer: SoundPlayer = SoundPlayer(context)
@@ -377,11 +378,11 @@ class RhythmMode(
         userManager.incrementTotalScore(accuracy)
 
 
-        achievementManager.checkAndUnlockAchievements()
+        val unlockedAchievements = achievementManager.checkAndUnlockAchievements()
         achievementManager.checkRemainingAchievements()
 
         // Trigger the completion callback with the final score
-        onCompleteCallback(accuracy)
+        onCompleteCallback(accuracy, unlockedAchievements)
     }
 
 }

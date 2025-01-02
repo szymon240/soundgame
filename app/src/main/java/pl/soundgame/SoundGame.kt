@@ -25,11 +25,14 @@ import kotlinx.coroutines.MainScope
 import pl.soundgame.connection.NetworkMonitor
 import pl.soundgame.playerutils.UserManager
 import pl.soundgame.engine.gameobjects.Popup
+import pl.soundgame.engine.gameobjects.PopupAchievement
+import pl.soundgame.engine.loadTextureBitmap
 import pl.soundgame.modes.Empty
 import pl.soundgame.modes.rankings.AchievementsScreen
 import pl.soundgame.modes.rankings.RankingScreen
 import pl.soundgame.modes.rankings.TopTenScreenInstrumental
 import pl.soundgame.modes.rankings.TopTenScreenRhythm
+import pl.soundgame.playerutils.Achievement
 
 /**
  * SoundGame class extends the Game class and serves as the central controller for the game.
@@ -157,11 +160,12 @@ internal class SoundGame(context: Context) : Game() {
      *
      * @param finalAccuracy
      */
-    private fun onRhythmModeComplete(finalAccuracy: Double) {
+    private fun onRhythmModeComplete(finalAccuracy: Double, achievements: List<Achievement>) {
         score = finalAccuracy
         Log.i(TAG, "Final accuracy after all rounds: $score")
 
         sendScore(gameModeName, score)
+
     }
 
     private fun sendScore(mode: GameModeName, score: Double) {

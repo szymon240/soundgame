@@ -14,6 +14,7 @@ import pl.soundgame.engine.gameobjects.PopupDouble
 import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.engine.loadTextureBitmap
 import pl.soundgame.engine.shapes.createTextTexture
+import pl.soundgame.playerutils.Achievement
 import pl.soundgame.playerutils.AchievementManager
 import pl.soundgame.playerutils.UserManager
 import java.io.File
@@ -35,7 +36,7 @@ class InstrumentalMode(
     private val changeModeCallback: (GameModeName) -> Unit,
     private var questions: List<Question>,
     private val totalRounds: Int,
-    private val onCompleteCallback: (Double) -> Unit
+    private val onCompleteCallback: (Double, List<Achievement>) -> Unit
 ) : GameMode() {
     private val soundPlayer: SoundPlayer = SoundPlayer(context)
     private var currentRound = 0
@@ -269,9 +270,9 @@ class InstrumentalMode(
         userManager.incrementTotalScore(currentGameScore)
 
 
-        achievementManager.checkAndUnlockAchievements()
+        val unlockedAchievements = achievementManager.checkAndUnlockAchievements()
         achievementManager.checkRemainingAchievements()
 
-        onCompleteCallback(currentGameScore)
+        onCompleteCallback(currentGameScore, unlockedAchievements)
     }
 }

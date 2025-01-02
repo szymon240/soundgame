@@ -118,6 +118,10 @@ class Scene {
         }
     }
 
+    fun removeGameObject(id: String){
+        mObjects.removeIf { obj -> obj.getId() == id }
+    }
+
     /**
      * Finds and returns all GameObjects with the given id.
      *
