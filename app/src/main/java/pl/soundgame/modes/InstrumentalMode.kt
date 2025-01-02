@@ -93,7 +93,7 @@ class InstrumentalMode(
         lateinit var ans2: Button
         lateinit var ans3: Button
         lateinit var ans4: Button
-        var currentURL = "";
+        var currentURL = ""
         val exitButton = Button(loadTextureBitmap("back.png", context), id = "exitButton")
         val playMusicButton = Button(loadTextureBitmap("rhythm_mode/play.png", context), id = "playMusicButton")
 
@@ -109,8 +109,8 @@ class InstrumentalMode(
             ans4.changeBaseBitmap(createTextTexture(text = "${q.ans4}", size = 90f, background = loadTextureBitmap("button.png", context)))
             currentURL = q.url
             playMusicButton.onClickAction {
-                Log.i(TAG, "${currentURL}" );
-                val soundFile = questions[currentRound]?.url?.let { context.cacheDir.resolve(it.substringAfterLast("/")) }
+                Log.i(TAG, "${currentURL}" )
+                val soundFile = questions[currentRound].url?.let { context.cacheDir.resolve(it.substringAfterLast("/")) }
                 if (soundFile?.exists() == true) {
                     soundPlayer.playSoundWithPitch(1.0f, soundFile.absolutePath)
                 }
@@ -123,7 +123,7 @@ class InstrumentalMode(
          * @param question The question object from which the correct answer is retrieved.
          * @return The correct answer as a string.
          */
-        fun getCorrectAnswer(question: Question): String? {
+        fun getCorrectAnswer(question: Question): String {
             return when (question.correctAnswer) {
                 1 -> question.ans1 ?: ""
                 2 -> question.ans2 ?: ""

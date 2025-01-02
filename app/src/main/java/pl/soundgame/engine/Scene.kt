@@ -26,10 +26,6 @@ class Scene {
     private var timesRefreshed: Int = 0
     private var framesPassed: UInt = 0u
     var id: String = ""
-        get() = field
-        set(value) {
-            field = value
-        }
 
     fun setBackground(pBackground: () -> Background){
         mInitBackground = pBackground

@@ -122,7 +122,7 @@ class RhythmMode(
                     val pitch = if (currentPatternIndex < rhythmPattern.size) rhythmPattern[currentPatternIndex].second else 1.0f
                     currentPatternIndex++
 
-                    val soundFile = questions[0]?.url?.let { context.cacheDir.resolve(it.substringAfterLast("/")) }  //FIXME tutaj roundNumber gdy do kazdego pytania jest URL
+                    val soundFile = questions[0].url?.let { context.cacheDir.resolve(it.substringAfterLast("/")) }  //FIXME tutaj roundNumber gdy do kazdego pytania jest URL
                     if (soundFile?.exists() == true) {
                         soundPlayer.playSoundWithPitch(pitch, soundFile.absolutePath)
                     }

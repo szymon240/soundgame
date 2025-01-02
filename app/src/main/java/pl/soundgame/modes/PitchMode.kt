@@ -22,11 +22,9 @@ class PitchMode(
 ) : GameMode() {
     private val soundPlayer = SoundPlayer(context)
     private var score = 0
-    private var lastScore = 0
     private val TAG = "PitchMode"
-
-    private var currentPitch = 1.0f // Initial pitch
-    private val pitchRange = 0.2f   // Range for the new pitch
+    private var currentPitch = 1.0f
+    private val pitchRange = 0.2f
 
     override fun returnGameModeScene(): Scene {
         val scene = Scene()
@@ -108,9 +106,12 @@ class PitchMode(
                     soundPlayer.playSoundWithPitch(nextPitch, it.resId)
                 }, 1500)
             }
+
+            Log.d(TAG, "currentPitch: $currentPitch, nextPitch: $nextPitch")
         }
 
         fun checkAnswer(isHigher: Boolean) {
+            println("SPRAWDZAM")
             val isCorrect = (isHigher && nextPitch > currentPitch) || (!isHigher && nextPitch < currentPitch)
 
             if (isCorrect) {
@@ -125,7 +126,8 @@ class PitchMode(
 
         higherButton.onClickAction { checkAnswer(isHigher = true) }
         lowerButton.onClickAction { checkAnswer(isHigher = false) }
-        playButton.onClickAction { playCurrentAndNextSounds() }
+        playButton.onClickAction { println("KLIK")
+            playCurrentAndNextSounds() }
 
         popup.setPopupCallback {
             playButton.unlock()
@@ -141,6 +143,7 @@ class PitchMode(
     }
 
     private fun generateNewPitch(): Float {
+        Log.d(TAG, "Generating new pitch")
         return currentPitch + Random.nextFloat() * pitchRange * 2 - pitchRange
     }
 

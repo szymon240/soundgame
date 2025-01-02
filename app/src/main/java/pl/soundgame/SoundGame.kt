@@ -22,13 +22,12 @@ import java.io.FileOutputStream
 import java.net.URL
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
 import pl.soundgame.connection.NetworkMonitor
 import pl.soundgame.playerutils.UserManager
 import pl.soundgame.engine.gameobjects.Popup
 import pl.soundgame.modes.Empty
 import pl.soundgame.modes.PitchMode
-import pl.soundgame.modes.RankingScreen
+import pl.soundgame.modes.rankings.RankingScreen
 import pl.soundgame.modes.rankings.AchievementsScreen
 import pl.soundgame.modes.rankings.TopTenScreenInstrumental
 import pl.soundgame.modes.rankings.TopTenScreenRhythm
@@ -57,10 +56,10 @@ internal class SoundGame(context: Context) : Game() {
     private val networkMonitor = NetworkMonitor(context)
     init {
         this.context = context
-        gameMode = Menu(this.context, changeModeCallback)
-        gameModeName = GameModeName.MENU
+        gameMode = PitchMode(this.context, changeModeCallback, ::onRhythmModeComplete)
+        gameModeName = GameModeName.PITCH
         mScene = gameMode.returnGameModeScene()
-        changeMode(GameModeName.MENU)
+        changeMode(GameModeName.PITCH)
 
         checkServerStatus()
         networkMonitor.registerNetworkCallback { isConnected ->
@@ -169,7 +168,7 @@ internal class SoundGame(context: Context) : Game() {
     private fun sendScore(mode: GameModeName, score: Double) {
         val roundedScore = String.format("%.2f", score)
         val formattedScore = roundedScore.replace(",", ".").toDouble()
-        val username = userManager.getNickname()?.takeIf { it.isNotBlank() } ?: "player"
+        val username = userManager.getNickname().takeIf { it.isNotBlank() } ?: "player"
 
         commManager.postScore(mode, username, formattedScore) { response ->
             if (response != null) {

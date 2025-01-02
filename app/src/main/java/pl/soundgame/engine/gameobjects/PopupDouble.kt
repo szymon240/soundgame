@@ -29,27 +29,16 @@ class PopupDouble(background: Bitmap, popupText: String, popupAnswer1: String = 
      * Text on top of popup
      */
     var popupText: String = popupText
-        get() = field
-        set(value){
-            field = value
-        }
 
     /**
      * First text on the bottom of popup - can be clicked to dismiss a popup
      */
     var popupAnswer1: String = popupAnswer1
-        get() = field
-        set(value){
-            field = value
-        }
+
     /**
      * Second text on the bottom of popup - can be clicked to dismiss a popup
      */
     var popupAnswer2: String = popupAnswer2
-        get() = field
-        set(value){
-            field = value
-        }
 
     var popupTextBox: TextBox
     var answerButton1: TextBox
@@ -68,8 +57,7 @@ class PopupDouble(background: Bitmap, popupText: String, popupAnswer1: String = 
         popupCallback2 = func
     }
     init{
-        if(duration > 0) timedPopup = true
-        else timedPopup = false
+        timedPopup = duration > 0
 
         this.scale(0.75f)
 

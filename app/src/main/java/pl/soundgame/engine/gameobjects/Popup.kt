@@ -28,19 +28,11 @@ class Popup(background: Bitmap, popupText: String, popupAnswer: String = "", val
      * Text on top of popup
      */
     var popupText: String = popupText
-        get() = field
-        set(value){
-            field = value
-        }
 
     /**
      * Text on the bottom of popup - can be clicked to dismiss a popup
      */
     var popupAnswer: String = popupAnswer
-        get() = field
-        set(value){
-            field = value
-        }
 
     var popupTextBox: TextBox
     var answerButton: TextBox
@@ -54,8 +46,7 @@ class Popup(background: Bitmap, popupText: String, popupAnswer: String = "", val
         popupCallback = func
     }
     init{
-        if(duration > 0) timedPopup = true
-        else timedPopup = false
+        timedPopup = duration > 0
 
         this.scale(0.75f)
 
@@ -102,9 +93,9 @@ class Popup(background: Bitmap, popupText: String, popupAnswer: String = "", val
 
         answerButton.onClickAction {
             println("Click detected")
-            popupOn = false;
+            popupOn = false
             framesOn = 0
-            popupCallback?.let { it() };
+            popupCallback?.let { it() }
             answerButton.removeClickAction()
         }
 

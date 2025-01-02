@@ -100,13 +100,12 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             pitchModeButton.setOriginPosition(
                 y = 0.0f,
                 x = 0.0f
-            )  // Center the button on the screen
+            )
             pitchModeButton.scale(0.4f)
             pitchModeButton.onClickAction {
-                changeModeCallback(GameModeName.PITCH) // Call to switch to PitchMode
+                changeModeCallback(GameModeName.PITCH)
             }
 
-// Add the button to the scene
             scene.addGameObject(pitchModeButton)
 
 
