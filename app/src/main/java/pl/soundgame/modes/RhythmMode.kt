@@ -40,7 +40,7 @@ class RhythmMode(
     private val changeModeCallback: (GameModeName) -> Unit,
     private val questions: List<Question>,
     private val totalRounds: Int,
-    private val onCompleteCallback: (Double, List<Achievement>) -> Unit
+    private val onCompleteCallback: (Double) -> Unit
 ) : GameMode() {
 
     private val soundPlayer: SoundPlayer = SoundPlayer(context)
@@ -378,11 +378,8 @@ class RhythmMode(
         userManager.incrementTotalScore(accuracy)
 
 
-        val unlockedAchievements = achievementManager.checkAndUnlockAchievements()
-        achievementManager.checkRemainingAchievements()
-
         // Trigger the completion callback with the final score
-        onCompleteCallback(accuracy, unlockedAchievements)
+        onCompleteCallback(accuracy)
     }
 
 }

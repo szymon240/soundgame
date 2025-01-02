@@ -36,7 +36,7 @@ class InstrumentalMode(
     private val changeModeCallback: (GameModeName) -> Unit,
     private var questions: List<Question>,
     private val totalRounds: Int,
-    private val onCompleteCallback: (Double, List<Achievement>) -> Unit
+    private val onCompleteCallback: (Double) -> Unit
 ) : GameMode() {
     private val soundPlayer: SoundPlayer = SoundPlayer(context)
     private var currentRound = 0
@@ -273,6 +273,6 @@ class InstrumentalMode(
         val unlockedAchievements = achievementManager.checkAndUnlockAchievements()
         achievementManager.checkRemainingAchievements()
 
-        onCompleteCallback(currentGameScore, unlockedAchievements)
+        onCompleteCallback(currentGameScore)
     }
 }

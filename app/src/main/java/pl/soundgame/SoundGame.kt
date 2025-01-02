@@ -161,7 +161,7 @@ internal class SoundGame(context: Context) : Game() {
      *
      * @param finalAccuracy
      */
-    private fun onRhythmModeComplete(finalAccuracy: Double, achievements: List<Achievement>) {
+    private fun onRhythmModeComplete(finalAccuracy: Double) {
         score = finalAccuracy
         Log.i(TAG, "Final accuracy after all rounds: $score")
 
