@@ -7,5 +7,8 @@ enum class GameModeName {
     SETTINGS,
     EMPTY,
     RANKING_SCREEN,
-    PITCH
+    PITCH,
+    TOP10_INSTRUMENTAL,
+    TOP10_RHTHM,
+    ACHIEVEMENTS_SCREEN
 }

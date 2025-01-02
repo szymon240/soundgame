@@ -29,6 +29,9 @@ import pl.soundgame.engine.gameobjects.Popup
 import pl.soundgame.modes.Empty
 import pl.soundgame.modes.PitchMode
 import pl.soundgame.modes.RankingScreen
+import pl.soundgame.modes.rankings.AchievementsScreen
+import pl.soundgame.modes.rankings.TopTenScreenInstrumental
+import pl.soundgame.modes.rankings.TopTenScreenRhythm
 
 /**
  * SoundGame class extends the Game class and serves as the central controller for the game.
@@ -54,10 +57,10 @@ internal class SoundGame(context: Context) : Game() {
     private val networkMonitor = NetworkMonitor(context)
     init {
         this.context = context
-        gameMode = PitchMode(this.context, changeModeCallback, ::onRhythmModeComplete)
-        gameModeName = GameModeName.PITCH
+        gameMode = Menu(this.context, changeModeCallback)
+        gameModeName = GameModeName.MENU
         mScene = gameMode.returnGameModeScene()
-        changeMode(GameModeName.PITCH)
+        changeMode(GameModeName.MENU)
 
         checkServerStatus()
         networkMonitor.registerNetworkCallback { isConnected ->
@@ -151,6 +154,11 @@ internal class SoundGame(context: Context) : Game() {
         return validExtensions.any { file.extension.equals(it, ignoreCase = true) }
     }
 
+    /**
+     * TODO
+     *
+     * @param finalAccuracy
+     */
     private fun onRhythmModeComplete(finalAccuracy: Double) {
         score = finalAccuracy
         Log.i(TAG, "Final accuracy after all rounds: $score")
@@ -188,7 +196,7 @@ internal class SoundGame(context: Context) : Game() {
         Log.i(TAG, "Changing mode to: $newMode")
         var retries = 6  // Number of retries allowed
         fun tryChangeMode() {
-            if (newMode != GameModeName.MENU && newMode != GameModeName.SETTINGS && newMode != GameModeName.RANKING_SCREEN) {
+            if (newMode == GameModeName.INSTRUMENTAL || newMode == GameModeName.RHYTHM) {
                 if (CONNECTION_STATUS != ConnectionStatus.SUCCESS){
                     MainScope().launch {
                         val text = context.getString(R.string.msg_no_connection)
@@ -211,14 +219,13 @@ internal class SoundGame(context: Context) : Game() {
                     if (retries > 0) {
                         retries--
                         MainScope().launch {
-                            Thread.sleep(1000)  // Wait 1 second before retrying
-
+                            Thread.sleep(1000)
                             tryChangeMode()
                         }
                     } else {
                         val text = context.getString(R.string.msg_error_downloading)
                         val duration = Toast.LENGTH_SHORT
-                        val toast = Toast.makeText(context, text, duration) // in Activity
+                        val toast = Toast.makeText(context, text, duration)
                         toast.show()
                         Log.e(TAG, "Failed to load mode: $newMode after retries. Staying in current mode.")
                         mScene.unlockAllButtons()
@@ -279,13 +286,14 @@ internal class SoundGame(context: Context) : Game() {
             GameModeName.EMPTY -> Empty(this.context, changeModeCallback, GameModeName.MENU)
             GameModeName.RANKING_SCREEN -> RankingScreen(this.context, commManager, changeModeCallback)
             GameModeName.PITCH -> PitchMode(this.context, changeModeCallback, ::onRhythmModeComplete)
+            GameModeName.TOP10_INSTRUMENTAL -> TopTenScreenInstrumental(this.context, commManager, changeModeCallback)
+            GameModeName.TOP10_RHTHM -> TopTenScreenRhythm(this.context, commManager, changeModeCallback)
+            GameModeName.ACHIEVEMENTS_SCREEN -> AchievementsScreen(this.context, commManager, changeModeCallback)
         }
 
         gameModeName = newMode
         mScene = gameMode.returnGameModeScene()
         mScene.loadScene()
-
-        GlobalScope.launch {  delay(500) ; withContext(Dispatchers.Main){ } }
     }
 
     /**
@@ -298,7 +306,7 @@ internal class SoundGame(context: Context) : Game() {
     private suspend fun downloadSoundsForQuestions(questions: List<Question>): Boolean {
         var allDownloaded = true
         for (question in questions) {
-            val url = question.url ?: continue
+            val url = question.url
             val soundFile = downloadSound(url)
             if (soundFile == null || !isValidAudioFile(soundFile)) {
                 allDownloaded = false

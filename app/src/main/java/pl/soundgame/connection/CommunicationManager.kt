@@ -224,6 +224,5 @@ class CommunicationManager {
         val SCORE_URL = "https://springboot-kotlin-app-84877666332.europe-west1.run.app/api/scores/add"
         val TOP10_RHYTHM = "https://springboot-kotlin-app-84877666332.europe-west1.run.app/api/scores/top10/rhythm"
         val TOP10_INSTRUMENTAL = "https://springboot-kotlin-app-84877666332.europe-west1.run.app/api/scores/top10/instrumental"
-        val AUDIO_URL = "https://springboot-kotlin-app-84877666332.europe-west1.run.app"
     }
  }

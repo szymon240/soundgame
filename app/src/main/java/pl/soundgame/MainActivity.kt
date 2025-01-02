@@ -35,22 +35,19 @@ class MainActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("user_preferences", Context.MODE_PRIVATE)
         val savedLanguageCode =
             sharedPreferences.getString("language_code", "en") ?: "en" // Default to "en"
-       // val context = changeLocale(this, savedLanguageCode)
+
 
         val game = SoundGame(this)
 
         gLView = GameGLSurfaceView(this, game)
-
-        // Create a FrameLayout with a black background
         val frameLayout = FrameLayout(this).apply {
             setBackgroundColor(Color.BLACK)
             addView(gLView)
         }
 
         setContentView(frameLayout)
-        // Add an EditText programmatically
         editText = EditText(this).apply {
-            visibility = View.GONE // Initially hidden
+            visibility = View.GONE
             inputType = InputType.TYPE_CLASS_TEXT // Basic text input
             imeOptions = EditorInfo.IME_ACTION_DONE // Show "Done" button on the keyboard
             filters = arrayOf(
