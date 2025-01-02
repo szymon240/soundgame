@@ -150,6 +150,11 @@ internal class SoundGame(context: Context) : Game() {
         return validExtensions.any { file.extension.equals(it, ignoreCase = true) }
     }
 
+    /**
+     * TODO
+     *
+     * @param finalAccuracy
+     */
     private fun onRhythmModeComplete(finalAccuracy: Double) {
         score = finalAccuracy
         Log.i(TAG, "Final accuracy after all rounds: $score")
@@ -210,14 +215,13 @@ internal class SoundGame(context: Context) : Game() {
                     if (retries > 0) {
                         retries--
                         MainScope().launch {
-                            Thread.sleep(1000)  // Wait 1 second before retrying
-
+                            Thread.sleep(1000)
                             tryChangeMode()
                         }
                     } else {
                         val text = context.getString(R.string.msg_error_downloading)
                         val duration = Toast.LENGTH_SHORT
-                        val toast = Toast.makeText(context, text, duration) // in Activity
+                        val toast = Toast.makeText(context, text, duration)
                         toast.show()
                         Log.e(TAG, "Failed to load mode: $newMode after retries. Staying in current mode.")
                         mScene.unlockAllButtons()
@@ -282,8 +286,6 @@ internal class SoundGame(context: Context) : Game() {
         gameModeName = newMode
         mScene = gameMode.returnGameModeScene()
         mScene.loadScene()
-
-        GlobalScope.launch {  delay(500) ; withContext(Dispatchers.Main){ } }
     }
 
     /**
@@ -296,7 +298,7 @@ internal class SoundGame(context: Context) : Game() {
     private suspend fun downloadSoundsForQuestions(questions: List<Question>): Boolean {
         var allDownloaded = true
         for (question in questions) {
-            val url = question.url ?: continue
+            val url = question.url
             val soundFile = downloadSound(url)
             if (soundFile == null || !isValidAudioFile(soundFile)) {
                 allDownloaded = false

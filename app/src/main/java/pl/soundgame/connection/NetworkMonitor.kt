@@ -7,12 +7,17 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.util.Log
 
+/**
+ * Newtworkl
+ *
+ * @property context App main activity context
+ */
+
 class NetworkMonitor(private val context: Context) {
 
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-    // Check current network status
     fun isNetworkAvailable(): Boolean {
         val activeNetwork = connectivityManager.activeNetwork
         val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
@@ -20,7 +25,6 @@ class NetworkMonitor(private val context: Context) {
                 networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
-    // Register callback for network changes
     fun registerNetworkCallback(onNetworkChange: (Boolean) -> Unit) {
         val networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
@@ -43,7 +47,6 @@ class NetworkMonitor(private val context: Context) {
         connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
     }
 
-    // Optional: Unregister the callback (to avoid memory leaks)
     fun unregisterNetworkCallback(networkCallback: ConnectivityManager.NetworkCallback) {
         connectivityManager.unregisterNetworkCallback(networkCallback)
     }
