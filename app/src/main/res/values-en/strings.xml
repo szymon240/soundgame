@@ -34,4 +34,9 @@
     <string name="nickname_change_button">Change your nick</string>
     <string name="incorrect_nickname">Provided nickname is incorrect - it\'s empty or too long</string>
     <string name="achievement_locked">Locked</string>
+    <string name="achievements_nick">Nickname</string>
+    <string name="achievements_score">Score</string>
+    <string name="achievements_screen">Your achievements</string>
+    <string name="top_10_instrumental">Top 10 Best players in instrumental</string>
+    <string name="top_10_rhythm">Top 10 best players in rhythm mode</string>
 </resources>

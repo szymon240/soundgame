@@ -22,12 +22,14 @@ import java.io.FileOutputStream
 import java.net.URL
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
 import pl.soundgame.connection.NetworkMonitor
 import pl.soundgame.playerutils.UserManager
 import pl.soundgame.engine.gameobjects.Popup
 import pl.soundgame.modes.Empty
-import pl.soundgame.modes.RankingScreen
+import pl.soundgame.modes.rankings.AchievementsScreen
+import pl.soundgame.modes.rankings.RankingScreen
+import pl.soundgame.modes.rankings.TopTenScreenInstrumental
+import pl.soundgame.modes.rankings.TopTenScreenRhythm
 
 /**
  * SoundGame class extends the Game class and serves as the central controller for the game.
@@ -192,7 +194,7 @@ internal class SoundGame(context: Context) : Game() {
         Log.i(TAG, "Changing mode to: $newMode")
         var retries = 6  // Number of retries allowed
         fun tryChangeMode() {
-            if (newMode != GameModeName.MENU && newMode != GameModeName.SETTINGS && newMode != GameModeName.RANKING_SCREEN) {
+            if (newMode == GameModeName.INSTRUMENTAL || newMode == GameModeName.RHYTHM) {
                 if (CONNECTION_STATUS != ConnectionStatus.SUCCESS){
                     MainScope().launch {
                         val text = context.getString(R.string.msg_no_connection)
@@ -281,6 +283,9 @@ internal class SoundGame(context: Context) : Game() {
             GameModeName.SETTINGS -> Settings(this.context, changeModeCallback)
             GameModeName.EMPTY -> Empty(this.context, changeModeCallback, GameModeName.MENU)
             GameModeName.RANKING_SCREEN -> RankingScreen(this.context, commManager, changeModeCallback)
+            GameModeName.TOP10_INSTRUMENTAL -> TopTenScreenInstrumental(this.context, commManager, changeModeCallback)
+            GameModeName.TOP10_RHTHM -> TopTenScreenRhythm(this.context, commManager, changeModeCallback)
+            GameModeName.ACHIEVEMENTS_SCREEN -> AchievementsScreen(this.context, commManager, changeModeCallback)
         }
 
         gameModeName = newMode
