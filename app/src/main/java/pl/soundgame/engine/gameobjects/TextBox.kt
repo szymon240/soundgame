@@ -36,38 +36,32 @@ class TextBox(
     id
 ) {
     var displayedText: String = initialText
-        get() = field
         set(value){
             field = value
             updateBitmap()
         }
     var width: Int = width
-        get() = field
         set(value) {
             field = value
             updateBitmap()
         }
     var height: Int = height
-        get() = field
         set(value) {
             field = value
             updateBitmap()
         }
     var size: Float = size
-        get() = field
         set(value) {
             field = value
             updateBitmap()
         }
     var color: Color = color
-        get() = field
         set(value) {
             field = value
             updateBitmap()
         }
 
     var background: Bitmap? = background
-        get() = field
         set(value) {
             field = value
             updateBitmap()

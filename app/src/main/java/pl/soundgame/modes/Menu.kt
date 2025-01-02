@@ -95,6 +95,21 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             //  popup.showPopup()
             }
 
+            // Adding PitchMode Button
+            val pitchModeButton =
+                Button(loadTextureBitmap("pitchMode.png", context), id = "pitchModeButton")
+            pitchModeButton.setOriginPosition(
+                y = 0.0f,
+                x = 0.0f
+            )
+            pitchModeButton.scale(0.4f)
+            pitchModeButton.onClickAction {
+                changeModeCallback(GameModeName.PITCH)
+            }
+
+            scene.addGameObject(pitchModeButton)
+
+
             val settingsButton =
             Button(loadTextureBitmap("settings.png", context), id = "settings Button")
                 settingsButton.setOriginPosition(

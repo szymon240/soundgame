@@ -28,8 +28,9 @@ import pl.soundgame.engine.gameobjects.Popup
 import pl.soundgame.engine.gameobjects.PopupAchievement
 import pl.soundgame.engine.loadTextureBitmap
 import pl.soundgame.modes.Empty
-import pl.soundgame.modes.rankings.AchievementsScreen
+import pl.soundgame.modes.PitchMode
 import pl.soundgame.modes.rankings.RankingScreen
+import pl.soundgame.modes.rankings.AchievementsScreen
 import pl.soundgame.modes.rankings.TopTenScreenInstrumental
 import pl.soundgame.modes.rankings.TopTenScreenRhythm
 import pl.soundgame.playerutils.Achievement
@@ -58,10 +59,10 @@ internal class SoundGame(context: Context) : Game() {
     private val networkMonitor = NetworkMonitor(context)
     init {
         this.context = context
-        gameMode = Menu(this.context, changeModeCallback)
-        gameModeName = GameModeName.MENU
+        gameMode = PitchMode(this.context, changeModeCallback, ::onRhythmModeComplete)
+        gameModeName = GameModeName.PITCH
         mScene = gameMode.returnGameModeScene()
-        changeMode(GameModeName.MENU)
+        changeMode(GameModeName.PITCH)
 
         checkServerStatus()
         networkMonitor.registerNetworkCallback { isConnected ->
@@ -171,7 +172,7 @@ internal class SoundGame(context: Context) : Game() {
     private fun sendScore(mode: GameModeName, score: Double) {
         val roundedScore = String.format("%.2f", score)
         val formattedScore = roundedScore.replace(",", ".").toDouble()
-        val username = userManager.getNickname()?.takeIf { it.isNotBlank() } ?: "player"
+        val username = userManager.getNickname().takeIf { it.isNotBlank() } ?: "player"
 
         commManager.postScore(mode, username, formattedScore) { response ->
             if (response != null) {
@@ -287,6 +288,7 @@ internal class SoundGame(context: Context) : Game() {
             GameModeName.SETTINGS -> Settings(this.context, changeModeCallback)
             GameModeName.EMPTY -> Empty(this.context, changeModeCallback, GameModeName.MENU)
             GameModeName.RANKING_SCREEN -> RankingScreen(this.context, commManager, changeModeCallback)
+            GameModeName.PITCH -> PitchMode(this.context, changeModeCallback, ::onRhythmModeComplete)
             GameModeName.TOP10_INSTRUMENTAL -> TopTenScreenInstrumental(this.context, commManager, changeModeCallback)
             GameModeName.TOP10_RHTHM -> TopTenScreenRhythm(this.context, commManager, changeModeCallback)
             GameModeName.ACHIEVEMENTS_SCREEN -> AchievementsScreen(this.context, commManager, changeModeCallback)

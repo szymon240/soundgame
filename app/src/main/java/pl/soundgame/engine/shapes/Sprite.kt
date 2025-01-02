@@ -163,6 +163,6 @@ class Sprite(bitmap: Bitmap) {
         GLES20.glUseProgram(0)
     }
     companion object{
-        var NUMBER_OF_TEXTURES = 0;
+        var NUMBER_OF_TEXTURES = 0
     }
 }

@@ -92,7 +92,8 @@ class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) :
 
     override fun draw(shaderProgram: Int, vPMatrix: FloatArray) {
         if(wasClicked){
-            if(!wasSwaped) { wasSwaped = true; alternateBitmap?.let { mSprite.swapImage(it) }}
+            if(!wasSwaped) { wasSwaped = true; alternateBitmap.let { mSprite.swapImage(it) }
+            }
             animationFrameCounter--
             if(animationFrameCounter == 0){
                 wasClicked = false
@@ -126,7 +127,4 @@ class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) :
         alternateBitmap = darkenBitmap(newBitmap)
     }
 
-    override fun swapSprite(newBitmap: Bitmap){
-        super.swapSprite(newBitmap)
-    }
 }
