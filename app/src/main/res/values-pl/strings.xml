@@ -33,4 +33,6 @@
     <string name="player_nick">Gracz:</string>
     <string name="nickname_change_button">Zmień swój nick</string>
     <string name="incorrect_nickname">Podany nick jest nie poprawny, jest zbyt długi lub pusty</string>
+    <string name="higherButtonText">Wyżej</string>
+    <string name="lowerButtonText">Niżej</string>
 </resources>

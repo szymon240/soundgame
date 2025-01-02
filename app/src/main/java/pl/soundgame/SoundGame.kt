@@ -27,6 +27,7 @@ import pl.soundgame.connection.NetworkMonitor
 import pl.soundgame.playerutils.UserManager
 import pl.soundgame.engine.gameobjects.Popup
 import pl.soundgame.modes.Empty
+import pl.soundgame.modes.PitchMode
 import pl.soundgame.modes.RankingScreen
 
 /**
@@ -53,10 +54,10 @@ internal class SoundGame(context: Context) : Game() {
     private val networkMonitor = NetworkMonitor(context)
     init {
         this.context = context
-        gameMode = Menu(this.context, changeModeCallback)
-        gameModeName = GameModeName.MENU
+        gameMode = PitchMode(this.context, changeModeCallback, ::onRhythmModeComplete)
+        gameModeName = GameModeName.PITCH
         mScene = gameMode.returnGameModeScene()
-        changeMode(GameModeName.MENU)
+        changeMode(GameModeName.PITCH)
 
         checkServerStatus()
         networkMonitor.registerNetworkCallback { isConnected ->
@@ -277,6 +278,7 @@ internal class SoundGame(context: Context) : Game() {
             GameModeName.SETTINGS -> Settings(this.context, changeModeCallback)
             GameModeName.EMPTY -> Empty(this.context, changeModeCallback, GameModeName.MENU)
             GameModeName.RANKING_SCREEN -> RankingScreen(this.context, commManager, changeModeCallback)
+            GameModeName.PITCH -> PitchMode(this.context, changeModeCallback, ::onRhythmModeComplete)
         }
 
         gameModeName = newMode

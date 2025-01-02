@@ -6,5 +6,6 @@ enum class GameModeName {
     INSTRUMENTAL,
     SETTINGS,
     EMPTY,
-    RANKING_SCREEN
+    RANKING_SCREEN,
+    PITCH
 }
