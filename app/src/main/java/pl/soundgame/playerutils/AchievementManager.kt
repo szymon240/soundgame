@@ -30,8 +30,7 @@ class AchievementManager private constructor(private val userManager: UserManage
         Achievement(
             name = "High Scorer - Pitch",
             description = "Score 300 points in Pitch Mode.",
-            requirement = { false //TODO
-                },
+            requirement = { userManager.getHighScore("pitch") >= 300 },
             textureName = "achievements/pitch_achievement.png"
         ),
         Achievement(

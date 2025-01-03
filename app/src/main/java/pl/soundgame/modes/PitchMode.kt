@@ -14,6 +14,7 @@ import pl.soundgame.engine.gameobjects.Popup
 import pl.soundgame.engine.gameobjects.PopupDouble
 import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.engine.loadTextureBitmap
+import pl.soundgame.playerutils.UserManager
 import kotlin.random.Random
 
 class PitchMode(
@@ -27,6 +28,7 @@ class PitchMode(
     private val TAG = "PitchMode"
     private var currentPitch = 1.0f
     private val pitchRange = 0.2f
+    private val userManager: UserManager = UserManager.getInstance(context)
 
     override fun returnGameModeScene(): Scene {
         val scene = Scene()
@@ -158,6 +160,17 @@ class PitchMode(
         // Send score to callbacks and update achievements
         val finalScore = score.toDouble()
         Log.i(TAG, "Final score: $finalScore")
+
+        // Update game stats
+        Log.i(TAG, "Updating game stat: gamesPlayed")
+        userManager.incrementGamesPlayed()
+
+        Log.i(TAG, "Updating high score for rhythm with score: $finalScore")
+        userManager.updateHighScore("pitch", finalScore)
+
+        Log.i(TAG, "Incrementing total score by: $finalScore")
+        userManager.incrementTotalScore(finalScore)
+
         onCompleteCallback(finalScore)
     }
 }
