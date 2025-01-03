@@ -24,20 +24,25 @@ import java.net.URL
 class CommunicationManager {
     private var parser = Gson()
     private val TAG = "CommunicationManager"
+    private val API_KEY = "123456789"
 
-    fun getServerStatus(onResult: (StatusResponse?) -> Unit){
+    fun getServerStatus(onResult: (StatusResponse?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val urlToStatus = URL(STATUS_URL)
-            try{
-                val response = urlToStatus.readText()
-                Log.i(TAG, "$response")
+            try {
+                with(urlToStatus.openConnection() as HttpURLConnection) {
+                    requestMethod = "GET"
+                    setRequestProperty("x-api-key", "$API_KEY")
+                    val response = inputStream.bufferedReader().use { it.readText() }
+                    Log.i(TAG, "$response")
+                    withContext(Dispatchers.Main) {
+                        val parsedResponse = Gson().fromJson(response, StatusResponse::class.java)
+                        onResult(parsedResponse)
+                    }
+                }
+            } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    val response = Gson().fromJson(response, StatusResponse::class.java)
-                    onResult(response)
-                 }
-            }catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    onResult(null) // Return null in case of an error
+                    onResult(null)
                 }
             }
         }
@@ -60,6 +65,7 @@ class CommunicationManager {
                     requestMethod = "POST"
                     doOutput = true
                     setRequestProperty("Content-Type", "application/json")
+                    setRequestProperty("x-api-key", "$API_KEY")
                     outputStream.use { os ->
                         os.write(requestBody.toByteArray())
                         os.flush()
@@ -67,9 +73,7 @@ class CommunicationManager {
                     val responseCode = responseCode
                     if (responseCode == HttpURLConnection.HTTP_OK) {
                         val jsonResponse = inputStream.bufferedReader().use { it.readText() }
-
-                         val response = parser.fromJson(jsonResponse, Response::class.java)
-
+                        val response = parser.fromJson(jsonResponse, Response::class.java)
                         withContext(Dispatchers.Main) {
                             onResult(response)
                         }
@@ -107,7 +111,7 @@ class CommunicationManager {
                     requestMethod = "POST"
                     doOutput = true
                     setRequestProperty("Content-Type", "application/json")
-
+                    setRequestProperty("x-api-key", "$API_KEY")
                     outputStream.use { os ->
                         os.write(requestBody.toByteArray())
                         os.flush()
@@ -117,7 +121,6 @@ class CommunicationManager {
                     if (responseCode == HttpURLConnection.HTTP_OK) {
                         val jsonResponse = inputStream.bufferedReader().use { it.readText() }
                         val response = parser.fromJson(jsonResponse, ScoreResponse::class.java)
-
                         withContext(Dispatchers.Main) {
                             onResult(response)
                         }
@@ -137,14 +140,13 @@ class CommunicationManager {
         }
     }
 
-
     fun getScoresRhythm(onResult: (List<ScoreTop10Response>?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val url = URL(TOP10_RHYTHM)
             try {
                 with(url.openConnection() as HttpURLConnection) {
                     requestMethod = "GET"
-                    doOutput = false
+                    setRequestProperty("x-api-key", "Bearer $API_KEY")
                     setRequestProperty("Content-Type", "application/json")
 
                     val responseCode = responseCode
@@ -152,7 +154,6 @@ class CommunicationManager {
                         val jsonResponse = inputStream.bufferedReader().use { it.readText() }
                         println(jsonResponse)
 
-                        // Parse as a list of ScoreTop10Response
                         val response: List<ScoreTop10Response> = parser.fromJson(
                             jsonResponse,
                             object : TypeToken<List<ScoreTop10Response>>() {}.type
@@ -177,13 +178,14 @@ class CommunicationManager {
             }
         }
     }
-    fun getScoresInstrumental(onResult: (List<ScoreTop10Response>?) -> Unit){
+
+    fun getScoresInstrumental(onResult: (List<ScoreTop10Response>?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val url = URL(TOP10_INSTRUMENTAL)
             try {
                 with(url.openConnection() as HttpURLConnection) {
                     requestMethod = "GET"
-                    doOutput = false
+                    setRequestProperty("x-api-key", "$API_KEY")
                     setRequestProperty("Content-Type", "application/json")
 
                     val responseCode = responseCode
@@ -191,7 +193,6 @@ class CommunicationManager {
                         val jsonResponse = inputStream.bufferedReader().use { it.readText() }
                         println(jsonResponse)
 
-                        // Parse as a list of ScoreTop10Response
                         val response: List<ScoreTop10Response> = parser.fromJson(
                             jsonResponse,
                             object : TypeToken<List<ScoreTop10Response>>() {}.type
@@ -209,7 +210,7 @@ class CommunicationManager {
                     }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error in getScoresRhythm: ${e.message}", e)
+                Log.e(TAG, "Error in getScoresInstrumental: ${e.message}", e)
                 withContext(Dispatchers.Main) {
                     onResult(null)
                 }

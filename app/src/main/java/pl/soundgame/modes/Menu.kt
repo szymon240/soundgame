@@ -110,12 +110,11 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             scene.addGameObject(pitchModeButton)
 
 
-            val settingsButton =
-            Button(loadTextureBitmap("settings.png", context), id = "settings Button")
-                settingsButton.setOriginPosition(
-                y = -0.33f,
-                x = 0.5f
-            )  // Position button below the Rhythm button
+            val settingsButton = Button(loadTextureBitmap("settings.png", context), id = "settings Button")
+                    settingsButton.setOriginPosition(
+                    y = -0.33f,
+                    x = 0.5f
+                )  // Position button below the Rhythm button
             settingsButton.scale(0.4f)
             settingsButton.onClickAction {
                 changeModeCallback(GameModeName.SETTINGS) // Call to switch to InstrumentalMode
