@@ -117,7 +117,7 @@ class PitchMode(
             val isCorrect = (isHigher && nextPitch > currentPitch) || (!isHigher && nextPitch < currentPitch)
 
             if (isCorrect) {
-                score++
+                score+= 100
                 scoreText.displayedText = "Score: $score"
                 currentPitch = nextPitch
                 nextPitch = generateNewPitch()
