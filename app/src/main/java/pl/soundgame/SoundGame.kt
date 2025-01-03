@@ -59,10 +59,10 @@ internal class SoundGame(context: Context) : Game() {
     private val networkMonitor = NetworkMonitor(context)
     init {
         this.context = context
-        gameMode = PitchMode(this.context, changeModeCallback, ::onRhythmModeComplete)
-        gameModeName = GameModeName.PITCH
+        gameMode = Menu(this.context, changeModeCallback)
+        gameModeName = GameModeName.MENU
         mScene = gameMode.returnGameModeScene()
-        changeMode(GameModeName.PITCH)
+        changeMode(GameModeName.MENU)
 
         checkServerStatus()
         networkMonitor.registerNetworkCallback { isConnected ->
@@ -288,7 +288,7 @@ internal class SoundGame(context: Context) : Game() {
             GameModeName.SETTINGS -> Settings(this.context, changeModeCallback)
             GameModeName.EMPTY -> Empty(this.context, changeModeCallback, GameModeName.MENU)
             GameModeName.RANKING_SCREEN -> RankingScreen(this.context, commManager, changeModeCallback)
-            GameModeName.PITCH -> PitchMode(this.context, changeModeCallback, ::onRhythmModeComplete)
+            GameModeName.PITCH -> PitchMode(this.context, changeModeCallback, questions, ::onRhythmModeComplete)
             GameModeName.TOP10_INSTRUMENTAL -> TopTenScreenInstrumental(this.context, commManager, changeModeCallback)
             GameModeName.TOP10_RHTHM -> TopTenScreenRhythm(this.context, commManager, changeModeCallback)
             GameModeName.ACHIEVEMENTS_SCREEN -> AchievementsScreen(this.context, commManager, changeModeCallback)

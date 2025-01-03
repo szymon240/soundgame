@@ -6,6 +6,7 @@ import android.os.Looper
 import android.util.Log
 import pl.soundgame.R
 import pl.soundgame.SoundPlayer
+import pl.soundgame.connection.serializedclasses.Question
 import pl.soundgame.engine.Scene
 import pl.soundgame.engine.background.SampleBackground
 import pl.soundgame.engine.gameobjects.Button
@@ -18,6 +19,7 @@ import kotlin.random.Random
 class PitchMode(
     private val context: Context,
     private val changeModeCallback: (GameModeName) -> Unit,
+    private var questions: List<Question>,
     private val onCompleteCallback: (Double) -> Unit
 ) : GameMode() {
     private val soundPlayer = SoundPlayer(context)
@@ -98,12 +100,12 @@ class PitchMode(
         var nextPitch = generateNewPitch()
 
         fun playCurrentAndNextSounds() {
-            val beatSound = soundPlayer.getSoundById(4)
-            beatSound?.let {
-                soundPlayer.playSoundWithPitch(currentPitch, it.resId)
+            val soundFile = questions[0].url?.let { context.cacheDir.resolve(it.substringAfterLast("/")) }
+            if (soundFile?.exists() == true) {
+                soundPlayer.playSoundWithPitch(currentPitch, soundFile.absolutePath)
 
                 Handler(Looper.getMainLooper()).postDelayed({
-                    soundPlayer.playSoundWithPitch(nextPitch, it.resId)
+                    soundPlayer.playSoundWithPitch(nextPitch, soundFile.absolutePath)
                 }, 1500)
             }
 
