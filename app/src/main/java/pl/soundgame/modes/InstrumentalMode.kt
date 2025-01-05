@@ -111,8 +111,8 @@ class InstrumentalMode(
             currentURL = q.url
             playMusicButton.onClickAction {
                 Log.i(TAG, "${currentURL}" )
-                val soundFile = questions[currentRound].url?.let { context.cacheDir.resolve(it.substringAfterLast("/")) }
-                if (soundFile?.exists() == true) {
+                val soundFile = questions[currentRound].url.let { context.cacheDir.resolve(it.substringAfterLast("/")) }
+                if (soundFile.exists() == true) {
                     soundPlayer.playSoundWithPitch(1.0f, soundFile.absolutePath)
                 }
             }

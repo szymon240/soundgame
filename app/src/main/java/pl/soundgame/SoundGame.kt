@@ -199,7 +199,7 @@ internal class SoundGame(context: Context) : Game() {
         Log.i(TAG, "Changing mode to: $newMode")
         var retries = 6  // Number of retries allowed
         fun tryChangeMode() {
-            if (newMode == GameModeName.INSTRUMENTAL || newMode == GameModeName.RHYTHM) {
+            if (newMode == GameModeName.INSTRUMENTAL || newMode == GameModeName.RHYTHM || newMode == GameModeName.PITCH) {
                 if (CONNECTION_STATUS != ConnectionStatus.SUCCESS){
                     MainScope().launch {
                         val text = context.getString(R.string.msg_no_connection)

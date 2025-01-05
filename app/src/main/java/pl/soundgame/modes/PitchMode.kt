@@ -102,8 +102,8 @@ class PitchMode(
         var nextPitch = generateNewPitch()
 
         fun playCurrentAndNextSounds() {
-            val soundFile = questions[0].url?.let { context.cacheDir.resolve(it.substringAfterLast("/")) }
-            if (soundFile?.exists() == true) {
+            val soundFile = questions[0].url.let { context.cacheDir.resolve(it.substringAfterLast("/")) }
+            if (soundFile.exists() == true) {
                 soundPlayer.playSoundWithPitch(currentPitch, soundFile.absolutePath)
 
                 Handler(Looper.getMainLooper()).postDelayed({

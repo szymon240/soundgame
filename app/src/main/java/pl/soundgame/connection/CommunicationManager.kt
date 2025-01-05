@@ -24,7 +24,7 @@ import java.net.URL
 class CommunicationManager {
     private var parser = Gson()
     private val TAG = "CommunicationManager"
-    private val API_KEY = "123456789"
+    private val API_KEY = "qN9vfTph2RrFE1oZW3O7"
 
     fun getServerStatus(onResult: (StatusResponse?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {

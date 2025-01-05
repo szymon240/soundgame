@@ -20,20 +20,12 @@ class PopupAchievement(background: Bitmap, achievement: Achievement, context: Co
      * Achievement unlcok to display
      */
     var achievement: Achievement = achievement
-        get() = field
-        set(value){
-            field = value
-        }
 
 
     /**
      * Text on the bottom of popup - can be clicked to dismiss a popup
      */
     var popupAnswer: String = popupAnswer
-        get() = field
-        set(value){
-            field = value
-        }
 
     var popupTextBox: TextBox
     var popupTextBoxDescription: TextBox
@@ -49,8 +41,7 @@ class PopupAchievement(background: Bitmap, achievement: Achievement, context: Co
         popupCallback = func
     }
     init{
-        if(duration > 0) timedPopup = true
-        else timedPopup = false
+        timedPopup = duration > 0
 
         this.scale(0.75f)
 
@@ -105,9 +96,9 @@ class PopupAchievement(background: Bitmap, achievement: Achievement, context: Co
 
         answerButton.onClickAction {
             println("Click detected")
-            popupOn = false;
+            popupOn = false
             framesOn = 0
-            popupCallback?.let { it() };
+            popupCallback?.let { it() }
             answerButton.removeClickAction()
         }
 
