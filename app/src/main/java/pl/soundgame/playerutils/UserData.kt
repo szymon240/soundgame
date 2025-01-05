@@ -8,7 +8,8 @@ data class UserData(
     var gamesPlayed: Int = 0,
     var totalScore: Double  = 0.0,
     var instrumental: Double  = 0.0,
-    var rhythm: Double = 0.0
+    var rhythm: Double = 0.0,
+    var pitch: Double = 0.0
 )
 //
 //MutableMap<String, Any> = mutableMapOf(

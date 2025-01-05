@@ -93,6 +93,7 @@ class UserManager private constructor(private val context: Context) {
         when (mode) {
             "rhythm" -> if (score > userData.rhythm) userData.rhythm = score
             "instrumental" -> if (score > userData.instrumental) userData.instrumental = score
+            "pitch" -> if (score > userData.pitch) userData.pitch = score
         }
         saveUserData()
     }
@@ -102,6 +103,7 @@ class UserManager private constructor(private val context: Context) {
         return when (mode) {
             "rhythm" -> userData.rhythm
             "instrumental" -> userData.instrumental
+            "pitch" -> userData.pitch
             else -> 0.0
         }
     }
@@ -129,6 +131,7 @@ class UserManager private constructor(private val context: Context) {
         userData.totalScore = 0.0
         userData.rhythm = 0.0
         userData.instrumental = 0.0
+        userData.pitch = 0.0
         saveUserData()
         Log.i("UserManager", "Game stats have been reset.")
     }

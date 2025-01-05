@@ -103,16 +103,21 @@ class PitchMode(
 
         fun playCurrentAndNextSounds() {
             val soundFile = questions[0].url.let { context.cacheDir.resolve(it.substringAfterLast("/")) }
-            if (soundFile.exists() == true) {
+            if (soundFile.exists()) {
+                Log.d(TAG, "Playing sound from file: ${soundFile.absolutePath}")
                 soundPlayer.playSoundWithPitch(currentPitch, soundFile.absolutePath)
 
                 Handler(Looper.getMainLooper()).postDelayed({
+                    Log.d(TAG, "Playing next sound with pitch: $nextPitch")
                     soundPlayer.playSoundWithPitch(nextPitch, soundFile.absolutePath)
                 }, 1500)
+            } else {
+                Log.e(TAG, "Sound file does not exist: ${soundFile.absolutePath}")
             }
 
             Log.d(TAG, "currentPitch: $currentPitch, nextPitch: $nextPitch")
         }
+
 
         fun checkAnswer(isHigher: Boolean) {
             println("SPRAWDZAM")
