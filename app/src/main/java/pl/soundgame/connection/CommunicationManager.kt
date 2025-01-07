@@ -1,5 +1,6 @@
 package pl.soundgame.connection
 
+import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -7,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import pl.soundgame.R
 import pl.soundgame.connection.serializedclasses.Question
 import pl.soundgame.connection.serializedclasses.Request
 import pl.soundgame.connection.serializedclasses.Response
@@ -21,10 +23,10 @@ import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 
-class CommunicationManager {
+class CommunicationManager(context: Context) {
     private var parser = Gson()
     private val TAG = "CommunicationManager"
-    private val API_KEY = "qN9vfTph2RrFE1oZW3O7"
+    private val API_KEY = context.getString(R.string.apiKey)
 
     fun getServerStatus(onResult: (StatusResponse?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {

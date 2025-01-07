@@ -1,7 +1,11 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
 }
+
+val apiKey = gradleLocalProperties(rootDir,providers).getProperty("apiKey","")
 
 android {
     namespace = "pl.soundgame"
@@ -17,7 +21,13 @@ android {
         versionName = "0.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        resValue(
+            "string",
+            "apiKey",
+            "\"" + apiKey + "\""
+        )
     }
+
 
     buildTypes {
         release {

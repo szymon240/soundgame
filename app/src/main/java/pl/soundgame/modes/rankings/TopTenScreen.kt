@@ -1,6 +1,7 @@
 package pl.soundgame.modes.rankings
 
 import android.content.Context
+import android.util.Log
 import pl.soundgame.R
 import pl.soundgame.connection.CommunicationManager
 import pl.soundgame.connection.serializedclasses.ScoreTop10Response
@@ -22,15 +23,18 @@ class TopTenScreenInstrumental(var context: Context,
 
         commManager.getScoresInstrumental { response ->
             response?.let {
+                instrumentalModeScores = response
+
                 for( row in it){
-                    instrumentalModeScores = response
                     println("${row.playerName} - ${row.score}" )
-                    val ranks = displayRanking(response, context)
-                    for (rank in ranks){
-                        scene.addGameObject(rank)
-                    }
+
                 }
-            } }
+                val ranks = displayRanking(response, context)
+                for (rank in ranks){
+                    scene.addGameObject(rank)
+                }
+            }
+        }
 
         scene.setBackground {
             SampleBackground(context)
@@ -60,15 +64,19 @@ class TopTenScreenRhythm(var context: Context,
 
         commManager.getScoresRhythm { response ->
             response?.let {
+                rhythmModeScores = response
+
+
                 for( row in it){
-                    rhythmModeScores = response
                     println("${row.playerName} - ${row.score}" )
-                    val ranks = displayRanking(response, context)
-                    for (rank in ranks){
-                        scene.addGameObject(rank)
-                    }
+
                 }
-            } }
+                val ranks = displayRanking(response, context)
+                for (rank in ranks){
+                    scene.addGameObject(rank)
+                }
+            }
+        }
 
         scene.setBackground {
             SampleBackground(context)
