@@ -41,4 +41,9 @@
     <string name="achievements_screen">Your achievements</string>
     <string name="top_10_instrumental">Top 10 Best players in instrumental</string>
     <string name="top_10_rhythm">Top 10 best players in rhythm mode</string>
+    <string name="game_modes">Game modes</string>
+    <string name="pitch_mode">Pitch Mode</string>
+    <string name="top_tens">Top 10 for modes</string>
+    <string name="achievments">Achievements and scores</string>
+    <string name="tutorial_pitch">Listen to two samples, they differ in pitch. Decide if second sound is lower or higher in pitch that the first.</string>
 </resources>

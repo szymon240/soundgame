@@ -47,7 +47,7 @@ class PitchMode(
         val scoreText = TextBox(initialText = "Score: $score", id = "scoreText")
         val popup = Popup(
             loadTextureBitmap("popupBackground.png", context),
-            context.getString(R.string.tutorial_rhythm_answer),
+            context.getString(R.string.tutorial_pitch),
             popupAnswer = context.getString(R.string.tutorial_rhythm_answer)
         )
 
@@ -58,17 +58,17 @@ class PitchMode(
             popupAnswer2 = context.getString(R.string.exit_yes)
         )
 
-        val higherButton = Button(loadTextureBitmap("button_higher.png", context), id = "higherButton")
-        val lowerButton = Button(loadTextureBitmap("button_lower.png", context), id = "lowerButton")
+        val higherButton = Button(loadTextureBitmap("higher.png", context), id = "higherButton")
+        val lowerButton = Button(loadTextureBitmap("lower.png", context), id = "lowerButton")
         val playButton = Button(loadTextureBitmap("rhythm_mode/play.png", context), id = "playButton")
         val exitButton = Button(loadTextureBitmap("back.png", context), id = "exitButton")
 
         val higherButtonText = TextBox(initialText = context.getString(R.string.higherButtonText), id = "higherButtonText")
-        higherButtonText.setOriginPosition(y = -0.3f, x = 0.5f)
+        higherButtonText.setOriginPosition(y = -0.2f, x = 0.5f)
         higherButtonText.scale(0.4f)
 
         val lowerButtonText = TextBox(initialText = context.getString(R.string.lowerButtonText), id = "lowerButtonText")
-        lowerButtonText.setOriginPosition(y = -0.3f, x = -0.5f)
+        lowerButtonText.setOriginPosition(y = -0.2f, x = -0.5f)
         lowerButtonText.scale(0.4f)
 
         higherButton.setOriginPosition(x = 0.5f, y = -0.5f)
@@ -76,9 +76,9 @@ class PitchMode(
         playButton.setOriginPosition(x = 0f, y = 0.3f)
         scoreText.setOriginPosition(x = 0f, y = 0.8f)
 
-        higherButton.scale(0.25f)
-        lowerButton.scale(0.25f)
-        playButton.scale(0.25f)
+        higherButton.scale(0.4f)
+        lowerButton.scale(0.4f)
+        playButton.scale(0.4f)
         scoreText.scale(0.5f)
 
         exitPopup.setPopupCallback1 {

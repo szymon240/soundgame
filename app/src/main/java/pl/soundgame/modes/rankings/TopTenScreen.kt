@@ -27,7 +27,6 @@ class TopTenScreenInstrumental(var context: Context,
 
                 for( row in it){
                     println("${row.playerName} - ${row.score}" )
-
                 }
                 val ranks = displayRanking(response, context)
                 for (rank in ranks){

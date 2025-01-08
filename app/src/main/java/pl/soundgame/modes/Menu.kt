@@ -30,29 +30,37 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             SampleBackground(context)
         }
 
-        val settings = context.getString(R.string.settings)
-        val rhythm = context.getString(R.string.rhythm)
-        val instrumental = context.getString(R.string.instrumental)
-
+        val settingsText = context.getString(R.string.achievments)
+        val rhythmText = context.getString(R.string.rhythm)
+        val instrumentalText = context.getString(R.string.instrumental)
+        val gameModesText = context.getString(R.string.game_modes)
+        val pitchText = context.getString(R.string.pitch_mode)
         scene.setInitScene {
             userManager.logUserData()
             achievementManager.checkAndUnlockAchievements()
             achievementManager.checkRemainingAchievements()
             userManager.logUserData()
 
-            val settings = TextBox(initialText = "$settings", id = "settings")
-            val rhythm = TextBox(initialText = "$rhythm", id = "rhythm")
-            val instrumental = TextBox(initialText = "$instrumental", id = "instrumental")
+            val settings = TextBox(initialText = "$settingsText", id = "settings")
+            val rhythm = TextBox(initialText = "$rhythmText", id = "rhythm",  width = 512, size = 32f)
+            val instrumental = TextBox(initialText = "$instrumentalText", id = "instrumental", width = 512, size = 32f)
+
             val popupLoading = Popup(popupText= "", background
-            = createTextTexture(text = context.getString(R.string.loading)), id = "popup_loading", duration = 1200)
+            = createTextTexture(text = context.getString(R.string.loading), background = loadTextureBitmap("button.png", context)), id = "popup_loading", duration = 1200)
             popupLoading.hidePopup()
-            settings.setOriginPosition(y = -0.06f, x = 0.5f)
-            settings.scale(0.5f)
-            rhythm.setOriginPosition(y = 0.57f, x = -0.5f)
-            rhythm.scale(0.5f)
-            instrumental.setOriginPosition(y = 0.6f, x = 0.5f)
-            instrumental.scale(0.5f)
-            scene.addGameObject(settings, rhythm, instrumental, popupLoading)
+            settings.setOriginPosition(y = -0.1f, x = -0.5f)
+            settings.scale(0.6f)
+            rhythm.setOriginPosition(y = 0.47f, x = -0.5f)
+            rhythm.scale(0.3f)
+            instrumental.setOriginPosition(y = 0.62f, x = 0.5f)
+            instrumental.scale(0.3f)
+            val topText = TextBox(id = "topText", initialText = gameModesText)
+            topText.setOriginPosition(y = 0.6f, x = -0.5f)
+            topText.scale(0.6f)
+            val pitch = TextBox(initialText = "$pitchText", id = "instrumental", width = 512, size = 32f)
+            pitch.setOriginPosition(y = 0.21f, x = 0.5f)
+            pitch.scale(0.3f)
+            scene.addGameObject(settings, rhythm, instrumental, topText, pitch)
 
             val title = GameObject(loadTextureBitmap("title.png", context), "title")
             title.setOriginPosition(y = 0.8f)
@@ -60,34 +68,34 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             val popup = Popup(loadTextureBitmap("popupBackground.png", context), popupText = "Testowy\n popup\nbaredzo długa linijka z dużą ilością zbędnego tekstu", popupAnswer = "Continue", id = "popup", duration = -1)
 
             val nicknamePopup = PopupTextfield(
-            popupAnswer1 = context.getString(R.string.nickname_popup_save),
-            popupAnswer2 = context.getString(R.string.nickname_popup_cancel),
-            background = loadTextureBitmap("popupBackground.png", context),
-            id = "nicknamePopup",
-            duration = -1,
-            context = context as MainActivity
+                popupAnswer1 = context.getString(R.string.nickname_popup_save),
+                popupAnswer2 = context.getString(R.string.nickname_popup_cancel),
+                background = loadTextureBitmap("popupBackground.png", context),
+                id = "nicknamePopup",
+                duration = -1,
+                context = context as MainActivity
             )
 
             val rhythmModeButton =
             Button(loadTextureBitmap("rhythmMode2.png", context), id = "rhythmModeButton")
             rhythmModeButton.setOriginPosition(
-            y = 0.3f,
-            x = -0.5f
+                y = 0.2f,
+                x = -0.5f
             )  // Position button in the upper center
             rhythmModeButton.scale(0.4f)
             rhythmModeButton.onClickAction {
-            changeModeCallback(GameModeName.RHYTHM) // Call to switch to RhythmMode
+              changeModeCallback(GameModeName.RHYTHM) // Call to switch to RhythmMode
             }
             scene.addGameObject(rhythmModeButton)
 
             // Button to go to InstrumentalMode
             val instrumentalModeButton =
-            Button(loadTextureBitmap("instrumental.png", context), id = "instrumentalModeButton")
+            Button(loadTextureBitmap("instrumentalMode.png", context), id = "instrumentalModeButton")
             instrumentalModeButton.setOriginPosition(
-            y = 0.3f,
-            x = 0.5f
+                y = 0.4f,
+                x = 0.5f
             )  // Position button below the Rhythm button
-            instrumentalModeButton.scale(0.4f)
+            instrumentalModeButton.scale(0.3f)
             instrumentalModeButton.onClickAction {
             changeModeCallback(GameModeName.INSTRUMENTAL) // Call to switch to InstrumentalMode
             //instrumentalModeButton.lock()
@@ -99,10 +107,10 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             val pitchModeButton =
                 Button(loadTextureBitmap("pitchMode.png", context), id = "pitchModeButton")
             pitchModeButton.setOriginPosition(
-                y = 0.0f,
-                x = 0.0f
+                y = -0.00f,
+                x = 0.5f
             )
-            pitchModeButton.scale(0.4f)
+            pitchModeButton.scale(0.3f)
             pitchModeButton.onClickAction {
                 changeModeCallback(GameModeName.PITCH)
             }
@@ -110,7 +118,7 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             scene.addGameObject(pitchModeButton)
 
 
-            val settingsButton = Button(loadTextureBitmap("settings.png", context), id = "settings Button")
+            val settingsButton = Button(loadTextureBitmap("settings2.png", context), id = "settings Button")
                     settingsButton.setOriginPosition(
                     y = -0.8f,
                     x = 0.7f
@@ -123,19 +131,16 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
                 //  popup.showPopup()
             }
 
-            val nicknameButton = Button(loadTextureBitmap("settings.png", context), id = "nicknameButton")
-                nicknameButton.setOriginPosition(y = -0.33f, x = -0.5f)
-                nicknameButton.scale(0.4f)
-
-
-                nicknameButton.onClickAction {
+            val achievementsButton = Button(loadTextureBitmap("achievements.png", context), id = "nicknameButton")
+                achievementsButton.setOriginPosition(y = -0.43f, x = -0.5f)
+                achievementsButton.scale(0.4f)
+                achievementsButton.onClickAction {
                 //nicknameButton.lock() // Lock the nickname button to prevent multiple clicks
                 //nicknamePopup.showPopup()
                 changeModeCallback(GameModeName.RANKING_SCREEN)
                 settingsButton.lock()
                 instrumentalModeButton.lock()
                 rhythmModeButton.lock()
-
             }
 
             nicknamePopup.setPopupCallback1 {
@@ -145,7 +150,7 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
                     Log.i("Menu", "Nickname updated to: ${userManager.getNickname()}")
                 }
                 nicknamePopup.hidePopup()
-                nicknameButton.unlock()
+                achievementsButton.unlock()
                 settingsButton.unlock()
                 instrumentalModeButton.unlock()
                 rhythmModeButton.unlock()// Unlock the nickname button after the popup is dismissed
@@ -154,7 +159,7 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             nicknamePopup.setPopupCallback2 {
                 Log.i("Menu", "Nickname input cancelled")
                 nicknamePopup.hidePopup()
-                nicknameButton.unlock()
+                achievementsButton.unlock()
                 settingsButton.unlock()
                 instrumentalModeButton.unlock()
                 rhythmModeButton.unlock()// Unlock the nickname button after the popup is dismissed
@@ -164,10 +169,10 @@ class Menu(var context: Context, private val changeModeCallback: (GameModeName) 
             connectionStatusText.setOriginPosition(y = -0.8f)
             connectionStatusText.scale(0.3f)
             val connectionImage = GameObject(loadTextureBitmap("connection/connecting.png", context), id = "connImage")
-            connectionImage.setOriginPosition(y = -0.8f, x = -0.5f )
-            connectionImage.scale(0.1f)
+            connectionImage.setOriginPosition(y = -0.8f, x = -0.7f )
+            connectionImage.scale(0.12f)
 
-            scene.addGameObject(title, instrumentalModeButton, popup, connectionStatusText, connectionImage, settingsButton, nicknameButton, nicknamePopup)
+            scene.addGameObject(title, instrumentalModeButton, popup, connectionStatusText, connectionImage, settingsButton, achievementsButton, nicknamePopup, popupLoading)
 
 
             val achievements = achievementManager.getNotDisplayedAchievements()

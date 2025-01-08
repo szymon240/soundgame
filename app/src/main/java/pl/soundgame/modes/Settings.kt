@@ -67,8 +67,9 @@ class Settings(var context: Context, private val changeModeCallback: (GameModeNa
 
 
 
-            val authorsInfo = TextBox(initialText = context.getString(R.string.authors_info), width = 280, size = 20f)
+            val authorsInfo = TextBox(initialText = context.getString(R.string.authors_info), width = 600, height= 400, size = 40f)
             authorsInfo.setOriginPosition(y = -0.5f, x = 0f)
+            authorsInfo.scale(0.5f)
             val exitButton = Button(loadTextureBitmap("back.png", context), id = "playButton")
             exitButton.setOriginPosition(y = 0.8f, x = -0.75f)
             exitButton.scale(0.15f)

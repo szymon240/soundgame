@@ -41,4 +41,9 @@
     <string name="achievements_screen">Twoje osiągnięcia</string>
     <string name="top_10_instrumental">10 Najlepszych graczy w trybie instrumenty</string>
     <string name="top_10_rhythm">10 Najlepszych graczy w trybie rytmicznym</string>
+    <string name="game_modes">Tryby gry</string>
+    <string name="pitch_mode">Wyższa/niższa tonacja</string>
+    <string name="top_tens">Top 10 dla trybów</string>
+    <string name="achievments">Osiągnięcia i wyniki</string>
+    <string name="tutorial_pitch">Posłuchaj dwóch dźwięków, różnią się one tonacją. Stwierdź, czy drugi dźwięk jest wyższy, czy niższy niż pierwszy.</string>
 </resources>
