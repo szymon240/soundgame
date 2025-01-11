@@ -220,12 +220,52 @@ class CommunicationManager(context: Context) {
         }
     }
 
+    fun getScoresPitch(onResult: (List<ScoreTop10Response>?) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val url = URL(TOP10_PITCH)
+            try {
+                with(url.openConnection() as HttpURLConnection) {
+                    requestMethod = "GET"
+                    setRequestProperty("x-api-key", "$API_KEY")
+                    setRequestProperty("Content-Type", "application/json")
+
+                    val responseCode = responseCode
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        val jsonResponse = inputStream.bufferedReader().use { it.readText() }
+                        println(jsonResponse)
+
+                        val response: List<ScoreTop10Response> = parser.fromJson(
+                            jsonResponse,
+                            object : TypeToken<List<ScoreTop10Response>>() {}.type
+                        )
+
+                        withContext(Dispatchers.Main) {
+                            onResult(response)
+                        }
+
+                    } else {
+                        Log.e(TAG, "HTTP error: $responseCode")
+                        withContext(Dispatchers.Main) {
+                            onResult(null)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in getScoresInstrumental: ${e.message}", e)
+                withContext(Dispatchers.Main) {
+                    onResult(null)
+                }
+            }
+        }
+    }
+
     companion object URLs {
         val STATUS_URL = "https://springboot-kotlin-app-84877666332.europe-west1.run.app/api/status"
         val QUESTIONS_URL =
             "https://springboot-kotlin-app-84877666332.europe-west1.run.app/api/audio/questions"
         val SCORE_URL = "https://springboot-kotlin-app-84877666332.europe-west1.run.app/api/scores/add"
         val TOP10_RHYTHM = "https://springboot-kotlin-app-84877666332.europe-west1.run.app/api/scores/top10/rhythm"
+        val TOP10_PITCH = "https://springboot-kotlin-app-84877666332.europe-west1.run.app/api/scores/top10/pitch"
         val TOP10_INSTRUMENTAL = "https://springboot-kotlin-app-84877666332.europe-west1.run.app/api/scores/top10/instrumental"
     }
  }

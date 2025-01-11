@@ -17,7 +17,7 @@ import pl.soundgame.modes.GameModeName
 class TopTenScreenInstrumental(var context: Context,
                                private val commManager: CommunicationManager,
                                private val changeModeCallback: (GameModeName) -> Unit) : GameMode()  {
-    var instrumentalModeScores: List<ScoreTop10Response> = emptyList()
+    private var instrumentalModeScores: List<ScoreTop10Response> = emptyList()
     override fun returnGameModeScene(): Scene {
         val scene = Scene()
 
@@ -45,7 +45,43 @@ class TopTenScreenInstrumental(var context: Context,
             exitButton.scale(0.15f)
             exitButton.onClickAction { changeModeCallback(GameModeName.RANKING_SCREEN) }
 
-            // val obj = GameObject(loadTextureBitmap("bledna.png", context) )
+            scene.addGameObject( exitButton)
+        }
+
+        return scene
+    }
+}
+
+class TopTenScreenPitch(var context: Context,
+                               private val commManager: CommunicationManager,
+                               private val changeModeCallback: (GameModeName) -> Unit) : GameMode()  {
+    private var instrumentalModeScores: List<ScoreTop10Response> = emptyList()
+    override fun returnGameModeScene(): Scene {
+        val scene = Scene()
+
+        commManager.getScoresPitch { response ->
+            response?.let {
+                instrumentalModeScores = response
+
+                for( row in it){
+                    println("${row.playerName} - ${row.score}" )
+                }
+                val ranks = displayRanking(response, context)
+                for (rank in ranks){
+                    scene.addGameObject(rank)
+                }
+            }
+        }
+
+        scene.setBackground {
+            SampleBackground(context)
+        }
+
+        scene.setInitScene {
+            val exitButton = Button(loadTextureBitmap("back.png", context), id = "playButton")
+            exitButton.setOriginPosition(y = 0.8f, x = -0.75f)
+            exitButton.scale(0.15f)
+            exitButton.onClickAction { changeModeCallback(GameModeName.RANKING_SCREEN) }
 
             scene.addGameObject( exitButton)
         }
@@ -57,7 +93,7 @@ class TopTenScreenInstrumental(var context: Context,
 class TopTenScreenRhythm(var context: Context,
                          private val commManager: CommunicationManager,
                          private val changeModeCallback: (GameModeName) -> Unit) : GameMode() {
-    var rhythmModeScores: List<ScoreTop10Response> = emptyList()
+    private var rhythmModeScores: List<ScoreTop10Response> = emptyList()
     override fun returnGameModeScene(): Scene {
         val scene = Scene()
 

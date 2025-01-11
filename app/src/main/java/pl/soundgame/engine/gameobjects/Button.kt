@@ -25,8 +25,10 @@ class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) :
     private var wasClicked: Boolean = false
     private var wasSwaped = false
     private var wasSetAlternate = false
+    private var baseBitmapBackup: Bitmap
     protected var alternateBitmap: Bitmap
     init{
+        baseBitmapBackup = bitmap
         if(alternateBitmap == null){
             wasSetAlternate = true
             this.alternateBitmap = darkenBitmap(bitmap)
@@ -72,8 +74,8 @@ class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) :
     fun lock(){
         if (!isBlocked){
             isBlocked = !isBlocked
-            swapSprite(baseBitmap)
-            if(clickAction != null) storeClickAction = clickAction!!
+            wasSwaped = true; alternateBitmap.let { mSprite.swapImage(it) }
+            if(clickAction != null) storeClickAction = clickAction
             clickAction = null
         }
     }
@@ -84,9 +86,12 @@ class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) :
     fun unlock() {
         if (isBlocked){
             isBlocked = !isBlocked
-            swapSprite(baseBitmap)
+            wasSwaped = false
+            animationFrameCounter = 1
+            wasClicked = true
             if(storeClickAction != null) clickAction = storeClickAction
             storeClickAction = null
+
         }
     }
 
@@ -127,4 +132,7 @@ class Button(bitmap: Bitmap, id: String = "", alternateBitmap: Bitmap? = null) :
         alternateBitmap = darkenBitmap(newBitmap)
     }
 
+    fun changeToBase(){
+        swapSprite(baseBitmap)
+    }
 }

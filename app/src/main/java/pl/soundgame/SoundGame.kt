@@ -25,15 +25,13 @@ import kotlinx.coroutines.MainScope
 import pl.soundgame.connection.NetworkMonitor
 import pl.soundgame.playerutils.UserManager
 import pl.soundgame.engine.gameobjects.Popup
-import pl.soundgame.engine.gameobjects.PopupAchievement
-import pl.soundgame.engine.loadTextureBitmap
 import pl.soundgame.modes.Empty
 import pl.soundgame.modes.PitchMode
 import pl.soundgame.modes.rankings.RankingScreen
 import pl.soundgame.modes.rankings.AchievementsScreen
 import pl.soundgame.modes.rankings.TopTenScreenInstrumental
+import pl.soundgame.modes.rankings.TopTenScreenPitch
 import pl.soundgame.modes.rankings.TopTenScreenRhythm
-import pl.soundgame.playerutils.Achievement
 
 /**
  * SoundGame class extends the Game class and serves as the central controller for the game.
@@ -290,8 +288,9 @@ internal class SoundGame(context: Context) : Game() {
             GameModeName.RANKING_SCREEN -> RankingScreen(this.context, commManager, changeModeCallback)
             GameModeName.PITCH -> PitchMode(this.context, changeModeCallback, questions, ::onRhythmModeComplete)
             GameModeName.TOP10_INSTRUMENTAL -> TopTenScreenInstrumental(this.context, commManager, changeModeCallback)
-            GameModeName.TOP10_RHTHM -> TopTenScreenRhythm(this.context, commManager, changeModeCallback)
+            GameModeName.TOP10_RHYTHM -> TopTenScreenRhythm(this.context, commManager, changeModeCallback)
             GameModeName.ACHIEVEMENTS_SCREEN -> AchievementsScreen(this.context, commManager, changeModeCallback)
+            GameModeName.TOP10_PITCH -> TopTenScreenPitch(this.context, commManager, changeModeCallback)
         }
 
         gameModeName = newMode

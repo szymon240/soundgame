@@ -8,7 +8,6 @@ import pl.soundgame.engine.background.SampleBackground
 import pl.soundgame.engine.gameobjects.Button
 import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.engine.loadTextureBitmap
-import pl.soundgame.engine.shapes.createTextTexture
 import pl.soundgame.modes.GameMode
 import pl.soundgame.modes.GameModeName
 
@@ -41,7 +40,7 @@ class RankingScreen(var context: Context, private val commManager: Communication
             val top10Rhythm = Button(loadTextureBitmap("rhythmMode2.png", context) )
             top10Rhythm.setOriginPosition(y = -0.2f, x = -0.6f)
             top10Rhythm.scale(0.3f)
-            top10Rhythm.onClickAction { changeModeCallback(GameModeName.TOP10_RHTHM) }
+            top10Rhythm.onClickAction { changeModeCallback(GameModeName.TOP10_RHYTHM) }
             scene.addGameObject( top10Rhythm)
             val top10Instrumental = Button(loadTextureBitmap("instrumentalMode.png", context) )
             top10Instrumental.setOriginPosition(y = -0.2f, x = -0.0f)
@@ -52,7 +51,7 @@ class RankingScreen(var context: Context, private val commManager: Communication
             val top10Pitch = Button(loadTextureBitmap("pitchMode.png",context) )
             top10Pitch.setOriginPosition(y = -0.2f, x = 0.6f)
             top10Pitch.scale(0.3f)
-            top10Pitch.onClickAction { changeModeCallback(GameModeName.TOP10_INSTRUMENTAL) }
+            top10Pitch.onClickAction { changeModeCallback(GameModeName.TOP10_PITCH) }
             scene.addGameObject( top10Instrumental, topText, tops10text, top10Pitch)
         }
 

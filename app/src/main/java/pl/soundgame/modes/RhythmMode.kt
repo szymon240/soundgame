@@ -4,19 +4,20 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import pl.soundgame.R
 import pl.soundgame.SoundPlayer
 import pl.soundgame.connection.serializedclasses.Question
-import pl.soundgame.playerutils.AchievementManager
 import pl.soundgame.engine.Scene
-import pl.soundgame.playerutils.UserManager
 import pl.soundgame.engine.background.SampleBackground
 import pl.soundgame.engine.gameobjects.Button
 import pl.soundgame.engine.gameobjects.Popup
 import pl.soundgame.engine.gameobjects.PopupDouble
 import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.engine.loadTextureBitmap
-import pl.soundgame.playerutils.Achievement
 import kotlin.math.min
 import kotlin.random.Random
 
@@ -59,16 +60,15 @@ class RhythmMode(
     private val TAG = "RHYTHM MODE"
     private var lastRoundScore = 0.0f
     private var playingPattern = false
-    private val userManager: UserManager = UserManager.getInstance(context)
-    private val achievementManager: AchievementManager = AchievementManager.getInstance(userManager)
 
+    @Volatile private var playedSounds = 0
     /**
      * Creates and initializes the game scene.
      * Sets up buttons, text, and event handling for gameplay.
      */
     override fun returnGameModeScene(): Scene {
         Log.i(TAG, "Creating scene")
-        logAllQuestions()
+
 
         val scene = Scene()
         scene.setBackground {
@@ -105,6 +105,132 @@ class RhythmMode(
                 popupAnswer2 = context.getString(R.string.exit_yes)
             )
 
+            /**
+             * Logs all questions with their details.
+             */
+            fun logAllQuestions() {
+                Log.i(TAG, "Logging all questions with full details:")
+                for ((index, question) in questions.withIndex()) {
+                    Log.i(
+                        TAG, """
+            |Question ${index + 1}:
+            |  Question Text: ${question.question}
+            |  Correct Answer: ${question.correctAnswer}
+            |  Answer 1: ${question.ans1}
+            |  Answer 2: ${question.ans2}
+            |  Answer 3: ${question.ans3}
+            |  Answer 4: ${question.ans4}
+            |  URL: ${question.url}
+            """.trimMargin()
+                    )
+                }
+            }
+            logAllQuestions()
+
+            /**
+             * Generates a random rhythm pattern for the current round.
+             */
+            fun generateRhythmPattern() {
+                rhythmPattern.clear()
+                rhythmIntervals.clear()
+
+                val totalBeats = 8
+
+                rhythmPattern.add(Pair(true, Random.nextFloat() * 1.5f + 0.5f))
+
+                repeat(totalBeats - 1) {
+                    val playSound = Random.nextBoolean()
+                    val randomPitch = if (playSound) Random.nextFloat() * 1.5f + 0.5f else 1.0f
+                    rhythmPattern.add(Pair(playSound, randomPitch))
+                }
+
+                Log.i(TAG, "Generated Rhythm Pattern: $rhythmPattern")
+            }
+
+            /**
+             * Plays the generated rhythm pattern and schedules user input.
+             */
+            fun playRhythmPattern() {
+                startTime = System.currentTimeMillis()
+                lastPressTime = 0L
+                userPressIntervals.clear()
+
+                playingPattern = true
+
+                var isFirst = true
+                var delay = 0L
+                val beatInterval = (60000L / (tempoBPM * 2))
+                val question = questions.getOrNull(0) //FIXME tutaj roundNumber gdy do kazdego pytania jest URL zamiast 0
+                var lastDelay = 0L
+
+                val maxSounds = rhythmPattern.count()
+                playedSounds = 0
+                for ((playSound, pitch) in rhythmPattern) {
+                    if (playSound) {
+                        if (isFirst) {
+                            rhythmIntervals.add(delay)
+                            isFirst = false
+                            lastDelay = delay
+                        } else {
+                            rhythmIntervals.add(delay - lastDelay)
+                            lastDelay = delay
+                        }
+                    }
+
+                    handler.postDelayed({
+                        if (playSound) {
+                            val soundFile = question?.url?.let { context.cacheDir.resolve(it.substringAfterLast("/")) }
+                            if (soundFile?.exists() == true) {
+                                soundPlayer.playSoundWithPitch(pitch, soundFile.absolutePath)
+                            }
+                        }
+                        if(playedSounds >= (maxSounds - 1)){
+                            tapButton.unlock()
+                            playButton.unlock()
+                        }
+                        playedSounds++
+                    }, delay)
+
+                    delay += beatInterval
+                }
+
+                handler.postDelayed( {
+                    playingPattern = false
+                }, delay)
+            }
+
+            /**
+             * Compares user input with the rhythm pattern to calculate accuracy.
+             */
+            fun checkAccuracy() {
+                Log.i(TAG, "Checking accuracy")
+                Log.i(TAG, "Generated Intervals: $rhythmIntervals")
+                Log.i(TAG, "User Press Intervals: $userPressIntervals")
+
+                var score = 0f
+                val comparisonCount = minOf(rhythmIntervals.size, userPressIntervals.size)
+
+                for (i in 1 until comparisonCount) {
+                    val interval1 = rhythmIntervals[i]
+                    val interval2 = userPressIntervals[i]
+                    val maxInterval = maxOf(interval1, interval2)
+                    val minInterval = minOf(interval1, interval2)
+
+                    val ratioScore = (minInterval.toFloat() / maxInterval.toFloat()) * 100
+                    score += ratioScore
+                }
+
+                lastRoundScore = (score / (rhythmIntervals.size - 1))
+                accuracy += lastRoundScore
+                Log.i(TAG, "Score: ${"%.2f".format(accuracy)}")
+            }
+
+            fun sendScore() {
+                onCompleteCallback(accuracy)
+            }
+
+
+
             // Set positions and scaling for UI elements
             roundText.setOriginPosition(y = 0.8f, x = 0f)
             roundText.scale(0.5f)
@@ -123,18 +249,10 @@ class RhythmMode(
                     val pitch = if (currentPatternIndex < rhythmPattern.size) rhythmPattern[currentPatternIndex].second else 1.0f
                     currentPatternIndex++
 
-                    val soundFile =
-                        questions[0].url.let { context.cacheDir.resolve(it.substringAfterLast("/")) }  //FIXME tutaj roundNumber gdy do kazdego pytania jest URL
-                    if (soundFile.exists() == true) {
+                    val soundFile = questions[0]?.url?.let { context.cacheDir.resolve(it.substringAfterLast("/")) }  //FIXME tutaj roundNumber gdy do kazdego pytania jest URL
+                    if (soundFile?.exists() == true) {
                         soundPlayer.playSoundWithPitch(pitch, soundFile.absolutePath)
                     }
-                    //FIXME if something goes wrong uncomment it pls
-//                    else {
-//                        val beatSound = soundPlayer.getSoundById(4)
-//                        beatSound?.let {
-//                            soundPlayer.playSoundWithPitch(pitch, it.resId)
-//                        }
-//                    }
 
                     val pressTime = System.currentTimeMillis()
                     if (isFirst) {
@@ -160,7 +278,7 @@ class RhythmMode(
                             scoreText.displayedText = "$scoreExampleText ${"%.2f".format(accuracy)}"
                             roundText.displayedText = "$roundExampleText ${min(roundNumber+1, totalRounds)}"
                             popup.popupTextBox.size = 32f
-                            popup.popupTextBox.displayedText = "$roundExampleText ${roundNumber}\n $scoreExampleText ${"%.2f".format(lastRoundScore)}/100"
+                            popup.popupTextBox.displayedText = "$roundExampleText ${roundNumber}\n $scoreExampleText ${"%.2f".format(lastRoundScore)}%"
                             playButton.lock()
                             exitButton.lock()
                             tapButton.lock()
@@ -188,6 +306,8 @@ class RhythmMode(
                 if (roundNumber < totalRounds) {
                     generateRhythmPattern()
                     startTime = System.currentTimeMillis()
+                    tapButton.lock()
+                    playButton.lock()
                     playRhythmPattern()
                     unblocked = true
                     start = false
@@ -244,143 +364,5 @@ class RhythmMode(
         return scene
     }
 
-    /**
-     * Logs all questions with their details.
-     */
-    private fun logAllQuestions() {
-        Log.i(TAG, "Logging all questions with full details:")
-        for ((index, question) in questions.withIndex()) {
-            Log.i(
-                TAG, """
-            |Question ${index + 1}:
-            |  Question Text: ${question.question}
-            |  Correct Answer: ${question.correctAnswer}
-            |  Answer 1: ${question.ans1}
-            |  Answer 2: ${question.ans2}
-            |  Answer 3: ${question.ans3}
-            |  Answer 4: ${question.ans4}
-            |  URL: ${question.url}
-            """.trimMargin()
-            )
-        }
-    }
-
-
-    /**
-     * Generates a random rhythm pattern for the current round.
-     */
-    fun generateRhythmPattern() {
-        rhythmPattern.clear()
-        rhythmIntervals.clear()
-
-        val totalBeats = 8
-
-        rhythmPattern.add(Pair(true, Random.nextFloat() * 1.5f + 0.5f))
-
-        repeat(totalBeats - 1) {
-            val playSound = Random.nextBoolean()
-            val randomPitch = if (playSound) Random.nextFloat() * 1.5f + 0.5f else 1.0f
-            rhythmPattern.add(Pair(playSound, randomPitch))
-        }
-
-        Log.i(TAG, "Generated Rhythm Pattern: $rhythmPattern")
-    }
-
-    /**
-     * Plays the generated rhythm pattern and schedules user input.
-     */
-    fun playRhythmPattern() {
-        startTime = System.currentTimeMillis()
-        lastPressTime = 0L
-        userPressIntervals.clear()
-
-        playingPattern = true
-
-        var isFirst = true
-        var delay = 0L
-        val beatInterval = (60000L / (tempoBPM * 2))
-        val question = questions.getOrNull(0) //FIXME tutaj roundNumber gdy do kazdego pytania jest URL zamiast 0
-        var lastDelay = 0L
-
-        for ((playSound, pitch) in rhythmPattern) {
-            if (playSound) {
-                if (isFirst) {
-                    rhythmIntervals.add(delay)
-                    isFirst = false
-                    lastDelay = delay
-                } else {
-                    rhythmIntervals.add(delay - lastDelay)
-                    lastDelay = delay
-                }
-            }
-
-            handler.postDelayed({
-                if (playSound) {
-                    val soundFile = question?.url?.let { context.cacheDir.resolve(it.substringAfterLast("/")) }
-                    if (soundFile?.exists() == true) {
-                        soundPlayer.playSoundWithPitch(pitch, soundFile.absolutePath)
-                    }
-                    //FIXME if something goes wrong uncomment it pls
-//                    else {
-//                        val beatSound = soundPlayer.getSoundById(4)
-//                        beatSound?.let {
-//                            soundPlayer.playSoundWithPitch(pitch, it.resId)
-//                        }
-//                    }
-                }
-            }, delay)
-
-            delay += beatInterval
-        }
-
-        handler.postDelayed( {
-            playingPattern = false
-        }, delay)
-    }
-
-    /**
-     * Compares user input with the rhythm pattern to calculate accuracy.
-     */
-    private fun checkAccuracy() {
-        Log.i(TAG, "Checking accuracy")
-        Log.i(TAG, "Generated Intervals: $rhythmIntervals")
-        Log.i(TAG, "User Press Intervals: $userPressIntervals")
-
-        var score = 0f
-        val comparisonCount = minOf(rhythmIntervals.size, userPressIntervals.size)
-
-        for (i in 1 until comparisonCount) {
-            val interval1 = rhythmIntervals[i]
-            val interval2 = userPressIntervals[i]
-            val maxInterval = maxOf(interval1, interval2)
-            val minInterval = minOf(interval1, interval2)
-
-            val ratioScore = (minInterval.toFloat() / maxInterval.toFloat()) * 100
-            score += ratioScore
-        }
-
-        lastRoundScore = (score / (rhythmIntervals.size - 1))
-        accuracy += lastRoundScore
-        Log.i(TAG, "Score: ${"%.2f".format(accuracy)}")
-    }
-
-    private fun sendScore() {
-        // Log the final score
-        Log.i(TAG, "Sending score: $accuracy")
-
-        // Update game stats
-        Log.i(TAG, "Updating game stat: gamesPlayed")
-        userManager.incrementGamesPlayed()
-
-        Log.i(TAG, "Updating high score for rhythm with score: $accuracy")
-        userManager.updateHighScore("rhythm", accuracy)
-
-        Log.i(TAG, "Incrementing total score by: $accuracy")
-        userManager.incrementTotalScore(accuracy)
-
-
-        // Trigger the completion callback with the final score
-        onCompleteCallback(accuracy)
-    }
 
 }
