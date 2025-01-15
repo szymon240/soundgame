@@ -61,7 +61,7 @@ class Settings(var context: Context, private val changeModeCallback: (GameModeNa
             }
 
 
-            val nickname = TextBox(initialText = "${context.getString(R.string.player_nick)} ${UserManager.getInstance(context).getNickname()}", size = 40f)
+            val nickname = TextBox(initialText = "${context.getString(R.string.player_nick)} ${UserManager.getInstance(context).getNickname()}", size = 40f, width = 800)
             nickname.setOriginPosition(y = 0.35f, x = 0f, )
             nickname.scale(0.5f)
 
@@ -86,7 +86,7 @@ class Settings(var context: Context, private val changeModeCallback: (GameModeNa
             }
             nicknamePopup.setPopupCallback1 {
                 val inputText = nicknamePopup.inputText
-                if (inputText.isNotBlank() || inputText.length <= 20) {
+                if (inputText.isNotBlank() && inputText.length <= 20) {
                     UserManager.getInstance(context).setNickname(inputText)
                     Log.i("Menu", "Nickname updated to: ${UserManager.getInstance(context).getNickname()}")
                     nicknamePopup.hidePopup()

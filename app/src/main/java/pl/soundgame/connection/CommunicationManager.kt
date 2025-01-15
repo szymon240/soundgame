@@ -148,7 +148,7 @@ class CommunicationManager(context: Context) {
             try {
                 with(url.openConnection() as HttpURLConnection) {
                     requestMethod = "GET"
-                    setRequestProperty("x-api-key", "Bearer $API_KEY")
+                    setRequestProperty("x-api-key", "$API_KEY")
                     setRequestProperty("Content-Type", "application/json")
 
                     val responseCode = responseCode

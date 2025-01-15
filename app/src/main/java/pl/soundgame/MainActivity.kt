@@ -2,10 +2,12 @@ package pl.soundgame
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Rect
 import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.text.InputFilter
 import android.text.InputType
+import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -48,37 +50,58 @@ class MainActivity : AppCompatActivity() {
         setContentView(frameLayout)
         editText = EditText(this).apply {
             visibility = View.GONE
-            inputType = InputType.TYPE_CLASS_TEXT // Basic text input
-            imeOptions = EditorInfo.IME_ACTION_DONE // Show "Done" button on the keyboard
+            inputType = InputType.TYPE_CLASS_TEXT
+            imeOptions = EditorInfo.IME_ACTION_DONE
             filters = arrayOf(
-                InputFilter.LengthFilter(20), // Limit to 20 characters
+                InputFilter.LengthFilter(20),
                 InputFilter { source, _, _, _, _, _ ->
-                    if (source.matches(Regex("^[a-zA-Z0-9]*$"))) source else "" // Allow only alphanumeric
+                    if (source.matches(Regex("^[a-zA-Z0-9 ]*$"))) source else ""
                 }
             )
 
-            // Listen for the "Done" key
             setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     val enteredText = text.toString()
-                    onEnterCallback?.invoke(enteredText) // Trigger the callback
-                    text.clear() // Clear the input text
-                    visibility = View.GONE // Hide the EditText
+                    onEnterCallback?.invoke(enteredText)
+                    text.clear()
+                    visibility = View.GONE
                     hideKeyboard()
                     true
                 } else {
                     false
                 }
             }
+
+            setBackgroundColor(Color.WHITE)
+            setTextColor(Color.BLACK)
         }
 
-
-        // Add the EditText to the window
-        val layoutParams = FrameLayout.LayoutParams(
+        val editTextParams = FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            Gravity.BOTTOM
         )
-        addContentView(editText, layoutParams)
+        addContentView(editText, editTextParams)
+        val rootView = findViewById<View>(android.R.id.content)
+        rootView.viewTreeObserver.addOnGlobalLayoutListener {
+            val rect = Rect()
+            rootView.getWindowVisibleDisplayFrame(rect)
+
+            val screenHeight = rootView.rootView.height
+            val keyboardHeight = screenHeight - rect.bottom
+
+            if (keyboardHeight > screenHeight * 0.15) { //
+                val params = editText.layoutParams as FrameLayout.LayoutParams
+                params.bottomMargin = keyboardHeight
+                editText.layoutParams = params
+                editText.visibility = View.VISIBLE
+            } else {
+                val params = editText.layoutParams as FrameLayout.LayoutParams
+                params.bottomMargin = 0
+                editText.layoutParams = params
+                editText.visibility = View.GONE
+            }
+        }
     }
 
     fun showKeyboard(onEnter: (String) -> Unit) {

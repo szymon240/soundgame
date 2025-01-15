@@ -23,7 +23,10 @@ import pl.soundgame.engine.shapes.createTextTexture
  *
  * @author Adam Czyżak
  */
-class PopupTextfield(background: Bitmap, popupText: String = "", popupAnswer1: String = "", popupAnswer2: String = "", val duration: Int = -1, id: String = "", val context: MainActivity) : GameObject(bitmap = background , id= id) {
+class PopupTextfield(background: Bitmap, popupText: String = "", popupAnswer1: String = "",
+                     popupAnswer2: String = "", val duration: Int = -1, id: String = "", 
+                     val context: MainActivity, var secondAnwser: Boolean = true) 
+            : GameObject(bitmap = background , id= id) {
     private val timedPopup: Boolean
     private var popupOn: Boolean = false
     private var currentDuration = duration
@@ -149,7 +152,7 @@ class PopupTextfield(background: Bitmap, popupText: String = "", popupAnswer1: S
             super.draw(shaderProgram, vPMatrix)
             popupTextBox.draw(shaderProgram, vPMatrix)
             answerButton1.draw(shaderProgram, vPMatrix)
-            answerButton2.draw(shaderProgram, vPMatrix)
+            if (secondAnwser) answerButton2.draw(shaderProgram, vPMatrix)
             textField.draw(shaderProgram, vPMatrix)
         }
     }
@@ -192,7 +195,7 @@ class PopupTextfield(background: Bitmap, popupText: String = "", popupAnswer1: S
     override fun click(x: Float, y: Float): Boolean {
         if (!popupOn || framesOn < 30 || textFieldOn) return false
 
-        return answerButton1.click(x, y) || answerButton2.click(x, y) || textField.click(x, y)
+        return answerButton1.click(x, y) || (answerButton2.click(x, y) && (secondAnwser) ) || textField.click(x, y)
     }
     private fun updatePopupText(){
         popupTextBox.displayedText = popupText

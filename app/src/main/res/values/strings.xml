@@ -45,4 +45,5 @@
     <string name="top_tens">Top 10 for modes</string>
     <string name="achievments">Achievements</string>
     <string name="tutorial_pitch">Listen to two samples, they differ in pitch. Decide if second sound is lower or higher in pitch that the first.</string>
+    <string name="invalid_nick">"Your nickname can't be empty or over 20 characters "</string>
 </resources>

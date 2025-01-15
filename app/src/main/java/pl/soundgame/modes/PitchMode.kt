@@ -83,6 +83,7 @@ class PitchMode(
 
         exitPopup.setPopupCallback1 {
             exitPopup.hidePopup()
+            exitButton.unlock()
         }
 
         exitPopup.setPopupCallback2 {
