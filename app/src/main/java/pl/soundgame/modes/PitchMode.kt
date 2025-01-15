@@ -30,6 +30,9 @@ class PitchMode(
     private var pitchRange = 0.5f
     private val minPitchRange = 0.04f
     private val rangeDecrement = 0.02f
+    private val minPitchDifference = 0.005f
+    private val minPitchValue = 0.6f
+    private val maxPitchValue = 1.8f
     private val userManager: UserManager = UserManager.getInstance(context)
 
     override fun returnGameModeScene(): Scene {
@@ -156,7 +159,12 @@ class PitchMode(
 
     private fun generateNewPitch(): Float {
         Log.d(TAG, "Generating new pitch")
-        return currentPitch + Random.nextFloat() * pitchRange * 2 - pitchRange
+        var newPitch: Float
+        do {
+            newPitch = currentPitch + Random.nextFloat() * pitchRange * 2 - pitchRange
+            newPitch = newPitch.coerceIn(minPitchValue, maxPitchValue) // Clamp to min and max values
+        } while (kotlin.math.abs(newPitch - currentPitch) < minPitchDifference) // Ensure minimum difference
+        return newPitch
     }
 
     private fun endGame(scene: Scene, popup: Popup) {
