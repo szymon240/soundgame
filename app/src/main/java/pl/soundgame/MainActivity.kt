@@ -1,6 +1,7 @@
 package pl.soundgame
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Rect
 import android.opengl.GLSurfaceView
@@ -16,6 +17,7 @@ import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import changeLocale
 import pl.soundgame.engine.GameGLSurfaceView
+import java.util.Locale
 
 /**
  * The main entry point of the app, responsible for initializing the game and rendering the OpenGL view.
@@ -38,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         val savedLanguageCode =
             sharedPreferences.getString("language_code", "en") ?: "en" // Default to "en"
 
-
+        applyLanguage(savedLanguageCode)
         val game = SoundGame(this)
 
         gLView = GameGLSurfaceView(this, game)
@@ -125,5 +127,13 @@ class MainActivity : AppCompatActivity() {
 
     fun getUserInput(): String {
         return editText.text.toString()
+    }
+
+    private fun applyLanguage(languageCode: String) {
+        val locale = Locale(languageCode)
+        Locale.setDefault(locale)
+        val config = Configuration(resources.configuration)
+        config.setLocale(locale)
+        resources.updateConfiguration(config, resources.displayMetrics)
     }
 }

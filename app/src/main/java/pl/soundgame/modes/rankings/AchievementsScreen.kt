@@ -40,13 +40,21 @@ class AchievementsScreen(var context: Context,
                     val popup = PopupAchievement(background = loadTextureBitmap("popupBackground.png", context),
                         achievement = achievement, context = context, id = "popup $displayId")
                     var text = ""
+
                     val bitmap = if (achievement in remaining){
                         text = context.getString(R.string.achievement_locked)
                         loadTextureBitmap("achievements/locked_achievement.png", context)
                     } else {
                         popup.setPopupCallback { popup.hidePopup() ; scene.unlockAllButtons() }
                         popups.add(popup)
-                        text =  achievement.name
+                        val resId = context.resources.getIdentifier(achievement.name, "string", context.packageName)
+                        if (resId != 0) { // Ensure resource exists
+                            val translatedString = context.getString(resId)
+                            text =  translatedString
+                        } else {
+                            text = achievement.name
+                        }
+
                         loadTextureBitmap(achievement.textureName, context)
                     }
                     val gameObject = GameObject(bitmap,  id = id )

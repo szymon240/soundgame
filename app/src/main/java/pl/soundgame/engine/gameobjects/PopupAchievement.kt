@@ -44,12 +44,27 @@ class PopupAchievement(background: Bitmap, achievement: Achievement, context: Co
         timedPopup = duration > 0
 
         this.scale(0.75f)
-
-        popupTextBox = TextBox(id = "${id} - Textbox",  size = 32f, width = 300, initialText = achievement.name)
+        var achievementName = ""
+        val resId = context.resources.getIdentifier(achievement.name, "string", context.packageName)
+        if (resId != 0) { // Ensure resource exists
+            val translatedString = context.getString(resId)
+            achievementName =  translatedString
+        } else {
+            achievementName = achievement.name
+        }
+        var achievementDesc = ""
+        val resId2 = context.resources.getIdentifier(achievement.description, "string", context.packageName)
+        if (resId2 != 0) { // Ensure resource exists
+            val translatedString = context.getString(resId2)
+            achievementDesc =  translatedString
+        } else {
+            achievementDesc = achievement.name
+        }
+        popupTextBox = TextBox(id = "${id} - Textbox",  size = 32f, width = 300, initialText = achievementName)
         popupTextBox.setOriginPosition(y = 0.3f)
         popupTextBox.scale(0.5f)
 
-        popupTextBoxDescription = TextBox(id = "${id} - Textbox",  size = 20f, width = 300, initialText = achievement.description)
+        popupTextBoxDescription = TextBox(id = "${id} - Textbox",  size = 20f, width = 300, initialText = achievementDesc)
         popupTextBoxDescription.setOriginPosition(y = -0.2f)
         popupTextBoxDescription.scale(0.5f)
 

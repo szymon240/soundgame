@@ -47,4 +47,16 @@
     <string name="achievments">Osiągnięcia i wyniki</string>
     <string name="tutorial_pitch">Posłuchaj dwóch dźwięków, różnią się one tonacją. Stwierdź, czy drugi dźwięk jest wyższy, czy niższy niż pierwszy.</string>
     <string name="invalid_nick">Twoja nazwa gracza nie może być pusta lub powyżej 20 znaków</string>
+    <string name="ach_score_chaser">Łowca wyników</string>
+    <string name="ach_desc_score_chaser">Zdobądź łącznie 2000 punktów</string>
+    <string name="ach_hs_pitch">Ekspert wyokości dźwięku</string>
+    <string name="ach_desc_hs_pitch">Zdobądź 800 punktów  w trybie z wysokością dźwięku</string>
+    <string name="ach_hs_instrumental">Znawca instrumentów</string>
+    <string name="ach_desc_hs_instrumental">Zdobądź 500 punktów w trybie z instrumentami</string>
+    <string name="ach_hs_rhythm">Czujesz rytm</string>
+    <string name="ach_desc_hs_rhythm">Zdobądź 300 punktów w trybie z rytmemem</string>
+    <string name="ach_dedicated">Zapalony gracz</string>
+    <string name="ach_desc_dedicated">Zagraj w 10 gier</string>
+    <string name="ach_first_steps">Pierwsze kroki</string>
+    <string name="ach_desc_first_steps">Zagraj w pierwszą grę</string>
 </resources>

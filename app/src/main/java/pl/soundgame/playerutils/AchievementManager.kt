@@ -4,39 +4,39 @@ class AchievementManager private constructor(private val userManager: UserManage
 
     private val achievements = listOf(
         Achievement(
-            name = "First Steps",
-            description = "Complete your first game.",
+            name = "ach_first_steps",
+            description = "ach_desc_first_steps",
             requirement = { userManager.getGamesPlayed() >= 1 },
             textureName = "achievements/first_steps.png"
         ),
         Achievement(
-            name = "Dedicated Player",
-            description = "Play 10 games.",
+            name = "ach_dedicated",
+            description = "ach_desc_dedicated",
             requirement = { userManager.getGamesPlayed() >= 10 },
             textureName = "achievements/dedicated_player.png"
         ),
         Achievement(
-            name = "High Scorer - Rhythm",
-            description = "Score 100 points in Rhythm Mode.",
-            requirement = { userManager.getHighScore("rhythm") >= 100 },
+            name = "ach_hs_rhythm",
+            description = "ach_desc_hs_rhythm",
+            requirement = { userManager.getHighScore("rhythm") >= 300 },
             textureName = "achievements/rhythm_achievement.png"
         ),
         Achievement(
-            name = "High Scorer - Instrumental",
-            description = "Score 400 points in Instrumental Mode.",
-            requirement = { userManager.getHighScore("instrumental") >= 400 },
+            name = "ach_hs_instrumental",
+            description = "ach_desc_hs_instrumental",
+            requirement = { userManager.getHighScore("instrumental") >= 500 },
             textureName = "achievements/instrumental_achievement.png"
         ),
         Achievement(
-            name = "High Scorer - Pitch",
-            description = "Score 300 points in Pitch Mode.",
-            requirement = { userManager.getHighScore("pitch") >= 300 },
+            name = "ach_hs_pitch",
+            description = "ach_desc_hs_pitch",
+            requirement = { userManager.getHighScore("pitch") >= 800 },
             textureName = "achievements/pitch_achievement.png"
         ),
         Achievement(
-            name = "Score Chaser",
-            description = "Achieve a total score of 300.",
-            requirement = { userManager.getTotalScore() >= 300 },
+            name = "ach_score_chaser",
+            description = "ach_desc_score_chaser",
+            requirement = { userManager.getTotalScore() >= 2000 },
             textureName = "achievements/high_scorer.png"
         )
     )

@@ -1,5 +1,6 @@
 package pl.soundgame.modes
 
+import android.app.Activity
 import android.content.Context
 import pl.soundgame.R
 import pl.soundgame.engine.Scene
@@ -9,8 +10,10 @@ import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.engine.loadTextureBitmap
 import android.util.Log
 import android.widget.Toast
+import androidx.core.app.ActivityCompat.recreate
 import changeLocale
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.channels.broadcast
 import kotlinx.coroutines.launch
 import pl.soundgame.MainActivity
 import pl.soundgame.playerutils.UserManager
@@ -51,12 +54,38 @@ class Settings(var context: Context, private val changeModeCallback: (GameModeNa
             engButton.onClickAction {
                 applyLocaleChange("en")
                 scene.refreshAll()
+                MainScope().launch {
+                    val text ="Changes will be applied with app next launch"
+                    val duration = Toast.LENGTH_SHORT
+                    val toast = Toast.makeText(context, text, duration)
+                    toast.show()
+
+                }
+                if (context is Activity) {
+                    val intent = (context as Activity).intent
+                    (context as Activity).finish()
+                    context.startActivity(intent)
+                }
+                scene.refreshAll()
             }
             val plButton = Button(loadTextureBitmap("settings/pl_flag.png", context))
             plButton.setOriginPosition(y = 0.6f, x = -0.4f)
             plButton.scale(0.2f)
             plButton.onClickAction {
                 applyLocaleChange("pl")
+
+                MainScope().launch {
+                    val text ="Zmiany nastąpią przy następnym uruchomieniu aplikacji"
+                    val duration = Toast.LENGTH_SHORT
+                    val toast = Toast.makeText(context, text, duration)
+                    toast.show()
+
+                }
+                if (context is Activity) {
+                    val intent = (context as Activity).intent
+                    (context as Activity).finish()
+                    context.startActivity(intent)
+                }
                 scene.refreshAll()
             }
 

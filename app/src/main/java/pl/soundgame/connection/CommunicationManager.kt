@@ -50,14 +50,17 @@ class CommunicationManager(context: Context) {
         }
     }
 
-    fun getQuestions(
+    fun getQuestions(context: Context,
         gameMode: GameModeName,
         numberOfRounds: Int,
         onResult: (Response?) -> Unit
     ) {
+        val sharedPreferences = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE)
+        val savedLanguageCode =
+            sharedPreferences.getString("language_code", "en") ?: "en"
         CoroutineScope(Dispatchers.IO).launch {
             val url = URL(QUESTIONS_URL)
-            val request = Request(mode = gameMode.name.lowercase(), questions = numberOfRounds)
+            val request = Request(mode = gameMode.name.lowercase(), questions = numberOfRounds, lang = savedLanguageCode)
 
             try {
                 val requestBody = parser.toJson(request)
@@ -99,8 +102,10 @@ class CommunicationManager(context: Context) {
         mode: GameModeName,
         username: String,
         score: Double,
-        onResult: (ScoreResponse?) -> Unit
+        onResult: (ScoreResponse?) -> Unit,
+
     ) {
+
         CoroutineScope(Dispatchers.IO).launch {
             val url = URL(SCORE_URL)
             val request = ScoreRequest(mode = mode.name.lowercase(), username = username, score = score)
@@ -143,6 +148,7 @@ class CommunicationManager(context: Context) {
     }
 
     fun getScoresRhythm(onResult: (List<ScoreTop10Response>?) -> Unit) {
+
         CoroutineScope(Dispatchers.IO).launch {
             val url = URL(TOP10_RHYTHM)
             try {

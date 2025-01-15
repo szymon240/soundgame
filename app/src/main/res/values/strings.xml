@@ -46,4 +46,16 @@
     <string name="achievments">Achievements</string>
     <string name="tutorial_pitch">Listen to two samples, they differ in pitch. Decide if second sound is lower or higher in pitch that the first.</string>
     <string name="invalid_nick">"Your nickname can't be empty or over 20 characters "</string>
+    <string name="ach_score_chaser">Score Chaser</string>
+    <string name="ach_desc_score_chaser">Achive a total score of 2000</string>
+    <string name="ach_hs_pitch">High Scorer - Pitch</string>
+    <string name="ach_desc_hs_pitch">Score 800 points in Pitch Mode</string>
+    <string name="ach_hs_instrumental">High Scorer - Instrumental</string>
+    <string name="ach_desc_hs_instrumental">Score 600 points in Instrumental Mode</string>
+    <string name="ach_hs_rhythm">High Scorer - Rhythm</string>
+    <string name="ach_desc_hs_rhythm">Score 300 points in Rhythm Mode</string>
+    <string name="ach_dedicated">Dedicated Player</string>
+    <string name="ach_desc_dedicated">Play 10 games</string>
+    <string name="ach_first_steps">First Steps</string>
+    <string name="ach_desc_first_steps">Complete your first game</string>
 </resources>
