@@ -27,7 +27,9 @@ class PitchMode(
     private var score = 0
     private val TAG = "PitchMode"
     private var currentPitch = 1.0f
-    private val pitchRange = 0.2f
+    private var pitchRange = 0.5f
+    private val minPitchRange = 0.04f
+    private val rangeDecrement = 0.02f
     private val userManager: UserManager = UserManager.getInstance(context)
 
     override fun returnGameModeScene(): Scene {
@@ -129,6 +131,7 @@ class PitchMode(
                 scoreText.displayedText = "Score: $score"
                 currentPitch = nextPitch
                 nextPitch = generateNewPitch()
+                pitchRange = (pitchRange - rangeDecrement).coerceAtLeast(minPitchRange)
             } else {
                 endGame(scene, popup)
             }
