@@ -99,10 +99,13 @@ internal class SoundGame(context: Context) : Game() {
      * @param mode The game mode for which questions are to be fetched.
      */
     private fun fetchQuestionsForMode(mode: GameModeName) {
-        commManager.getQuestions(context, mode, rounds) { response ->
+        var newRounds = rounds
+        if( mode == GameModeName.INSTRUMENTAL ){
+            newRounds = 8
+        }
+        commManager.getQuestions(context, mode, newRounds) { response ->
             if (response != null) {
                 questions = response.questions ?: emptyList()
-
                 GlobalScope.launch {
                     downloadSoundsForQuestions(questions)
                 }
