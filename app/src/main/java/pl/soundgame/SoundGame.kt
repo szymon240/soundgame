@@ -99,10 +99,13 @@ internal class SoundGame(context: Context) : Game() {
      * @param mode The game mode for which questions are to be fetched.
      */
     private fun fetchQuestionsForMode(mode: GameModeName) {
-        commManager.getQuestions(mode, rounds) { response ->
+        var newRounds = rounds
+        if( mode == GameModeName.INSTRUMENTAL ){
+            newRounds = 8
+        }
+        commManager.getQuestions(context, mode, newRounds) { response ->
             if (response != null) {
                 questions = response.questions ?: emptyList()
-
                 GlobalScope.launch {
                     downloadSoundsForQuestions(questions)
                 }
@@ -282,7 +285,7 @@ internal class SoundGame(context: Context) : Game() {
         gameMode = when (newMode) {
             GameModeName.MENU -> Menu(this.context, changeModeCallback)
             GameModeName.RHYTHM -> RhythmMode(this.context, changeModeCallback, questions, rounds, ::onRhythmModeComplete)
-            GameModeName.INSTRUMENTAL -> InstrumentalMode(this.context, changeModeCallback, questions, rounds, ::onRhythmModeComplete)
+            GameModeName.INSTRUMENTAL -> InstrumentalMode(this.context, changeModeCallback, questions, 8, ::onRhythmModeComplete)
             GameModeName.SETTINGS -> Settings(this.context, changeModeCallback)
             GameModeName.EMPTY -> Empty(this.context, changeModeCallback, GameModeName.MENU)
             GameModeName.RANKING_SCREEN -> RankingScreen(this.context, commManager, changeModeCallback)

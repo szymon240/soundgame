@@ -23,11 +23,25 @@ import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 
+/**
+ * Class creates proxy between game and server. Methods sends requests in Kotlin lang coroutines
+ *
+ * @constructor
+ * Class only requires Android main class context to be allowed to send messages over the Internet
+ *
+ * @param context Main Activity Context
+ */
 class CommunicationManager(context: Context) {
     private var parser = Gson()
     private val TAG = "CommunicationManager"
     private val API_KEY = context.getString(R.string.apiKey)
 
+
+    /**
+     * Gets server status
+     *
+     * @param onResult closure with callback after status is received
+     */
     fun getServerStatus(onResult: (StatusResponse?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val urlToStatus = URL(STATUS_URL)
@@ -50,14 +64,25 @@ class CommunicationManager(context: Context) {
         }
     }
 
-    fun getQuestions(
+    /**
+     * Gets questions for chosen game mode and number of rounds
+     *
+     * @param context Android Main class context
+     * @param gameMode Chosen game mode
+     * @param numberOfRounds Integer value for number of rounds
+     * @param onResult closure with callback after status is received
+     */
+    fun getQuestions(context: Context,
         gameMode: GameModeName,
         numberOfRounds: Int,
         onResult: (Response?) -> Unit
     ) {
+        val sharedPreferences = context.getSharedPreferences("user_preferences", Context.MODE_PRIVATE)
+        val savedLanguageCode =
+            sharedPreferences.getString("language_code", "en") ?: "en"
         CoroutineScope(Dispatchers.IO).launch {
             val url = URL(QUESTIONS_URL)
-            val request = Request(mode = gameMode.name.lowercase(), questions = numberOfRounds)
+            val request = Request(mode = gameMode.name.lowercase(), questions = numberOfRounds, lang = savedLanguageCode)
 
             try {
                 val requestBody = parser.toJson(request)
@@ -95,12 +120,22 @@ class CommunicationManager(context: Context) {
         }
     }
 
+    /**
+     * Sends POST request to put user score in ranking
+     *
+     * @param mode GameMode of socre
+     * @param username user chosen username
+     * @param score double value of score
+     * @param onResult callback after request response is received
+     */
     fun postScore(
         mode: GameModeName,
         username: String,
         score: Double,
-        onResult: (ScoreResponse?) -> Unit
+        onResult: (ScoreResponse?) -> Unit,
+
     ) {
+
         CoroutineScope(Dispatchers.IO).launch {
             val url = URL(SCORE_URL)
             val request = ScoreRequest(mode = mode.name.lowercase(), username = username, score = score)
@@ -142,7 +177,13 @@ class CommunicationManager(context: Context) {
         }
     }
 
+    /**
+     * Retrieves score ranging of top 10 in Rhythm mode
+     *
+     * @param onResult callback after response is recieved
+     */
     fun getScoresRhythm(onResult: (List<ScoreTop10Response>?) -> Unit) {
+
         CoroutineScope(Dispatchers.IO).launch {
             val url = URL(TOP10_RHYTHM)
             try {
@@ -181,6 +222,11 @@ class CommunicationManager(context: Context) {
         }
     }
 
+    /**
+     * Retrieves score ranging of top 10 in Instrumental mode
+     *
+     * @param onResult callback after response is received
+     */
     fun getScoresInstrumental(onResult: (List<ScoreTop10Response>?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val url = URL(TOP10_INSTRUMENTAL)
@@ -220,6 +266,11 @@ class CommunicationManager(context: Context) {
         }
     }
 
+    /**
+     * Retrieves score ranging of top 10 in Scores mode
+     *
+     * @param onResult callback after response is received
+     */
     fun getScoresPitch(onResult: (List<ScoreTop10Response>?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val url = URL(TOP10_PITCH)

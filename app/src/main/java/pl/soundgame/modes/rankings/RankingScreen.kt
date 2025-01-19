@@ -1,6 +1,7 @@
 package pl.soundgame.modes.rankings
 
 import android.content.Context
+import android.os.UserManager
 import pl.soundgame.R
 import pl.soundgame.connection.CommunicationManager
 import pl.soundgame.engine.Scene
@@ -52,7 +53,16 @@ class RankingScreen(var context: Context, private val commManager: Communication
             top10Pitch.setOriginPosition(y = -0.2f, x = 0.6f)
             top10Pitch.scale(0.3f)
             top10Pitch.onClickAction { changeModeCallback(GameModeName.TOP10_PITCH) }
-            scene.addGameObject( top10Instrumental, topText, tops10text, top10Pitch)
+
+            val score = pl.soundgame.playerutils.UserManager.getInstance(context).getTotalScore()
+            val gamesPlayed = pl.soundgame.playerutils.UserManager.getInstance(context).getGamesPlayed()
+            val bottomScore = TextBox(initialText = "${context.getString(R.string.score_text)} ${score.toInt()}" ,  width = 700, size = 20f)
+            bottomScore.setOriginPosition(y = -0.6f, x = 0f)
+            bottomScore.scale(0.6f)
+            val bottomTotalGames = TextBox(initialText ="${context.getString(R.string.number_of_games_played)} $gamesPlayed",  width = 700, size = 20f)
+            bottomTotalGames.setOriginPosition(y = -0.68f, x = 0f)
+            bottomTotalGames.scale(0.6f)
+            scene.addGameObject( top10Instrumental, topText, tops10text, top10Pitch, bottomTotalGames, bottomScore)
         }
 
         return scene
