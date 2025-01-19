@@ -25,7 +25,7 @@
     <string name="loading">Downloading...</string>
     <string name="msg_no_connection">Couldn\'t connect to the server. Connection is required to play the game.</string>
     <string name="msg_error_downloading">Some server error occured</string>
-    <string name="authors_info">Authors:\n Adam Czyżak,  Szymon Szymankiewicz\n, Maria Nowicka\n\n Licence: MIT</string>
+    <string name="authors_info">Authors:  Adam Czyżak,  Szymon Szymankiewicz, Maria Nowicka   Licence: MIT</string>
     <string name="popupText">Enter your nickname</string>
     <string name="nickname_popup_save">Save</string>
     <string name="nickname_popup_cancel">Cancel</string>
@@ -46,7 +46,7 @@
     <string name="top_tens">Top 10 for modes</string>
     <string name="achievments">Achievements and scores</string>
     <string name="tutorial_pitch">Listen to two samples, they differ in pitch. Decide if second sound is lower or higher in pitch that the first.</string>
-    <string name="invalid_nick">Your nickname can\'t be empty or over 20 characters</string>
+    <string name="invalid_nick">Your nickname can\'t be empty or over 16 characters</string>
     <string name="ach_score_chaser">Score Chaser</string>
     <string name="ach_desc_score_chaser">Achive a total score of 2000</string>
     <string name="ach_hs_pitch">High Scorer - Pitch</string>
@@ -59,4 +59,6 @@
     <string name="ach_desc_dedicated">Play 10 games</string>
     <string name="ach_first_steps">First Steps</string>
     <string name="ach_desc_first_steps">Complete your first game</string>
+    <string name="score_text">Your overall score:</string>
+    <string name="number_of_games_played">Number of games played:</string>
 </resources>

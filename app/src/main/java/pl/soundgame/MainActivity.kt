@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
             inputType = InputType.TYPE_CLASS_TEXT
             imeOptions = EditorInfo.IME_ACTION_DONE
             filters = arrayOf(
-                InputFilter.LengthFilter(20),
+                InputFilter.LengthFilter(16),
                 InputFilter { source, _, _, _, _, _ ->
                     if (source.matches(Regex("^[a-zA-Z0-9 ]*$"))) source else ""
                 }

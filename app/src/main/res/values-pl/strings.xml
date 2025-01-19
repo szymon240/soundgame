@@ -20,8 +20,8 @@
     <string name="exit_yes">Tak, opuść</string>
     <string name="exit_no">Nie, pozostań</string>
     <string name="settings">Ustawienia</string>
-    <string name="rhythm">Tryb rytmiczny</string>
-    <string name="instrumental">Tryb instrumentalny</string>
+    <string name="rhythm">Powtórz rytm</string>
+    <string name="instrumental">Rozpoznaj intrument</string>
     <string name="loading">Pobieranie...</string>
     <string name="msg_no_connection">Nie udało się połączyć do serwera. Połączenie jest wymagane do gry.</string>
     <string name="msg_error_downloading">Nastąpił nieoczekiwany błąd serwera</string>
@@ -46,7 +46,7 @@
     <string name="top_tens">Top 10 dla trybów</string>
     <string name="achievments">Osiągnięcia i wyniki</string>
     <string name="tutorial_pitch">Posłuchaj dwóch dźwięków, różnią się one tonacją. Stwierdź, czy drugi dźwięk jest wyższy, czy niższy niż pierwszy.</string>
-    <string name="invalid_nick">Twoja nazwa gracza nie może być pusta lub powyżej 20 znaków</string>
+    <string name="invalid_nick">Twoja nazwa gracza nie może być pusta lub powyżej 16 znaków</string>
     <string name="ach_score_chaser">Łowca wyników</string>
     <string name="ach_desc_score_chaser">Zdobądź łącznie 2000 punktów</string>
     <string name="ach_hs_pitch">Ekspert wyokości dźwięku</string>
@@ -59,4 +59,6 @@
     <string name="ach_desc_dedicated">Zagraj w 10 gier</string>
     <string name="ach_first_steps">Pierwsze kroki</string>
     <string name="ach_desc_first_steps">Zagraj w pierwszą grę</string>
+    <string name="score_text">Twój sumaryczny wynik:</string>
+    <string name="number_of_games_played">Łączna liczba gier:</string>
 </resources>

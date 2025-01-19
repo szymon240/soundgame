@@ -23,11 +23,25 @@ import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 
+/**
+ * Class creates proxy between game and server. Methods sends requests in Kotlin lang coroutines
+ *
+ * @constructor
+ * Class only requires Android main class context to be allowed to send messages over the Internet
+ *
+ * @param context Main Activity Context
+ */
 class CommunicationManager(context: Context) {
     private var parser = Gson()
     private val TAG = "CommunicationManager"
     private val API_KEY = context.getString(R.string.apiKey)
 
+
+    /**
+     * Gets server status
+     *
+     * @param onResult closure with callback after status is received
+     */
     fun getServerStatus(onResult: (StatusResponse?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val urlToStatus = URL(STATUS_URL)
@@ -50,6 +64,14 @@ class CommunicationManager(context: Context) {
         }
     }
 
+    /**
+     * Gets questions for chosen game mode and number of rounds
+     *
+     * @param context Android Main class context
+     * @param gameMode Chosen game mode
+     * @param numberOfRounds Integer value for number of rounds
+     * @param onResult closure with callback after status is received
+     */
     fun getQuestions(context: Context,
         gameMode: GameModeName,
         numberOfRounds: Int,
@@ -98,6 +120,14 @@ class CommunicationManager(context: Context) {
         }
     }
 
+    /**
+     * Sends POST request to put user score in ranking
+     *
+     * @param mode GameMode of socre
+     * @param username user chosen username
+     * @param score double value of score
+     * @param onResult callback after request response is received
+     */
     fun postScore(
         mode: GameModeName,
         username: String,
@@ -147,6 +177,11 @@ class CommunicationManager(context: Context) {
         }
     }
 
+    /**
+     * Retrieves score ranging of top 10 in Rhythm mode
+     *
+     * @param onResult callback after response is recieved
+     */
     fun getScoresRhythm(onResult: (List<ScoreTop10Response>?) -> Unit) {
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -187,6 +222,11 @@ class CommunicationManager(context: Context) {
         }
     }
 
+    /**
+     * Retrieves score ranging of top 10 in Instrumental mode
+     *
+     * @param onResult callback after response is received
+     */
     fun getScoresInstrumental(onResult: (List<ScoreTop10Response>?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val url = URL(TOP10_INSTRUMENTAL)
@@ -226,6 +266,11 @@ class CommunicationManager(context: Context) {
         }
     }
 
+    /**
+     * Retrieves score ranging of top 10 in Scores mode
+     *
+     * @param onResult callback after response is received
+     */
     fun getScoresPitch(onResult: (List<ScoreTop10Response>?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val url = URL(TOP10_PITCH)
