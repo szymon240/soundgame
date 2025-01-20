@@ -18,6 +18,7 @@ import pl.soundgame.engine.gameobjects.Popup
 import pl.soundgame.engine.gameobjects.PopupDouble
 import pl.soundgame.engine.gameobjects.TextBox
 import pl.soundgame.engine.loadTextureBitmap
+import pl.soundgame.playerutils.UserManager
 import kotlin.math.min
 import kotlin.random.Random
 
@@ -60,6 +61,7 @@ class RhythmMode(
     private val TAG = "RHYTHM MODE"
     private var lastRoundScore = 0.0f
     private var playingPattern = false
+    private val userManager: UserManager = UserManager.getInstance(context)
 
     @Volatile private var playedSounds = 0
     /**
@@ -226,6 +228,15 @@ class RhythmMode(
             }
 
             fun sendScore() {
+                Log.i(TAG, "Updating game stat: gamesPlayed")
+                userManager.incrementGamesPlayed()
+
+                Log.i(TAG, "Updating high score for rhythm with score: $accuracy")
+                userManager.updateHighScore("rhythm", accuracy)
+
+                Log.i(TAG, "Incrementing total score by: $accuracy")
+                userManager.incrementTotalScore(accuracy)
+
                 onCompleteCallback(accuracy)
             }
 
