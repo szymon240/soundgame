@@ -26,13 +26,13 @@ class PitchMode(
     private val soundPlayer = SoundPlayer(context)
     private var score = 0
     private val TAG = "PitchMode"
-    private var currentPitch = 1.0f
+    private var currentPitch = 1.00f
     private var pitchRange = 0.5f
-    private val minPitchRange = 0.04f
-    private val rangeDecrement = 0.02f
-    private val minPitchDifference = 0.005f
-    private val minPitchValue = 0.6f
-    private val maxPitchValue = 1.8f
+    private val minPitchRange = 0.040f
+    private val rangeDecrement = 0.005f
+    private val minPitchDifference = 0.010f
+    private val minPitchValue = 0.60f
+    private val maxPitchValue = 1.80f
     private val userManager: UserManager = UserManager.getInstance(context)
 
     override fun returnGameModeScene(): Scene {
